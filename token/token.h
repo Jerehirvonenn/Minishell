@@ -3,6 +3,7 @@
 
 #include <readline/readline.h>
 #include <readline/history.h>
+#include <stdlib.h>
 
 typedef enum e_token_type
 {
@@ -19,5 +20,9 @@ typedef struct s_token
 	struct s_token		*next;
 	struct s_token		*prev;
 }	t_token;
+
+//token_create.c
+t_token	*create_token(t_token_type type, char *value);
+void	add_token_to_list(t_token **lst, t_token *new_token);
 
 #endif

@@ -15,7 +15,7 @@ int ft_isoperator(char c)
     return 0;
 }
 
-e_token_type	ft_operator_type(char c)
+enum e_token_type	ft_operator_type(char c)
 {
 	if (c == '|')
 		return (T_PIPE);
@@ -27,7 +27,7 @@ e_token_type	ft_operator_type(char c)
 		return (0);
 }
 
-char *strndup(const char *src, int i)
+char *ft_strndup(const char *src, int i)
 {
     char	*dest;
     int		j;
@@ -35,7 +35,7 @@ char *strndup(const char *src, int i)
     dest = (char *)malloc(sizeof(char) * (i + 1));
     if (!dest)
         return NULL;
-    j = -1
+    j = -1;
     while (++j < i)
         dest[j] = src[j];
     dest[i] = '\0';
@@ -43,32 +43,34 @@ char *strndup(const char *src, int i)
 }
 
 
-void	create_operator_token(char **str, t_token **lst, t_token_type operator)
+void	create_operator_token(char **str, t_token **lst, t_token_type type)
 {
 	t_token *node;
 
-	node = new_token();//create new node and add it to the back of the list
+	node = create_token(type, NULL);//create new node and add it to the back of the list
 	if (!node)
 		return ; //error handling needed
-	*str++;
+	add_token_to_list(lst, node);
+	(*str)++;
 }
 
-void	create_argument_token(char **str, t_token **lst, t_token_type operator)
+void	create_argument_token(char **str, t_token **lst, t_token_type type)
 {
-	t_token	*node;
 	int 	i;
 	char	*line;
+	t_token *node;
 
 	i = 0;
-	while (str[i] && !ft_isoperator(str[i]) && !ft_isspace(str[i]))
+	while ((*str)[i] && !ft_isoperator((*str)[i]) && !ft_isspace((*str)[i]))
 		i++;
 	line = ft_strndup(*str, i);
 	if (!line)
 		return ; //error handling needed
-	node = new_token();//create new node and add it to the back of the list
+	node = create_token(type, line);//create new node and add it to the back of the list
 	if (!node)
 		return ; //error handling needed
-	*str += i;
+	add_token_to_list(lst, node);
+	(*str) += i;
 }
 
 void	ft_tokenize(char *str)
@@ -89,7 +91,7 @@ void	ft_tokenize(char *str)
 
 int main(int ac, char **av, char **envp)
 {
-	char prompt[1000];
+	char prompt[1000] = "minishell> ";
 	char *str;
 
 	str = readline(prompt);
