@@ -73,7 +73,7 @@ void	create_argument_token(char **str, t_token **lst, t_token_type type)
 	(*str) += i;
 }
 
-void	ft_tokenize(char *str)
+t_token	*ft_tokenize(char *str)
 {
 	t_token *lst;
 
@@ -87,13 +87,21 @@ void	ft_tokenize(char *str)
 		else
 			create_argument_token(&str, &lst, T_CMND);
 	}
+	return (lst);
 }
 
 int main(int ac, char **av, char **envp)
 {
 	char prompt[1000] = "minishell> ";
 	char *str;
+	t_token *lst;
 
 	str = readline(prompt);
-	ft_tokenize(str);
+	lst = ft_tokenize(str);
+
+	while(lst)
+	{
+		printf("Token type %i\n", lst->type);
+		lst = lst->next;
+	}
 }
