@@ -95,6 +95,7 @@ int main(int ac, char **av, char **envp)
 	char prompt[1000] = "minishell> ";
 	char *str;
 	t_token *lst;
+	t_ast	*tree;
 
 	str = readline(prompt);
 	lst = ft_tokenize(str);
@@ -104,4 +105,7 @@ int main(int ac, char **av, char **envp)
 		printf("Token type %i\n", lst->type);
 		lst = lst->next;
 	}
+
+	//creating the ast tree;
+	tree = parsing_ast();
 }
