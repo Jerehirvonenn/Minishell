@@ -1,6 +1,7 @@
 #include "../includes/minishell.h"
 
-void	print_ast_tree(t_ast *root);
+void		print_ast_tree(t_ast *root);
+const char	*token_type_to_str(t_token_type type);
 
 int ft_isspace(char c)
 {
@@ -106,10 +107,9 @@ int main(int ac, char **av, char **envp)
 	temp_print = lst;
 	while(temp_print)  //testing and printing out the tokens
 	{
-		printf("Token type %i\n", temp_print->type);
+		printf("Token type %s\n", token_type_to_str(temp_print->type));
 		temp_print = temp_print->next;
 	}
-
 	//creating the ast tree;
 	tree = parsing_ast(lst);
 	print_ast_tree(tree);
