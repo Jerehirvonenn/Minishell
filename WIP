@@ -1,0 +1,10 @@
+token/parsing
+make tokenizer work with ' ' " "
+parsing with io redirections
+parsing with "wrong" order of commands, exmpl echo hi > outfile > hello > outfile2 howdy
+also if redirections come before the command
+lots of error handling
+heredoc, append
+
+other
+signals
