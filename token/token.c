@@ -101,6 +101,9 @@ int main(int ac, char **av, char **envp)
 	t_token *temp_print;
 	t_ast	*tree;
 
+	(void)ac;
+	(void)av;
+	(void)envp;
 	str = readline(prompt);
 	lst = ft_tokenize(str);
 
