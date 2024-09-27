@@ -37,6 +37,8 @@ char	**append_args(char **args, char *to_add)
 	return (new_args);
 }
 
+//free toke nafter use
+
 t_ast	*parse_command(t_token **tokens)
 {
 	t_ast *node;
@@ -46,6 +48,7 @@ t_ast	*parse_command(t_token **tokens)
 	node = create_ast_node((*tokens)->type, (*tokens)->value);
 	if (!node)
 		return (NULL);
+	node->exp_value = append_args(node->exp_value, (*tokens)->value);
 	*tokens = (*tokens)->next;
 	while (*tokens && (*tokens)->type == T_CMND)
 	{
