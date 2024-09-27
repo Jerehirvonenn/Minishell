@@ -57,6 +57,38 @@ void	create_operator_token(char **str, t_token **lst, t_token_type type)
 	(*str)++;
 }
 
+//how to handle empty quotes?
+void	handle_quote(char **str, int *i)
+{
+	char	type;
+
+	type = (*str)[*i];
+	(*i)++;
+	while ((*str)[*i])
+	{
+		if ((*str)[*i] == type)
+			break;
+		else
+			(*i)++;
+	}
+	if (!(*str)[*i])  //fix error handling for incorrect quotes
+	{
+		printf("No closing quote");
+		exit(1);
+	}
+	(*i)++;
+	while ((*str)[*i] && !ft_isspace((*str)[*i]) && !ft_isoperator((*str)[*i]))
+	{
+		if ((*str)[*i] == '\'' || (*str)[*i] == '"')
+		{
+			handle_quote(str, i);
+			break;
+		}
+		else
+			(*i)++;
+	}
+}
+
 void	create_argument_token(char **str, t_token **lst, t_token_type type)
 {
 	int 	i;
@@ -65,11 +97,16 @@ void	create_argument_token(char **str, t_token **lst, t_token_type type)
 
 	i = 0;
 	while ((*str)[i] && !ft_isoperator((*str)[i]) && !ft_isspace((*str)[i]))
-		i++;
+	{
+		if (*str && (**str == '\'' || **str == '"'))
+			handle_quote(str, &i); //WIP
+		else
+			i++;
+	}
 	line = ft_strndup(*str, i);
 	if (!line)
 		return ; //error handling needed
-	node = create_token(type, line);//create new node and add it to the back of the list
+	node = create_token(type, line);
 	if (!node)
 		return ; //error handling needed
 	add_token_to_list(lst, node);
@@ -101,7 +138,12 @@ int main(int ac, char **av, char **envp)
 	t_token *temp_print;
 	t_ast	*tree;
 
+	(void)ac;
+	(void)av;
+	(void)envp;
 	str = readline(prompt);
+	if (!str)
+		return (1);
 	lst = ft_tokenize(str);
 
 	temp_print = lst;
