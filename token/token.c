@@ -126,6 +126,8 @@ t_token	*ft_tokenize(char *str)
 			create_operator_token(&str, &lst, ft_operator_type(*str));
 		else
 			create_argument_token(&str, &lst, T_CMND);
+		while (ft_isspace(*str))
+			str++;
 	}
 	return (lst);
 }
