@@ -8,8 +8,10 @@
 typedef enum e_token_type
 {
 	T_CMND,			//command names, filenames, and arguments.
-	T_IN_REDIR,		//input redirection
-	T_OUT_REDIR,		//output redirection
+	T_IN_REDIR,		//input redirection <
+	T_OUT_REDIR,		//output redirection >
+	T_HERE_DOC,		//Heredoc <<
+	T_APEND,		//Append >>
 	T_PIPE,			//pipe
 }	t_token_type;
 

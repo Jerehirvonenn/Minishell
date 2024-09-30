@@ -7,27 +7,33 @@ int ft_isspace(char c)
 {
     if (c == ' ' || c == '\t' || c == '\n'
 	|| c == '\v' || c == '\f' || c == '\r')
-        return 1;
-    return 0;
+        return (1);
+    return (0);
 }
 
-int ft_isoperator(char c)
+int ft_isoperator(char *str)
 {
-    if (c == '|' || c == '<' || c == '>')
-        return 1;
-    return 0;
+    if (!str)
+        return (0);
+    if (ft_strncmp(str, "<<", 2) == 0 || ft_strncmp(str, ">>", 2) == 0)
+        return (2);
+    if (*str == '|' || *str == '<' || *str == '>')
+        return (1);
+    return (0);
 }
 
-enum e_token_type	ft_operator_type(char c)
+t_token_type	ft_operator_type(char *str)
 {
-	if (c == '|')
-		return (T_PIPE);
-	else if (c == '<')
+	if (ft_strncmp(str, "<<", 2) == 0)
+		return (T_HERE_DOC);
+	else if (ft_strncmp(str, ">>", 2) == 0)
+		return (T_APEND);
+	else if (*str == '<')
 		return (T_IN_REDIR);
-	else if (c == '>')
+	else if (*str == '>')
 		return (T_OUT_REDIR);
 	else
-		return (0);
+		return (T_PIPE);
 }
 
 char *ft_strndup(const char *src, int i)
@@ -54,10 +60,12 @@ void	create_operator_token(char **str, t_token **lst, t_token_type type)
 	if (!node)
 		return ; //error handling needed
 	add_token_to_list(lst, node);
+	if (node->type == T_HERE_DOC || node->type == T_APEND)
+		(*str)++;
 	(*str)++;
 }
 
-//how to handle empty quotes?
+//how to handle empty quotes? create an emptry str?
 void	handle_quote(char **str, int *i)
 {
 	char	type;
@@ -77,7 +85,7 @@ void	handle_quote(char **str, int *i)
 		exit(1);
 	}
 	(*i)++;
-	while ((*str)[*i] && !ft_isspace((*str)[*i]) && !ft_isoperator((*str)[*i]))
+	while ((*str)[*i] && !ft_isspace((*str)[*i]) && !ft_isoperator((*str)))
 	{
 		if ((*str)[*i] == '\'' || (*str)[*i] == '"')
 		{
@@ -93,10 +101,10 @@ void	create_argument_token(char **str, t_token **lst, t_token_type type)
 {
 	int 	i;
 	char	*line;
-	t_token *node;
+	t_token	*node;
 
 	i = 0;
-	while ((*str)[i] && !ft_isoperator((*str)[i]) && !ft_isspace((*str)[i]))
+	while ((*str)[i] && !ft_isoperator((*str)) && !ft_isspace((*str)[i]))
 	{
 		if (*str && (**str == '\'' || **str == '"'))
 			handle_quote(str, &i); //WIP
@@ -122,8 +130,8 @@ t_token	*ft_tokenize(char *str)
 	{
 		while (ft_isspace(*str))
 			str++;
-		if (ft_isoperator(*str))
-			create_operator_token(&str, &lst, ft_operator_type(*str));
+		if (ft_isoperator(str))
+			create_operator_token(&str, &lst, ft_operator_type(str));
 		else
 			create_argument_token(&str, &lst, T_CMND);
 		while (ft_isspace(*str))

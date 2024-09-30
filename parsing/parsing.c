@@ -2,7 +2,8 @@
 
 int	ft_isredirection(enum e_token_type type)
 {
-	return (type == T_IN_REDIR || type == T_OUT_REDIR);
+	return (type == T_IN_REDIR || type == T_OUT_REDIR || type == T_HERE_DOC || type == T_APEND);
+	exit(1);
 }
 
 t_ast	*create_ast_node(t_token_type type, char *str)
@@ -114,7 +115,7 @@ void	add_io_to_ast(t_ast *ast_node, t_io_type io_type, char *io_value)
 		node->value = (*token)->value;
 	return (node);
 }*/
-
+/*
 t_ast	*parse_command(t_token **tokens)
 {
 	t_ast *node;
@@ -123,7 +124,7 @@ t_ast	*parse_command(t_token **tokens)
 		return (NULL);
 	//if ((*tokens)->type != T_CMND)
 	//	return (parse_command_reverese();) //make it work if it starts with io, check if its valid also
-	node = create_ast_node((*tokens)->type, (*tokens)->value);
+	node = create_ast_node(T_CMND, (*tokens)->value);
 	if (!node)
 		return (NULL);
 	node->exp_value = append_args(node->exp_value, (*tokens)->value);
@@ -143,6 +144,48 @@ t_ast	*parse_command(t_token **tokens)
 		}
 		else
 			exit (1); //parse error
+	}
+	return (node);
+}*/
+//tried to make 1 function that works on all ordres of cmnds and redirections. need more testing
+t_ast	*parse_command(t_token **tokens)
+{
+	t_ast *node;
+
+	if (!(*tokens))
+		return (NULL);
+	if ((*tokens)->type == T_CMND)
+		node = create_ast_node(T_CMND, (*tokens)->value);
+	else
+		node = create_ast_node(T_CMND, NULL);
+	if (!node)
+		return (NULL); //MALLOC FAILURE
+	if (node->value)
+	{
+		node->exp_value = append_args(node->exp_value, (*tokens)->value);
+		*tokens = (*tokens)->next;
+	}
+	while (*tokens && ((*tokens)->type == T_CMND || ft_isredirection((*tokens)->type)))
+	{
+		if ((*tokens)->type == T_CMND)
+		{
+			if (!node->value)
+			{
+				node->value = (*tokens)->value;
+				node->exp_value = append_args(node->exp_value, (*tokens)->value);
+			}
+			else
+				node->exp_value = append_args(node->exp_value, (*tokens)->value); //prog
+			*tokens = (*tokens)->next;
+		}
+		else if(ft_isredirection((*tokens)->type) && (*tokens)->next->type ==T_CMND)
+		{
+			add_io_to_ast(node, token_to_io_type((*tokens)->type), (*tokens)->next->value); //WIP
+			*tokens = (*tokens)->next;
+			*tokens = (*tokens)->next;
+		}
+		else
+			exit (1); //parse error, double pipe or redirection without target
 	}
 	return (node);
 }
