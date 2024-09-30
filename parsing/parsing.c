@@ -28,8 +28,10 @@ t_io_type token_to_io_type(t_token_type type)
 		return (T_IN);
 	else if (type == T_OUT_REDIR)
 		return (T_OUT);
+	else if (type == T_HERE_DOC)
+		return (T_HEREDOC);
 	else
-		return 3;
+		return (T_APPEND);
 }
 
 char	**append_args(char **args, char *to_add)
