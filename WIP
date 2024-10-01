@@ -1,8 +1,8 @@
 token/parsing
-make tokenizer work with ' ' " "
-parsing with io redirections
-parsing with "wrong" order of commands, exmpl echo hi > outfile > hello > outfile2 howdy
-also if redirections come before the command
+make tokenizer work with ' ' " "  DONE
+parsing with io redirections  DONE
+parsing with "wrong" order of commands, exmpl echo hi > outfile > hello > outfile2 howdy  DONE
+also if redirections come before the command  DONE
 lots of error handling
 heredoc, append
 

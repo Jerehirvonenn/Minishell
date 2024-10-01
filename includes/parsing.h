@@ -14,7 +14,7 @@ typedef enum e_io_type
 {
 	T_IN,
 	T_OUT,
-	T_HERE_DOC,
+	T_HEREDOC,
 	T_APPEND,
 }	t_io_type;
 

@@ -17,6 +17,8 @@ const char *token_type_to_str(t_token_type type)
         case T_IN_REDIR: return "IN REDIR";
         case T_OUT_REDIR: return "OUT_REDIR";
         case T_CMND: return "COMMAND";
+	case T_HERE_DOC: return "HEREDOC";
+	case T_APEND: return "APPEND";
         default: return "UNKNOWN";
     }
 }
@@ -28,7 +30,7 @@ const char *io_type_to_str(t_io_type type)
     {
         case T_IN: return "Input (<)";
         case T_OUT: return "Output (>)";
-        case T_HERE_DOC: return "Heredoc (<<)";
+        case T_HEREDOC: return "Heredoc (<<)";
         case T_APPEND: return "Append (>>)";
         default: return "UNKNOWN IO";
     }
