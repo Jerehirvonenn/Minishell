@@ -16,7 +16,7 @@ LIBFT = $(LIBFT_DIR)/libft.a
 
 # Source files
 PARSING_SRCS = $(PARSING_DIR)/parsing.c
-TOKEN_SRCS = $(TOKEN_DIR)/print_ast.c $(TOKEN_DIR)/token.c $(TOKEN_DIR)/token_create.c
+TOKEN_SRCS = $(TOKEN_DIR)/print_ast.c $(TOKEN_DIR)/token.c $(TOKEN_DIR)/token_create.c $(TOKEN_DIR)/main.c
 
 # Object files
 PARSING_OBJS = $(PARSING_SRCS:.c=.o)
