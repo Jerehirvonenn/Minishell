@@ -167,6 +167,7 @@ t_ast	*parse_command(t_token **tokens)
 		node->exp_value = append_args(node->exp_value, (*tokens)->value);
 		*tokens = (*tokens)->next;
 	}
+	printf("TEST2\n");
 	while (*tokens && ((*tokens)->type == T_CMND || ft_isredirection((*tokens)->type)))
 	{
 		if ((*tokens)->type == T_CMND)
@@ -180,14 +181,17 @@ t_ast	*parse_command(t_token **tokens)
 				node->exp_value = append_args(node->exp_value, (*tokens)->value); //prog
 			*tokens = (*tokens)->next;
 		}
-		else if(ft_isredirection((*tokens)->type) && (*tokens)->next->type ==T_CMND)
+		else if(ft_isredirection((*tokens)->type) && (*tokens)->next && (*tokens)->next->type ==T_CMND)
 		{
 			add_io_to_ast(node, token_to_io_type((*tokens)->type), (*tokens)->next->value); //WIP
 			*tokens = (*tokens)->next;
 			*tokens = (*tokens)->next;
 		}
 		else
+		{
+			printf("Parsing error double pipe/redirection no target");
 			exit (1); //parse error, double pipe or redirection without target
+		}
 	}
 	return (node);
 }
