@@ -1,0 +1,7 @@
+a.out
+*.o
+*.swp
+*.gch
+libft.a
+minishell
+*test*
