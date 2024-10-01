@@ -19,7 +19,10 @@ int	redirect(t_shell *ms, t_ast *ast, int cmd_id, int *prev_fd)
 	int	ret;
 
 	if (cmd_id == CMD_NOPIPE) // No redirection needed if there's no pipe
+	{
+		printf("cmd nopipe\n");
 		return (1);
+	}
 	ret = 1;
 	if (cmd_id > CMD_FIRST)
 	{

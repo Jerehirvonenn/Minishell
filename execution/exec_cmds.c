@@ -46,6 +46,13 @@ static int	exec_bin(t_shell *ms, t_ast *node)
 	ret = 0;
 	cmd_path = build_executable(node, ms);
 
+	printf("hello\n");
+	printf("Executing command: %s\n", cmd_path);
+	for (int i = 0; node->exp_value[i]; i++) {
+	    printf("Argument %d: %s\n", i, node->exp_value[i]);
+	}
+
+
 	if (cmd_path)
 	{
 		ret = execve(cmd_path, node->exp_value, ms->my_envp);
@@ -94,21 +101,22 @@ static void	exec_fork(t_shell *ms, t_ast *ast, int cmd_id, int *prev_fd)
 	if (ast->pid == 0)//child process
 	{
 		buildin = is_buildin(ast);
+		printf("build in = %d\n", buildin);
 		printf("Executing %s command in child process\n", buildin ? "built-in" : "external");
 		
-		if (redirect(ms, ast, cmd_id, prev_fd) != 0)
-			exit(ms->exit_code); // Exit if redirection fails
-		
-		//close fds
-		if (buildin)
+		if (redirect(ms, ast, cmd_id, prev_fd))
 		{
-			printf("exec build in\n");
-			exec_buildin(ms, ast);
-		}
-		else
-		{
-			printf("exec bin\n");
-			exec_bin(ms, ast);
+			//close fds
+			if (buildin)
+			{
+				printf("exec build in\n");
+				exec_buildin(ms, ast);
+			}
+			else
+			{
+				printf("exec bin\n");
+				exec_bin(ms, ast);
+			}
 		}
 		
 		minishell_close(ms->pipe);
@@ -235,5 +243,5 @@ void	commands_exec(t_shell *ms, t_ast *ast, t_ast *prev)
 	if ((ast->right) && (commands_can_continue(ms, ast, ast->right)))
 		commands_exec(ms, ast->right, ast);
 	commands_wait(ms, ast, NULL);
-}*/
+}
 
