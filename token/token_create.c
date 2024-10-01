@@ -1,5 +1,18 @@
 #include "../includes/minishell.h"
 
+void	ft_free_token(t_token *head)
+{
+	t_token *temp;
+
+	while (head)
+	{
+		temp = head;
+		head = head->next;
+		free(temp->value);
+		free(temp);
+	}
+}
+
 t_token	*create_token(t_token_type type, char *value)
 {
 	t_token *token = malloc(sizeof(t_token));

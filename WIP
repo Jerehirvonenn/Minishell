@@ -4,7 +4,8 @@ parsing with io redirections  DONE
 parsing with "wrong" order of commands, exmpl echo hi > outfile > hello > outfile2 howdy  DONE
 also if redirections come before the command  DONE
 lots of error handling
-heredoc, append
+cleanup functions for freeing tokens and AST
+heredoc, append ->token and parsing part DONE
 
 other
 signals

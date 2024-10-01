@@ -1,5 +1,47 @@
 #include "../includes/minishell.h"
 
+void	ft_free_io_list(t_io *io_list)
+{
+	t_io	*temp;
+
+	while (io_list)
+	{
+		free(io_list->value);
+		temp = io_list;
+		io_list = io_list->next;
+		free(temp);
+	}
+}
+
+void	ft_free_ast_node(t_ast *node)
+{
+	int	i;
+
+	//free value
+	free(node->value);
+	//free exp value
+	i = 0;
+	while (node->exp_value && node->exp_value[i])
+	{
+		free(node->exp_value[i]);
+		i++;
+	}
+	free(node->exp_value);
+	//free I/O list
+	ft_free_io_list(node->io_list);
+	//free the ast node
+	free(node);
+}
+
+void	ft_free_ast(t_ast *root)
+{
+	if (root->left)
+		ft_free_ast(root->left);
+	if (root->right)
+		ft_free_ast(root->right);
+	ft_free_ast_node(root);
+}
+
 int	ft_isredirection(enum e_token_type type)
 {
 	return (type == T_IN_REDIR || type == T_OUT_REDIR || type == T_HERE_DOC || type == T_APEND);
@@ -14,7 +56,10 @@ t_ast	*create_ast_node(t_token_type type, char *str)
 	if (!new_node)
 		return (NULL); //handle memory error
 	new_node->type = type;
-	new_node->value = str;
+	if (str)
+		new_node->value = ft_strdup(str);
+	else
+		new_node->value = NULL;;
 	new_node->exp_value = NULL;
 	new_node->io_list = NULL;
 	new_node->left = NULL;
@@ -167,7 +212,6 @@ t_ast	*parse_command(t_token **tokens)
 		node->exp_value = append_args(node->exp_value, (*tokens)->value);
 		*tokens = (*tokens)->next;
 	}
-	printf("TEST2\n");
 	while (*tokens && ((*tokens)->type == T_CMND || ft_isredirection((*tokens)->type)))
 	{
 		if ((*tokens)->type == T_CMND)
@@ -189,8 +233,8 @@ t_ast	*parse_command(t_token **tokens)
 		}
 		else
 		{
-			printf("Parsing error double pipe/redirection no target");
-			exit (1); //parse error, double pipe or redirection without target
+			printf("No target for redirection\n");
+			exit(1);
 		}
 	}
 	return (node);
@@ -206,6 +250,11 @@ t_ast	*parsing_ast(t_token *tokens)
 	while (tokens && tokens->type == T_PIPE)
 	{
 		tokens = tokens->next;
+		if (tokens->type == T_PIPE)
+		{
+			printf("Parsing error\n");  //how to handle like bash?
+			exit(1);
+		}
 		right = parse_command(&tokens);
 		//create pipe and assing commands
 		pipe = create_ast_node(T_PIPE, NULL);

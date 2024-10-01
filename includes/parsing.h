@@ -37,6 +37,7 @@ typedef struct s_ast
 	struct s_ast	*right;
 }	t_ast;
 
+void	ft_free_ast(t_ast *root);
 t_ast	*parsing_ast(t_token *tokens);
 
 #endif
