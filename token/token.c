@@ -130,7 +130,7 @@ t_token	*ft_tokenize(char *str)
 	return (lst);
 }
 
-int main(int ac, char **av, char **envp)
+/*int main(int ac, char **av, char **envp)
 {
 	char prompt[1000] = "minishell> ";
 	char *str;
@@ -155,4 +155,4 @@ int main(int ac, char **av, char **envp)
 	//creating the ast tree;
 	tree = parsing_ast(lst);
 	print_ast_tree(tree);
-}
+}*/

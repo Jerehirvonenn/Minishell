@@ -31,6 +31,7 @@ typedef struct s_ast
 	t_token_type		type;
 	char		*value;
 	char		**exp_value;
+	pid_t		pid;//change
 	t_io		*io_list;
 	struct s_ast	*left;
 	struct s_ast	*right;
