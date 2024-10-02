@@ -51,7 +51,6 @@ char *ft_strndup(const char *src, int i)
     return dest;
 }
 
-
 void	create_operator_token(char **str, t_token **lst, t_token_type type)
 {
 	t_token *node;
@@ -106,7 +105,7 @@ void	create_argument_token(char **str, t_token **lst, t_token_type type)
 	i = 0;
 	while ((*str)[i] && !ft_isoperator((*str)) && !ft_isspace((*str)[i]))
 	{
-		if (*str && (**str == '\'' || **str == '"'))
+		if ((*str)[i] == '\'' || (*str)[i] == '"')
 			handle_quote(str, &i); //WIP
 		else
 			i++;
