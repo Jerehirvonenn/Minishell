@@ -14,8 +14,10 @@ typedef struct s_shell
 	char			**my_envp;
 	int			exit_code;
 	int			envp_size;
-	int			pipe[2];
-	int			std[2];
+	int			pipefd[2];// Array to hold pipe file descriptors
+	pid_t 			pids[256];// Store PIDs of child processes
+	int			tempfd;// Temporary file descriptor
+	int index;     // Current index for PIDs
 	char			*pwd;
 	t_ast			*ast;
 }	t_shell;

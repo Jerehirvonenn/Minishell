@@ -16,7 +16,6 @@ void	buildin_echo(t_shell *ms, char **cmd);
 void	buildin_pwd(t_shell *ms);
 int	buildin_cd(t_shell *ms, char **args);
 void	buildin_env(t_shell *ms, int i, int j);
-void	exec_command(t_shell *ms, t_ast *ast);
 void	commands_wait(t_shell *ms, t_ast *ast, t_ast *limit);
 
 bool	is_buildin(t_ast *ast)
@@ -71,7 +70,7 @@ int	exec_buildin(t_shell *ms, t_ast *ast)
 
 
 
-
+/*
 // Main function for testing
 t_ast	*parsing_ast(t_token *tokens);
 t_token *ft_tokenize(char *str);
@@ -84,7 +83,6 @@ int main(void)
     t_token *tokens;
     t_ast *ast;
     char *input;
-    int ret = 0;
 
     ms.envp_size = 0;
     ms.pwd = 0;
@@ -100,11 +98,14 @@ int main(void)
             add_history(input); // Add non-empty input to history
         tokens = ft_tokenize(input);
         ast = parsing_ast(tokens);
+        
         // Execute the command (actual execution)
-        //exec_bin(&ms, ast);
-	//exec_buildin(&ms, ast);
-	//exec_fork(&ms, ast);
-	//exec_piped(&ms, ast);
-	commands_exec(&ms, ast, ast);
+        commands_exec(&ms, ast, ast);
     }
-}
+
+    // Free memory allocated for tokens and AST if needed
+    // free_tokens(tokens);
+    // free_ast(ast);
+    
+    return 0;
+}*/
