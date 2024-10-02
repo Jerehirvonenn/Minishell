@@ -4,12 +4,6 @@
 #include <stdio.h> //move to main h file
 #include <stdlib.h> //move to main h file
 
-typedef enum e_type
-{
-	T_CMND_AST,
-	T_PIPE_AST,
-}	t_type;
-
 typedef enum e_io_type
 {
 	T_IN,
