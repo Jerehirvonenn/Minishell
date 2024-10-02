@@ -94,4 +94,12 @@ void print_ast_tree(t_ast *root)
     printf("AST Tree:\n");
     print_ast(root, 0);
 }
-
+// Function to print out tokens and their types
+void	print_tokens(t_token *tokens)
+{
+	while(tokens)  //testing and printing out the tokens
+	{
+	printf("Token type %s\n", token_type_to_str(tokens->type));
+	tokens = tokens->next;
+	}
+}
