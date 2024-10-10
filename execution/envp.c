@@ -71,10 +71,9 @@ char	*envp_exists(char *name, t_shell *ms)
 		}
 		if (ft_strnstr(ms->my_envp[i], temp, len))
 		{
-			//printf("Found: %s\n", ms->my_envp[i] + len);//debug!!
 			free(temp); // Free the temp variable to avoid memory leak
 			return (ms->my_envp[i] + len); // Return the value after '='
-		} //i++;
+		}
 	}
 	free(temp); // Free temp even if not found
 	return (NULL);

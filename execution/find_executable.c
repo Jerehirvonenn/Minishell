@@ -1,8 +1,8 @@
 #include "../includes/minishell.h"
-char	*envp_exists(char *name, t_shell *ms);
 
 /**
- * find_executable - Searches for the full path of a command in the directories listed in PATH.
+ * find_executable - Searches for the full path of a command in the directories
+ * listed in PATH.
  * @cmd: The command to search for (e.g., "ls").
  * @path: The PATH environment variable, containing colon-separated directories.
  * @ms: A pointer to the shell structure containing environment variables.
@@ -12,7 +12,7 @@ char	*envp_exists(char *name, t_shell *ms);
  * is executable using access(). If a valid path is found, it's returned.
  *
  * Returns:
- *   A string representing the full path to the executable if found, or NULL if not found.
+ * A string representing the full path to the executable if found, or NULL.
  */
 char	*find_executable(char *cmd, char *path, t_shell *ms)
 {
@@ -42,8 +42,8 @@ char	*find_executable(char *cmd, char *path, t_shell *ms)
  * @ms: A pointer to the shell structure containing environment variables.
  *
  * This function checks if the command is an absolute or relative path. If not,
- * it uses the PATH environment variable to search for the command in the directories
- * listed in PATH. The full path is returned if found.
+ * it uses the PATH environment variable to search for the command in
+ * the directories listed in PATH. The full path is returned if found.
  *
  * Returns:
  *   The full path to the executable if found, or NULL if not found.

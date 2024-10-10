@@ -44,7 +44,6 @@ void	buildin_echo(t_shell *ms, char **cmd)
 			ft_putchar_fd(' ', 1);
 		i++;
 	}
-	exit(0);
 }
 
 /*int main(int argc, char **argv) {

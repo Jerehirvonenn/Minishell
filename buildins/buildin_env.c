@@ -2,7 +2,6 @@
 
 void	buildin_env(t_shell *ms, int i, int j)
 {
-	printf("hello\n");
 	while (ms->my_envp[i] != NULL)
 	{
 		j = 0;
@@ -12,7 +11,6 @@ void	buildin_env(t_shell *ms, int i, int j)
 			ft_putendl_fd(ms->my_envp[i], 1);
 		i++;
 	}
-	ms->exit_code = 0;
 }
 
 /*int	main(int ac, char **av, char **envp)
