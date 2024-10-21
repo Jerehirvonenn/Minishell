@@ -10,8 +10,8 @@ void	init_minishell(t_ms *ms_data, char **envp)
 	ms_data->my_envp = envp;
 	ms_data->exit_code = 0;
 	ms_data->envp_size = 0;
-	ms_data->ms_stop = 0;
-	ms_data->ms_quit = 0;
+	ms_data->stop = 0;
+	ms_data->quit = 0;
 	ms_data->pwd = getcwd(NULL, 0);
 	ms_data->old_pwd = NULL;
 	ms_data->ast = NULL;

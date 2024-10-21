@@ -63,8 +63,8 @@ typedef struct s_ms
 	char    	**my_envp;	// Environment variables
 	int     	exit_code;	// Exit code for the shell
 	int     	envp_size;	// Size of the environment variables
-	int		ms_stop;	//indicate the minishell should stop and start new round
-	int		ms_quit;	//indicate minishell should quit
+	int		stop;	//indicate the minishell should stop and start new round
+	int		quit;	//indicate minishell should quit
 	char    	*pwd;		// Current working directory
 	char		*old_pwd;
 	t_token		*tokens;	//linked list of tokens

@@ -104,30 +104,45 @@ int	ft_createfile(int *fd_write, int *fd_read)
 }
 
 //takes t_io heredo node and adds the read fd to it.
-int	ft_heredoc()
+int	ft_heredoc(t_ms *ms, t_io *io)
 {
 	int	fd_read;
 	int	fd_write;
 	//create random file name to /tmp/ms_{NAME}
 	if (ft_createfile(&fd_write, &fd_read))
 	{
-		//ms->abort = 1;
+		ms->stop = 1;
 		return(1);
 	}
-	ft_heredoc_getline("delim", fd_write);
+	ft_heredoc_getline(io->value, fd_write); //change delim to actual delim
 	close(fd_write);
-	//close(fd_read);
+	io->heredoc_fd = fd_read;
 	return (0);
 }
 
-/*int	ast_heredoc(t_ast *root, t_ms *ms)
+int	ast_heredoc(t_ast *root, t_ms *ms)
 {
-	if (ms->abort)
+	t_io *io_temp;
+
+	if (ms->stop || !root)
 		return (1);
-
+	io_temp = root->io_list;
+	while (!ms->stop && root->type == T_CMND && io_temp)
+	{
+		if (io_temp->type == T_HEREDOC)  //create function that actually checks that the heredoc is used and uses empty one
+			ft_heredoc(ms, io_temp);
+		else
+			io_temp = io_temp->next;
+	}
+	if (root->left)
+		ast_heredoc(root->left, ms);
+	if (root->right)
+		ast_heredoc(root->right, ms);
+	return (0);
 }
-
+/*
 int main(void)
 {
-	ft_heredoc();
+	return 0;
+	//ft_heredoc();
 }*/
