@@ -16,6 +16,7 @@ typedef struct s_io
 {
 	t_io_type	type;
 	char		*value;
+	int		heredoc_fd;
 	struct s_io	*prev;
 	struct s_io	*next;
 }	t_io;
