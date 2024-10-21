@@ -7,6 +7,8 @@ token/parsing
 	cleanup functions for freeing tokens and AST DONE
 	heredoc, append ->token and parsing part DONE
 
+	expansion in heredoc with or wihtout quoptes
+
 execution
 	handle NULL cmd aka just redirection without cmd
 other

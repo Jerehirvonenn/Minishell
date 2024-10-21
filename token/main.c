@@ -5,16 +5,30 @@ const char	*token_type_to_str(t_token_type type);
 t_token	*ft_tokenize(char *str);
 void	print_tokens(t_token *tokens);
 
-int main(int ac, char **av, char **envp)
+void	init_minishell(t_ms *ms_data, char **envp)
+{
+	ms_data->my_envp = envp;
+	ms_data->exit_code = 0;
+	ms_data->envp_size = 0;
+	ms_data->ms_stop = 0;
+	ms_data->ms_quit = 0;
+	ms_data->pwd = getcwd(NULL, 0);
+	ms_data->old_pwd = NULL;
+	ms_data->ast = NULL;
+}
+
+int	main(int ac, char **av, char **envp)
 {
 	char prompt[1000] = "minishell> ";
 	char *str;
 	t_token *lst;
 	t_ast	*tree;
+	t_ms	ms_data;
 
 	(void)ac;
 	(void)av;
-	(void)envp;
+	init_minishell(&ms_data);
+	signal_handler();
 	while (1)
 	{
 		str = readline(prompt);
