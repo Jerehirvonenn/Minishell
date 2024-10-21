@@ -23,11 +23,11 @@ int	main(int ac, char **av, char **envp)
 	char *str;
 	t_token *lst;
 	t_ast	*tree;
-	t_ms	ms_data;
+	t_ms	ms;
 
 	(void)ac;
 	(void)av;
-	init_minishell(&ms_data);
+	init_minishell(&ms, envp);
 	signal_handler();
 	while (1)
 	{
