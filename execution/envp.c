@@ -13,7 +13,7 @@
  * The `my_envp` array is null-terminated for proper use with execve
  * and other functions expecting environment variables.
  */
-void	init_envp(t_shell *ms)
+void	init_envp(t_ms *ms)
 {
 	extern char	**environ;
 	int			i;
@@ -27,9 +27,9 @@ void	init_envp(t_shell *ms)
 	while (i < ms->envp_size)
 	{
 		ms->my_envp[i] = ft_strdup(environ[i]);
-		if (!ms->my_envp[i]) // Check for strdup failure
+		if (!ms->my_envp[i]) 
 		{
-			while (i > 0) // Free already allocated memory
+			while (i > 0)
 				free(ms->my_envp[--i]);
 			free(ms->my_envp);
 			return ;
@@ -50,7 +50,7 @@ void	init_envp(t_shell *ms)
  * Returns:
  *   The value of the environment variable if found, or NULL if not found.
  */
-char	*envp_exists(char *name, t_shell *ms)
+char	*envp_exists(char *name, t_ms *ms)
 {
 	int		i;
 	int		len;
@@ -65,16 +65,16 @@ char	*envp_exists(char *name, t_shell *ms)
 	{
 		if (ms->my_envp[i] == NULL)
 		{
-			fprintf(stderr, "Error: my_envp[%d] is NULL\n", i);
+			fprintf(stderr, "Error: my_envp[%d] is NULL\n", i);//test
 			free(temp);
 			return (NULL);
 		}
 		if (ft_strnstr(ms->my_envp[i], temp, len))
 		{
-			free(temp); // Free the temp variable to avoid memory leak
-			return (ms->my_envp[i] + len); // Return the value after '='
+			free(temp);
+			return (ms->my_envp[i] + len);
 		}
 	}
-	free(temp); // Free temp even if not found
+	free(temp);
 	return (NULL);
 }

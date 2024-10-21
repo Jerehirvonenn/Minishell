@@ -49,13 +49,13 @@ static int	symbol_check(char *str, int i)
 	return (0); // If no errors, return 0
 }
 
-void	error_exit(int errcode, t_shell *ms)
+void	error_exit(int errcode, t_ms *ms)
 {
 	//free_exit(ms);//this one suppose to exit the shell
 	exit(errcode);
 }
 
-void	builtin_exit(t_shell *ms, char **cmd)
+void	builtin_exit(t_ms *ms, char **cmd, t_exec *exec)
 {
     int exit_code;
     int arg;
@@ -81,7 +81,7 @@ void	builtin_exit(t_shell *ms, char **cmd)
         else
             exit_code = (256 - ((arg * -1) % 256));
     }
-    if (ms->num_cmds == 1)
+    if (exec->num_cmds == 1)
         ft_putstr_fd("exit\n", 1);
     error_exit(exit_code, ms);
 }

@@ -14,57 +14,64 @@
 #include <string.h>
 #include <errno.h>
 
-typedef struct s_shell
-{
-    char    	**my_envp;    // Environment variables
-    int     	exit_code;    // Exit code for the shell
-    int     	envp_size;    // Size of the environment variables
-    int     	pipefd[2];    // Pipe file descriptors (read/write)
-    int     	tempfd;       // Temporary file descriptor (e.g., for redirection /?
-    int		    num_cmds;
-    int		    index;
-    char    	*pwd;         // Current working directory
-    char        *old_pwd;
-    int  	    *pids;        // PIDs array
-    t_ast   	*ast;         // Abstract syntax tree for the command(s)
-}   t_shell;
+//exec_builtin
+bool	is_builtin(t_ast *ast);
+int	exec_builtin(t_ms *ms, t_ast *ast, t_exec *exec);
 
 
-/*// Prototypes of dynamic PID array functions
-void    init_pids(t_pids **pids);
-void    add_pid(t_pids *pids, int pid);
-void    free_pids(t_pids *pids);
-void	clear_pids(t_pids *pids);*/
+//execution
+int	exec_bin(t_ms *ms, t_ast *node);
+void	child_process(t_ms *ms, t_ast *ast, t_exec *exec);
+//////
+void	execute_command(t_exec *exec, t_ast *node, t_ms *ms);
+void	execute_pipe(t_ast *node, t_exec *exec, t_ms *ms);
+void	execute_ast(t_ast *node, t_exec *exec, t_ms *ms);
 
-// Prototypes for shell execution functions
-int     ft_exec_node(t_shell *ms, t_ast *node, bool piped);
-void    exec_pipe_child(t_ast *node, t_shell *ms, char direction);
-void    exec_pipeline(t_ast *ast, t_shell *ms);
+//executable
+char	*build_executable(t_ast *node, t_ms *ms);
+char	*find_executable(char *cmd, char *path, t_ms *ms);
 
-// Parsing, tokenization, and AST-related prototypes
-t_ast   *parsing_ast(t_token *tokens);
-t_token *ft_tokenize(char *str);
-void    print_ast_tree(t_ast *root);
-void    init_envp(t_shell *ms);
-
-// Builtin command handling and simple command
-bool    is_buildin(t_ast *ast);
-int	exec_buildin(t_shell *ms, t_ast *ast);
-int 	exec_bin(t_shell *ms, t_ast *node);
-void	child_process(t_shell *ms, t_ast *ast);
+//execution_utils
+void	wait_for_processes(t_exec *exec);
+void	wait_for_command(t_exec *exec);
+int	count_commands(t_ast *node);
 
 //envp
-char	*envp_exists(char *name, t_shell *ms);
+void	init_envp(t_ms *ms);
+char	*envp_exists(char *name, t_ms *ms);
 
-//Buildins
-void	buildin_env(t_shell *ms, int i, int j);
-void	buildin_echo(t_shell *ms, char **cmd);
-
-// Utility function prototypes
-char    *build_executable(t_ast *node, t_shell *ms);
-
-//redirection
+//redirections
 int	ft_in(t_io *io_list);
-int	redirection(t_io *io_list);
+int	ft_out(t_io *io_list);
+int	ft_append(t_io *io_list);
+int	redirection(t_ast *node);
+
+//error_hanfling (for redirections)
+void	error_options(int error);
+void	error_handler(char *file_name, int error, int exit_status);
+
+
+//builtins
+int	builtin_cd(t_ms *ms, char *cmd);
+void	builtin_echo(t_ms *ms, char **cmd);
+void	builtin_env(t_ms *ms, int i, int j);
+void	builtin_exit(t_ms *ms, char **cmd, t_exec *exec);
+
+
+//EXPANSION
+//utils
+int	ft_isquote(char c);
+int	ft_isdelim(char c);
+
+//handle cases
+void	handle_envir(char **clean, char *ins, size_t *i, t_ms *ms);
+void	handle_exit_code(char **clean, size_t *i, t_ms *ms);
+void	handle_normal_char(char **clean, char *ins, size_t *i);
+void	handle_quoted_literal(char **clean, char *ins, size_t *i, t_ms *ms);
+
+//expansion
+void	handle_cases(char **clean, char *ins, size_t *i, t_ms *ms);
+char	*expand_argument(char *arg, t_ms *ms);
+
 
 #endif

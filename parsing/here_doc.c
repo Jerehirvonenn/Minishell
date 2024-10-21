@@ -120,7 +120,7 @@ int	ft_heredoc()
 	return (0);
 }
 
-int	ast_heredoc(t_ast *root, t_ms *ms)
+/*int	ast_heredoc(t_ast *root, t_ms *ms)
 {
 	if (ms->abort)
 		return (1);
@@ -130,4 +130,4 @@ int	ast_heredoc(t_ast *root, t_ms *ms)
 int main(void)
 {
 	ft_heredoc();
-}
+}*/

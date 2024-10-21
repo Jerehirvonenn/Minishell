@@ -1,7 +1,7 @@
 #include "../includes/minishell.h"
 
 //in thi sfunction we get the path to a certain envp var
-static char	*find_the_path(char *str, t_shell *ms)
+static char	*find_the_path(char *str, t_ms *ms)
 {
 	int	i;
 
@@ -16,7 +16,7 @@ static char	*find_the_path(char *str, t_shell *ms)
 	return (NULL);
 }
 
-static int change_dir_path(t_shell *ms, char *str)
+static int change_dir_path(t_ms *ms, char *str)
 {
     char *tmp;
     int ret;
@@ -66,12 +66,12 @@ static int change_dir_path(t_shell *ms, char *str)
         return -1;
     }
 
-    return ret;  // Return 0 on success
+    return (ret);  // Return 0 on success
 }
 
 
 //upadete pwds
-static void	update_pwds(t_shell *ms)
+static void	update_pwds(t_ms *ms)
 {
 	char	*tmp;
 
@@ -90,7 +90,7 @@ static void	update_pwds(t_shell *ms)
     }
 }
 
-int	buildin_cd(t_shell *ms, char *cmd)
+int	builtin_cd(t_ms *ms, char *cmd)
 {
 	int	ret;
 

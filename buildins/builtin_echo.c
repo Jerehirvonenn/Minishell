@@ -19,7 +19,7 @@ static int	check_flags(char *str)
 	return (0);
 }
 
-void	buildin_echo(t_shell *ms, char **cmd)
+void	builtin_echo(t_ms *ms, char **cmd)
 {
 	int	i;
 	bool	flag;

@@ -1,6 +1,6 @@
 #include"../includes/minishell.h"
 
-void	buildin_env(t_shell *ms, int i, int j)
+void	builtin_env(t_ms *ms, int i, int j)
 {
 	while (ms->my_envp[i] != NULL)
 	{

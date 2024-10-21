@@ -14,7 +14,7 @@
  * Returns:
  * A string representing the full path to the executable if found, or NULL.
  */
-char	*find_executable(char *cmd, char *path, t_shell *ms)
+char	*find_executable(char *cmd, char *path, t_ms *ms)
 {
 	char	**envp_paths;
 	char	*exec;
@@ -28,7 +28,7 @@ char	*find_executable(char *cmd, char *path, t_shell *ms)
 	{
 		exec = ft_strjoin(envp_paths[i++], cmd);
 		if (!exec)
-			return (NULL);//error
+			return (NULL); //error
 		if (access(exec, F_OK) == 0)
 			return (exec);
 		free(exec);
@@ -48,7 +48,7 @@ char	*find_executable(char *cmd, char *path, t_shell *ms)
  * Returns:
  *   The full path to the executable if found, or NULL if not found.
  */
-char	*build_executable(t_ast *node, t_shell *ms)
+char	*build_executable(t_ast *node, t_ms *ms)
 {
 	char	*path;
 	char	*binary;
@@ -56,7 +56,7 @@ char	*build_executable(t_ast *node, t_shell *ms)
 	if (!node || !*node->value)
 		return (NULL);
 	binary = node->value; // The command itself
-	if (!ft_strchr(binary, '/')) // Check if it’s a relative or absolute path
+	if (!ft_strchr(binary, '/'))
 	{
 		binary = ft_strjoin("/", binary);
 		path = envp_exists("PATH", ms);

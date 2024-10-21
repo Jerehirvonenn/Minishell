@@ -3,24 +3,24 @@
 /*
 Your shell must implement the following builtins:
 * echo with option -n
-* cd with only a relative or absolute path &
+* cd with only a relative or absolute path 
 * pwd with no options
-◦ export with no options &
-◦ unset with no options &
+* export with no options 
+◦ unset with no options 
 * env with no options or arguments
-*  exit with no options & */
+*  exit with no options  */
 
-int	buildin_cd(t_shell *ms, char *cmd);
-void	builtin_exit(t_shell *ms, char **cmd);
+int	builtin_cd(t_ms *ms, char *cmd);
+void	builtin_export(t_ms *ms, char **cmd, int i, int j);
 
-bool	is_buildin(t_ast *ast)
+bool	is_builtin(t_ast *ast)
 {
 	char	*cmd;
 	int		len;
 
 	cmd = ast->exp_value[0]; //executable command
 	len = ft_strlen(cmd);
-	if (((len == 6) && !(ft_strncmp("export", cmd, len + 1))) //export with arguments only works
+	if (((len == 6) && !(ft_strncmp("export", cmd, len + 1))) //export there is something with it??
 		|| ((len == 2) && !ft_strncmp("cd", cmd, len + 1))
 		|| ((len == 5) && !ft_strncmp("unset", cmd, len + 1))
 		|| ((len == 4) && !ft_strncmp("exit", cmd, len + 1)))
@@ -28,36 +28,39 @@ bool	is_buildin(t_ast *ast)
 	return (false);
 }
 
-int	exec_buildin(t_shell *ms, t_ast *ast)
+int	exec_builtin(t_ms *ms, t_ast *ast, t_exec *exec)
 {
 	int	ret;
 
 	ret = 0;
-	printf("Command received: %s\n", ast->exp_value[0]);
-	//mb some checks before ??
+	fprintf(stderr, "Command received: %s\n", ast->exp_value[0]);//test
 	if (!ft_strncmp("echo", ast->exp_value[0], 5))
-		buildin_echo(ms, ast->exp_value);
+		builtin_echo(ms, ast->exp_value);
 	else if (!ft_strncmp("cd", ast->exp_value[0], 3))
 	{
-		printf("Entering cd command\n");
-		ret = buildin_cd(ms, ast->exp_value[1]);
-		printf("ret = %d\n", ret);
+		fprintf(stderr, "Entering cd command\n");//test
+		ret = builtin_cd(ms, ast->exp_value[1]);
+		fprintf(stderr, "ret = %d\n", ret);//test
 	}
-	//i need the second one to chek if we go home or ..
 	else if (!ft_strncmp("env", ast->exp_value[0], 3))
 	{
-		printf("Entering env command\n");
-		buildin_env(ms, 0, 0);
+		fprintf(stderr, "Entering env command\n");//test
+		builtin_env(ms, 0, 0);
 	}
 	else if (!ft_strncmp("pwd", ast->exp_value[0], 4))
 	{
-		printf("Entering pwd command\n");
+		fprintf(stderr,"Entering pwd command\n");//test
 		printf("%s\n", ms->pwd);
 	}
 	else if (!ft_strncmp("exit", ast->exp_value[0], 5))
 	{
-		printf("Entering exit command\n");
-        builtin_exit(ms, ast->exp_value);
+		fprintf(stderr, "Entering exit command\n");//test
+        	builtin_exit(ms, ast->exp_value, exec);
+	}
+	else if (!ft_strncmp("export", ast->exp_value[0], 7))
+	{
+		fprintf(stderr, "Entering exposrt command\n");//test
+		builtin_export(ms, ast->exp_value, 1, 0);
 	}
 	else
 		fprintf(stderr, "Unknown command: %s\n", ast->exp_value[0]);
@@ -65,23 +68,12 @@ int	exec_buildin(t_shell *ms, t_ast *ast)
 	return (1);
 }
 
-int	exec_bin(t_shell *ms, t_ast *node)
+int	exec_bin(t_ms *ms, t_ast *node)
 {
 	int		ret;
 	char	*cmd_path;
 
 	ret = 0;
-
-	// Handle redirections before executing the binary
-	if (node->io_list)
-	{
-		fprintf(stderr, "redirection");
-		if (redirection(node->io_list) != 0)
-		{
-			ms->exit_code = 1;  // Set exit code on redirection failure
-			return (1);  // Exit early if redirection fails
-		}
-	}
 	cmd_path = build_executable(node, ms);
 	if (cmd_path)
 	{
@@ -101,20 +93,22 @@ int	exec_bin(t_shell *ms, t_ast *node)
 }
 
 // Function to handle command execution in the child process
-void	child_process(t_shell *ms, t_ast *ast)
+void	child_process(t_ms *ms, t_ast *ast, t_exec *exec)
 {
-	    bool buildin;
-		
-		buildin = is_buildin(ast);
-		fprintf(stderr, "In child_process, executing command: %s\n", ast->exp_value[0]);
-	   
-		if (buildin)
-		    exec_buildin(ms, ast);
-	    else
-		    exec_bin(ms, ast);
-	    // Child process must exit after executing the command
-	    //fprintf(stderr, "Child process exiting with exit code %d\n", ms->exit_code);
-	    //exit(ms->exit_code);
-		exit(1);
+	bool builtin;
+
+	builtin = is_builtin(ast);
+	fprintf(stderr, "In child_process, executing command: %s\n", ast->exp_value[0]);//test
+	if (builtin)
+		exec_builtin(ms, ast, exec);
+	else
+	{
+		if (exec_bin(ms, ast) == -1)
+		{
+            		perror("Execution failed");
+            		exit(1);
+        	}
+	}
+	exit(ms->exit_code);
 }
 
