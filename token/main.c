@@ -1,5 +1,7 @@
 #include "../includes/minishell.h"
 
+int ms_signal = 0;
+
 void		print_ast_tree(t_ast *root);
 const char	*token_type_to_str(t_token_type type);
 t_token	*ft_tokenize(char *str);
