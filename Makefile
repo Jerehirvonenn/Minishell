@@ -15,7 +15,7 @@ TOKEN_DIR = ./token
 LIBFT = $(LIBFT_DIR)/libft.a
 
 # Source files
-PARSING_SRCS = $(PARSING_DIR)/parsing.c
+PARSING_SRCS = $(PARSING_DIR)/parsing.c $(PARSING_DIR)/here_doc.c
 TOKEN_SRCS = $(TOKEN_DIR)/print_ast.c $(TOKEN_DIR)/token.c $(TOKEN_DIR)/token_create.c $(TOKEN_DIR)/main.c signal/signal.c
 
 # Object files

@@ -27,20 +27,70 @@ int	ft_strcmp(char *s1, char *s2)
 	return ((unsigned char)*s1 - (unsigned char)*s2);
 }
 
+void	remove_delim_quotes(char *delim)
+{
+	char	*temp;
+	char	quote;
+
+	quote = 0;
+	temp = delim;
+	while (*temp)
+	{
+		if (quote == *temp)
+			quote = 0;
+		else if (quote == 0 && (*temp == '\'' || *temp == '\"'))
+			quote = *temp;
+		else
+		{
+			*delim = *temp;
+			delim++;
+		}
+		temp++;
+	}
+	*delim = 0;
+}
+
+int	ft_delim_expansion(char *delim)
+{
+	int	i;
+	int	ret;
+
+	i = -1;
+	ret = 0;
+	while (delim[++i])
+		if (delim[i] == '\'' || delim[i] == '"')
+			ret = 1;
+	if (ret == 1)
+	{
+		//use expander to remove the quotes from delim
+		remove_delim_quotes(delim);
+		return (1);
+	}
+	else
+		return (0);
+}
+
 int	ft_heredoc_getline(char *delim, int fd_write)
 {
 	char	*line;
+	int	expand;
 
 	//set signals for heredoc!!!
-	//check delimiter for expanding or not. both ' and " block expaning
+	//removes quotes if delim have them, 1 means expansion is blocked, 0 expnasion on 
+	expand = ft_delim_expansion(delim);
+	printf("DELIM IS %s\n", delim);   //DELETE
 	while (1)
 	{
 		line = readline(">");
 		if (!ft_strcmp(line ,delim) || !line) //need to check for signal abort WIP, if delim is found or ctrl+c
 			break;
-		write(fd_write, line, ft_strlen(line));   //need to check expanding
-		write(fd_write, "\n", 1);		//also func with check for write errors
+		if (expand == 0)
+		{
+			write(fd_write, line, ft_strlen(line));   //need to check expanding
+			write(fd_write, "\n", 1);		//also func with check for write errors
+		}
 		free(line);
+		line = NULL;
 	}
 	free(line);
 	//set signals back to normal
@@ -82,7 +132,6 @@ int	ft_createfile(int *fd_write, int *fd_read)
 	ft_strlcpy(filename, "/tmp/ms_", 64);
 	if (create_random_name(gen_name, temp))
 	{
-		//error_print("Error creating heredoc tmp file!\n", NULL);
 		printf("Error with random name\n");
 		return(1);
 	}
@@ -91,16 +140,36 @@ int	ft_createfile(int *fd_write, int *fd_read)
 	*fd_read = open(filename, O_RDONLY, 0600);
 	if (*fd_write == -1 || *fd_read == -1)
 	{
-		//error_print("Error creating heredoc tmp file!\n", NULL);
 		printf("Error opening\n");
-		if (*fd_write != -1)  // Only close if fd_write is valid
+		if (*fd_write != -1)
 			close(*fd_write);
-		if (*fd_read != -1)  // Only close if fd_read is valid
+		if (*fd_read != -1)
 			close(*fd_read);
 		return (1);
 	}
-	//unlink(filename);
+	unlink(filename);
 	return(0);
+}
+
+void	ft_empty_heredoc(t_ms *ms, t_io *io, char *delim)
+{
+	char *line;
+
+	printf("EMPTY HEREDOC!\n");
+	//set signal to heredoc!!!
+	remove_delim_quotes(delim);
+	(void)ms;  //DELETE, here to satisfy unused error
+	printf("DELIM IS %s\n", delim);   //DELETE
+	while(1)
+	{
+		line = readline(">");
+		if (!ft_strcmp(line ,delim) || !line) //need to check for signal abort WIP, if delim is found or ctrl+c
+			break;
+		free(line);
+		line = NULL;
+	}
+	free(line);
+	io->heredoc_fd = -1;
 }
 
 //takes t_io heredo node and adds the read fd to it.
@@ -114,35 +183,45 @@ int	ft_heredoc(t_ms *ms, t_io *io)
 		ms->stop = 1;
 		return(1);
 	}
-	ft_heredoc_getline(io->value, fd_write); //change delim to actual delim
+	ft_heredoc_getline(io->value, fd_write);
 	close(fd_write);
 	io->heredoc_fd = fd_read;
 	return (0);
 }
 
-int	ast_heredoc(t_ast *root, t_ms *ms)
+int	ft_heredoc_used(t_io *io)
+{
+	io = io->next;
+	while (io)
+	{
+		if (io->type == T_HEREDOC || io->type == T_IN)
+			return (1);
+		io = io->next;
+	}
+	return(0);
+}
+
+int	ast_heredoc(t_ast *tree, t_ms *ms)
 {
 	t_io *io_temp;
 
-	if (ms->stop || !root)
+	if (ms->stop || !tree)
 		return (1);
-	io_temp = root->io_list;
-	while (!ms->stop && root->type == T_CMND && io_temp)
+	io_temp = tree->io_list;
+	while (!ms->stop && tree->type == T_CMND && io_temp)
 	{
-		if (io_temp->type == T_HEREDOC)  //create function that actually checks that the heredoc is used and uses empty one
-			ft_heredoc(ms, io_temp);
-		else
-			io_temp = io_temp->next;
+		if (io_temp->type == T_HEREDOC)  //create func for nonused heredoc
+		{
+			if (ft_heredoc_used(io_temp))
+				ft_empty_heredoc(ms, io_temp, io_temp->value);
+			else
+				ft_heredoc(ms, io_temp);
+		}
+		io_temp = io_temp->next;
 	}
-	if (root->left)
-		ast_heredoc(root->left, ms);
-	if (root->right)
-		ast_heredoc(root->right, ms);
+	if (tree->left)
+		ast_heredoc(tree->left, ms);
+	if (tree->right)
+		ast_heredoc(tree->right, ms);
 	return (0);
 }
-/*
-int main(void)
-{
-	return 0;
-	//ft_heredoc();
-}*/
