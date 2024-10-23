@@ -1,150 +1,199 @@
 #include "../includes/minishell.h"
 
-int	count_commands(t_ast *node)
+/*
+   1.create a pipe
+   2.check if left is pipe or command
+   3.if pipe we call execute pipe again and give it the pipe created.
+   4.if cmnd call exec command function
+   5.handle right part
+   6.call exec command on right node
+   ________
+   1. fork using pid from a struct
+   2. check the error and cleanup 
+   3. inside child process print out the name of the cmd
+   4. 
+   _______
+   execute first:
+   1. fork
+   2. inside child process i close read_fd
+   3. write (pipe[1], line, ft_strlen(line))
+   4. close wr_end
+   5. parent closes wr_end
+   _____
+   execute middle:
+   1. fork 
+   2.inside child process read (pipefd[0])
+   3.			close reading end
+   4.			write (write_pipe[1]);
+   5.			close writing end of write_pipe
+   6.close reading and writing wnds in the parent 
+   ______
+   las cmd:
+   1. fork
+   2. inside child read (pipefd[0], buf, bufsize);
+   3. in child and parent close rd_end
+*/
+
+void	execute_middle_command(t_ast *node, t_ms *ms, int *pipefd, int *write_pipe)
 {
-	int	count;
+	char buf[100];
 
-	count = 0;
-	if (!node)
-		return (0);
-	if (node && node->type == T_CMND)
-		count++;
-	count += count_commands(node->left);
-	count += count_commands(node->right);
-	return (count);
-}
-
-void	wait_for_command(t_exec *exec)
-{
-	int	status;
-	int	exit_status;
-	int	signal_num;
-
-	waitpid(exec->pids[exec->index], &status, 0);
-	if (WIFEXITED(status))
+	node->pid = fork();
+	if (node->pid == -1)
 	{
-		exit_status = WEXITSTATUS(status);
-		fprintf(stderr, "Process %d exited with status %d\n", exec->pids[exec->index], exit_status);
+		perror("fork error");
+		//clean up everything
 	}
-	else if (WIFSIGNALED(status))
+	else if (node->pid == 0)
 	{
-		signal_num = WTERMSIG(status);
-		fprintf(stderr, "Process %d was terminated by signal %d\n", exec->pids[exec->index], signal_num);
+
+		close(pipefd[1]);
+		close(write_pipe[0]);
+		dup2(pipefd[0], 0);
+		dup2(write_pipe[1], 1);
+		close(pipefd[0]);
+		close(write_pipe[1]);
+		if (redirection(node) == 0)
+			child_process(ms, node);
+		exit(1);
 	}
+	close(pipefd[0]);
+	close(write_pipe[1]);
+
+
 }
 
-void	wait_for_processes(t_exec *exec)
+void	execute_last_command(t_ast *node, t_ms *ms, int *pipefd)
 {
-	int	j;
-	int	status;
-	int	exit_status;
-	int	signal_num;
+	char buf[100];
 
-	j = 0;
-	while (j <= exec->index)
+	node->pid = fork();
+	if (node->pid == -1)
 	{
-		waitpid(exec->pids[j], &status, 0);
-		if (WIFEXITED(status))
-		{
-			exit_status = WEXITSTATUS(status);
-			fprintf(stderr, "Process %d exited with status %d\n", exec->pids[j], exit_status);
-		}
-		else if (WIFSIGNALED(status))
-		{
-			signal_num = WTERMSIG(status);
-			fprintf(stderr, "Process %d was terminated by signal %d\n", exec->pids[j], signal_num);
-		}
-		j++;
+		perror("fork error");
+		//clean up everything
 	}
-}
-
-void	execute_command(t_exec *exec, t_ast *node, t_ms *ms)
-{
-	bool	builtin;
-
-	builtin = is_builtin(node);
-	if (builtin)
-		exec_builtin(ms, node, exec);
-	else
+	else if (node->pid == 0)
 	{
-		exec->pids[exec->index] = fork();
-		if (exec->pids[exec->index] == -1)
-		{
-			perror("Fork Error");
-			exit(EXIT_FAILURE);
-		}
-		else if (exec->pids[exec->index] == 0)
-		{
-			if (redirection(node) != 0)
-			{
-				perror("redirection failed");
-				exit(EXIT_FAILURE);
-			}
-			child_process(ms, node, exec);
-			exit(EXIT_SUCCESS);
-		}
-		wait_for_command(exec);
-		exec->index++;
+		dup2(pipefd[0], 0);
+		close(pipefd[0]);
+		if (redirection(node) == 0)
+			child_process(ms, node);
+		exit(1);
 	}
+	close(pipefd[0]);
+
 }
 
-void	handle_error(char *msg)
+void	execute_first_command(t_ast *node, t_ms *ms, int *pipefd)
 {
-	perror(msg);
-	exit(EXIT_FAILURE);
+	node->pid = fork();
+	if (node->pid == -1)
+	{
+		perror("fork error");
+		//clean up everything
+	}
+	else if (node->pid == 0)
+	{
+		dup2(pipefd[1], 1);
+		close(pipefd[0]);
+		close(pipefd[1]);
+		if (redirection(node) == 0)
+			child_process(ms, node);
+		exit(1);
+	}
+	close(pipefd[1]);
+
 }
 
-void	fork_left(t_ast *node, t_exec *exec, t_ms *ms)
+void	execute_command(t_ast *node, t_ms *ms)
 {
-	close(exec->pipefd[0]);
-	dup2(exec->pipefd[1], STDOUT_FILENO);
-	close(exec->pipefd[1]);
-	execute_ast(node->left, exec, ms);
-	exit(EXIT_SUCCESS);
+	node->pid = fork();
+	if (node->pid == -1)
+	{
+		perror("fork error");
+		//clean up everything
+	}
+	else if (node->pid == 0) //child process
+	{
+		if (redirection(node) == 0)
+		{
+			fprintf(stderr, "heredoc\n");
+			child_process(ms, node);
+		}
+		exit(1);
+	}
+
+
 }
 
-void	fork_right(t_ast *node, t_exec *exec, t_ms *ms)
+void	execute_pipe(t_ast *node, t_ms *ms, int *write_pipe)
 {
-	close(exec->pipefd[1]);
-	dup2(exec->pipefd[0], STDIN_FILENO);
-	close(exec->pipefd[0]);
-	execute_ast(node->right, exec, ms);
-	exit(EXIT_SUCCESS);
+	int	pipefd[2];
+
+	if (pipe(pipefd) == -1)
+	{
+		perror("pipe failure");
+		//clean everything
+	}
+	if (node->left && node->left->type == T_PIPE)
+		execute_pipe(node->left, ms, pipefd);
+	else if (node->left && node->left->type == T_CMND)
+		execute_first_command(node->left, ms, pipefd);
+	if (node->right && node->right->type == T_CMND)
+		execute_middle_command(node->right, ms, pipefd, write_pipe);
 }
 
-void	execute_pipe(t_ast *node, t_exec *exec, t_ms *ms)
+void	execute_first_pipe(t_ast *node, t_ms *ms)
 {
-	if (pipe(exec->pipefd) == -1)
-		handle_error("Pipe failure");
-	exec->pids[exec->index] = fork();
-	if (exec->pids[exec->index] == -1)
-		handle_error("Fork error");
-	else if (exec->pids[exec->index] == 0)
-		fork_left(node, exec, ms);
-	exec->index++;
-	exec->pids[exec->index] = fork();
-	if (exec->pids[exec->index] == -1)
-		handle_error("Fork error");
-	else if (exec->pids[exec->index] == 0)
-		fork_right(node, exec, ms);
-	close(exec->pipefd[0]);
-	close(exec->pipefd[1]);
-	wait_for_processes(exec);
+	int	pipefd[2];
+
+	if (pipe(pipefd) == -1)
+	{
+		perror("pipe failure");
+		//clean everything
+	}
+	if (node->left && node->left->type == T_PIPE)
+		execute_pipe(node->left, ms, pipefd);
+	else if (node->left && node->left->type == T_CMND)
+		execute_first_command(node->left, ms, pipefd);
+	if (node->right && node->right->type == T_CMND)
+		execute_last_command(node->right, ms, pipefd);
 }
 
-void	expand_ast(t_ast *node, t_exec *ms);
-void print_ast_tree(t_ast *root);
-
-void	execute_ast(t_ast *node, t_exec *exec, t_ms *ms)
+void	ft_waiting(t_ast *node)
 {
+	static int	status;
+
+	if (node->type == T_CMND)
+	//fprintf(stderr, "before waitpid\n");
+		waitpid(node->pid, &status, 0);
+	//fprintf(stderr, "after waitpid\n");
+	if (node->left)
+		ft_waiting(node->left);
+	if (node->right)
+		ft_waiting(node->right);
+}
+
+void	execute_ast(t_ast *node,  t_ms *ms)
+{
+	t_exec exec;
+
 	if (!node)
 		return ;
 	if (node->type == T_PIPE)
-		execute_pipe(node, exec, ms);
+		execute_first_pipe(node, ms);
 	else if (node->type == T_CMND)
-	{
-		//expand_ast(node, ms);
-		//print_ast_tree(node);
-		execute_command(exec, node, ms);
-	}
+		execute_command(node, ms);
+	ft_waiting(node);
 }
+/*
+   1. redirection before each child process func
+   2. figure out how to handle here doc
+   	2.1 heredoc doesnt have value for the file name
+	2.2 fd for reading is stored in node->heredoc_fd
+	2.3 if heredoc_fd is -1, heredoc is not actually used
+   3. waitpid func for ast tree
+   4. go through ast tree and expand everything but hdoc value
+   5.be a good girl for daddy
+*/

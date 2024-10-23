@@ -16,16 +16,14 @@
 
 //exec_builtin
 bool	is_builtin(t_ast *ast);
-int	exec_builtin(t_ms *ms, t_ast *ast, t_exec *exec);
+int	exec_builtin(t_ms *ms, t_ast *ast);
 
 
 //execution
 int	exec_bin(t_ms *ms, t_ast *node);
-void	child_process(t_ms *ms, t_ast *ast, t_exec *exec);
+void	child_process(t_ms *ms, t_ast *ast);
 //////
-void	execute_command(t_exec *exec, t_ast *node, t_ms *ms);
-void	execute_pipe(t_ast *node, t_exec *exec, t_ms *ms);
-void	execute_ast(t_ast *node, t_exec *exec, t_ms *ms);
+void	execute_ast(t_ast *node, t_ms *ms);
 
 //executable
 char	*build_executable(t_ast *node, t_ms *ms);

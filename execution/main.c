@@ -7,7 +7,6 @@ t_token	*ft_tokenize(char *str);
 int	main(void)
 {
 	t_ms	ms;
-	t_exec	exec;
 	t_token	*tokens;
 	t_ast	*ast;
 	char	*input;
@@ -27,19 +26,9 @@ int	main(void)
 			add_history(input); // Add non-empty input to history
 		tokens = ft_tokenize(input);
 		ast = parsing_ast(tokens);
-		exec.num_cmds = count_commands(ast);
-		exec.pids = malloc(sizeof(int) * exec.num_cmds);
-		if (!exec.pids)
-		{
-			perror("Malloc failed for pids array");
-			free(tokens); // Free tokens if malloc fails
-			free(ast); // Free AST if malloc fails
-			free(input);
-			exit(EXIT_FAILURE);
-		}
-		exec.index = 0;
 		//print_ast_tree(ast);
-		execute_ast(ast, &exec, &ms);
+		ast_heredoc(ast, &ms);
+		execute_ast(ast,  &ms);
 		free(tokens); // Free tokens
 		free(ast); // Free AST
 		free(input); // Free input after processing

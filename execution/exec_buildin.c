@@ -28,7 +28,7 @@ bool	is_builtin(t_ast *ast)
 	return (false);
 }
 
-int	exec_builtin(t_ms *ms, t_ast *ast, t_exec *exec)
+int	exec_builtin(t_ms *ms, t_ast *ast)
 {
 	int	ret;
 
@@ -52,11 +52,11 @@ int	exec_builtin(t_ms *ms, t_ast *ast, t_exec *exec)
 		fprintf(stderr,"Entering pwd command\n");//test
 		printf("%s\n", ms->pwd);
 	}
-	else if (!ft_strncmp("exit", ast->exp_value[0], 5))
+	/*else if (!ft_strncmp("exit", ast->exp_value[0], 5))
 	{
 		fprintf(stderr, "Entering exit command\n");//test
         	builtin_exit(ms, ast->exp_value, exec);
-	}
+	}*/
 	else if (!ft_strncmp("export", ast->exp_value[0], 7))
 	{
 		fprintf(stderr, "Entering exposrt command\n");//test
@@ -93,21 +93,23 @@ int	exec_bin(t_ms *ms, t_ast *node)
 }
 
 // Function to handle command execution in the child process
-void	child_process(t_ms *ms, t_ast *ast, t_exec *exec)
+void	child_process(t_ms *ms, t_ast *ast)
 {
 	bool builtin;
 
 	builtin = is_builtin(ast);
 	fprintf(stderr, "In child_process, executing command: %s\n", ast->exp_value[0]);//test
 	if (builtin)
-		exec_builtin(ms, ast, exec);
+		exec_builtin(ms, ast);
 	else
 	{
+		fprintf(stderr, "exec_bin\n");
 		if (exec_bin(ms, ast) == -1)
 		{
             		perror("Execution failed");
             		exit(1);
         	}
+		fprintf(stderr, "exec_bin after\n");
 	}
 	exit(ms->exit_code);
 }

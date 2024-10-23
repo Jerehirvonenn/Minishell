@@ -13,7 +13,7 @@ void	error_options(int error)
 
 void	error_handler(char *file_name, int error, int exit_status)
 {
-	ft_putstr_fd("bash: ", 2);
+	ft_putstr_fd("minishell: ", 2);
 	error_options(error);
 	if (file_name)
 		ft_putstr_fd(file_name, 2);
@@ -73,6 +73,21 @@ int	ft_append(t_io *io_list)
 	return (0);
 }
 
+static int	ft_heredoc(t_io *io_list)
+{
+	if (io_list->heredoc_fd == -1)
+		return (0);
+	if (dup2(io_list->heredoc_fd, STDIN_FILENO) == -1)
+	{
+		perror("dup2 heredoc");
+		close(io_list->heredoc_fd);
+		return (-1);
+	}
+
+	close(io_list->heredoc_fd);
+	return (0);
+}
+
 //we use statuses here to check if it fails or not because this functions are meant
 // to return 0 or -1
 int	redirection(t_ast *node)
@@ -88,6 +103,8 @@ int	redirection(t_ast *node)
 			status = ft_out(current_io);
 		else if (current_io->type == T_APPEND) 
 			status = ft_append(current_io);
+		else if (current_io->type == T_HERE_DOC)
+			status = ft_heredoc(current_io);
 		if (status == -1) 
 			error_handler(current_io->value, 2, 1);
 		current_io = current_io->next;
