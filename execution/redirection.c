@@ -104,7 +104,7 @@ int	redirection(t_ast *node)
 			status = ft_out(current_io);
 		else if (current_io->type == T_APPEND) 
 			status = ft_append(current_io);
-		else if (current_io->type == T_HERE_DOC)
+		else if (current_io->type == T_HEREDOC)
 			status = ft_heredoc(current_io);
 		if (status == -1) 
 			error_handler(current_io->value, 2, 1);
