@@ -21,6 +21,7 @@ static int	check_flags(char *str)
 
 void	builtin_echo(t_ms *ms, char **cmd)
 {
+	(void)ms;
 	int	i;
 	bool	flag;
 

@@ -21,6 +21,7 @@ char	*find_executable(char *cmd, char *path, t_ms *ms)
 	int		i;
 
 	i = 0;
+	(void)ms; //DELETE
 	envp_paths = ft_split(path, ':');
 	if (!envp_paths)
 		return (NULL);

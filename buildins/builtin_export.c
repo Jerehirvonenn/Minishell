@@ -118,7 +118,7 @@ void	envp_add(t_ms *ms, char *content)
 }
 
 
-void	builtin_export(t_ms *ms, char **cmd, int i, int j)
+void	builtin_export(t_ms *ms, char **cmd, int i)
 {
 	while (cmd[i] != NULL)
 	{

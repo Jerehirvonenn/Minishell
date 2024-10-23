@@ -44,6 +44,7 @@ int	main(int ac, char **av, char **envp)
 		tree = parsing_ast(lst);
 		print_ast_tree(tree);  //debug
 		ast_heredoc(tree, &ms);
+		execute_ast(tree, &ms);
 		ft_free_ast(tree);
 		ft_free_token(lst);
 		free(str);

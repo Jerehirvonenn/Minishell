@@ -36,8 +36,6 @@
 
 void	execute_middle_command(t_ast *node, t_ms *ms, int *pipefd, int *write_pipe)
 {
-	char buf[100];
-
 	node->pid = fork();
 	if (node->pid == -1)
 	{
@@ -65,8 +63,6 @@ void	execute_middle_command(t_ast *node, t_ms *ms, int *pipefd, int *write_pipe)
 
 void	execute_last_command(t_ast *node, t_ms *ms, int *pipefd)
 {
-	char buf[100];
-
 	node->pid = fork();
 	if (node->pid == -1)
 	{
@@ -177,8 +173,6 @@ void	ft_waiting(t_ast *node)
 
 void	execute_ast(t_ast *node,  t_ms *ms)
 {
-	t_exec exec;
-
 	if (!node)
 		return ;
 	if (node->type == T_PIPE)

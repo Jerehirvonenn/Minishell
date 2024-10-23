@@ -51,6 +51,7 @@ static int	symbol_check(char *str, int i)
 
 void	error_exit(int errcode, t_ms *ms)
 {
+	(void)ms;
 	//free_exit(ms);//this one suppose to exit the shell
 	exit(errcode);
 }

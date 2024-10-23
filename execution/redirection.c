@@ -13,6 +13,7 @@ void	error_options(int error)
 
 void	error_handler(char *file_name, int error, int exit_status)
 {
+	(void)exit_status; //DELETE
 	ft_putstr_fd("minishell: ", 2);
 	error_options(error);
 	if (file_name)
