@@ -10,13 +10,15 @@ LIBFT_DIR = ./Libft
 INCLUDES_DIR = ./includes
 PARSING_DIR = ./parsing
 TOKEN_DIR = ./token
+EXP_DIR = ./expansion
+EXEC_DIR = ./execution
 
 # Library files
 LIBFT = $(LIBFT_DIR)/libft.a
 
 # Source files
 PARSING_SRCS = $(PARSING_DIR)/parsing.c $(PARSING_DIR)/here_doc.c
-TOKEN_SRCS = $(TOKEN_DIR)/print_ast.c $(TOKEN_DIR)/token.c $(TOKEN_DIR)/token_create.c $(TOKEN_DIR)/main.c signal/signal.c
+TOKEN_SRCS = $(TOKEN_DIR)/print_ast.c $(TOKEN_DIR)/token.c $(TOKEN_DIR)/token_create.c $(TOKEN_DIR)/main.c signal/signal.c $(EXP_DIR)/expansion.c $(EXP_DIR)/expansion_cases.c $(EXP_DIR)/expansion_utils.c $(EXEC_DIR)/envp.c
 
 # Object files
 PARSING_OBJS = $(PARSING_SRCS:.c=.o)

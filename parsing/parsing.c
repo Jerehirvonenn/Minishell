@@ -62,6 +62,7 @@ t_ast	*create_ast_node(t_token_type type, char *str)
 		new_node->value = NULL;;
 	new_node->exp_value = NULL;
 	new_node->io_list = NULL;
+	new_node->pid = -1;
 	new_node->left = NULL;
 	new_node->right = NULL;
 	return (new_node);
@@ -111,6 +112,7 @@ t_io	*create_io_node(t_io_type type, char *value)
 		return (NULL); // handle memory error
 	new_io->type = type;
 	new_io->value = ft_strdup(value); // Duplicate the value
+	new_io->heredoc_fd = -1;
 	new_io->next = NULL;
 	new_io->prev = NULL;
 	return (new_io);

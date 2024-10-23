@@ -44,6 +44,7 @@ typedef struct s_ast
 	char		*value;
 	char		**exp_value;
 	t_io		*io_list;
+	int		pid;
 	struct s_ast	*left;
 	struct s_ast	*right;
 }	t_ast;

@@ -62,7 +62,6 @@ int	ft_delim_expansion(char *delim)
 			ret = 1;
 	if (ret == 1)
 	{
-		//use expander to remove the quotes from delim
 		remove_delim_quotes(delim);
 		return (1);
 	}
@@ -70,7 +69,7 @@ int	ft_delim_expansion(char *delim)
 		return (0);
 }
 
-int	ft_heredoc_getline(char *delim, int fd_write)
+int	ft_heredoc_getline(char *delim, int fd_write, t_ms *ms)
 {
 	char	*line;
 	int	expand;
@@ -86,6 +85,7 @@ int	ft_heredoc_getline(char *delim, int fd_write)
 			break;
 		if (expand == 0)
 		{
+			line = expand_argument(line, ms);
 			write(fd_write, line, ft_strlen(line));   //need to check expanding
 			write(fd_write, "\n", 1);		//also func with check for write errors
 		}
@@ -147,7 +147,7 @@ int	ft_createfile(int *fd_write, int *fd_read)
 			close(*fd_read);
 		return (1);
 	}
-	unlink(filename);
+	//unlink(filename);
 	return(0);
 }
 
@@ -183,7 +183,7 @@ int	ft_heredoc(t_ms *ms, t_io *io)
 		ms->stop = 1;
 		return(1);
 	}
-	ft_heredoc_getline(io->value, fd_write);
+	ft_heredoc_getline(io->value, fd_write, ms);
 	close(fd_write);
 	io->heredoc_fd = fd_read;
 	return (0);
