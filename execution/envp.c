@@ -21,8 +21,12 @@ void	init_envp(t_ms *ms)
 	while (environ[ms->envp_size] != NULL)
 		ms->envp_size++;
 	ms->my_envp = (char **)malloc(sizeof (char *) * (ms->envp_size + 1));
-	if (!ms->my_envp)
-		return ;
+	/*if (!ms->my_envp)
+	{
+		clean_ms(ms);
+		printf("minishell: cannot allocate memory\n");
+		return ;//exit??
+	}*/
 	i = 0;
 	while (i < ms->envp_size)
 	{
@@ -32,7 +36,7 @@ void	init_envp(t_ms *ms)
 			while (i > 0)
 				free(ms->my_envp[--i]);
 			free(ms->my_envp);
-			return ;
+			return ;//return or exit?
 		}
 		i++;
 	}

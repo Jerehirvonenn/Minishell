@@ -38,12 +38,8 @@ int	count_commands(t_ast *node);
 void	init_envp(t_ms *ms);
 char	*envp_exists(char *name, t_ms *ms);
 
-//redirections
-int	ft_in(t_io *io_list);
-int	ft_out(t_io *io_list);
-int	ft_append(t_io *io_list);
+//REDIRECTION
 int	redirection(t_ast *node);
-
 //error_hanfling (for redirections)
 void	error_options(int error);
 void	error_handler(char *file_name, int error, int exit_status);
@@ -54,7 +50,7 @@ int	builtin_cd(t_ms *ms, char *cmd);
 void	builtin_echo(t_ms *ms, char **cmd);
 void	builtin_env(t_ms *ms, int i, int j);
 void	builtin_exit(t_ms *ms, char **cmd, t_exec *exec);
-
+void	builtin_export(t_ms *ms, char **cmd, int i);
 
 //EXPANSION
 //utils
@@ -64,12 +60,12 @@ int	ft_isdelim(char c);
 //handle cases
 void	handle_envir(char **clean, char *ins, size_t *i, t_ms *ms);
 void	handle_exit_code(char **clean, size_t *i, t_ms *ms);
-void	handle_normal_char(char **clean, char *ins, size_t *i);
+void	handle_normal_char(char **clean, char *ins, size_t *i, t_ms *ms);
 void	handle_quoted_literal(char **clean, char *ins, size_t *i, t_ms *ms);
 
 //expansion
-void	handle_cases(char **clean, char *ins, size_t *i, t_ms *ms);
 char	*expand_argument(char *arg, t_ms *ms);
+void	expand_ast(t_ast *node, t_ms *ms);
 
 
 #endif

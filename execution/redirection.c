@@ -23,7 +23,7 @@ void	error_handler(char *file_name, int error, int exit_status)
 }
 
 // Input redirection >
-int	ft_in(t_io *io_list)
+static int	ft_in(t_io *io_list)
 {
 	int	fd;
 
@@ -40,7 +40,7 @@ int	ft_in(t_io *io_list)
 	return (0);  // Success
 }
 
-int	ft_out(t_io *io_list)
+static int	ft_out(t_io *io_list)
 {
 	int	fd;
 
@@ -57,7 +57,7 @@ int	ft_out(t_io *io_list)
 	return (0);
 }
 
-int	ft_append(t_io *io_list)
+static int	ft_append(t_io *io_list)
 {
 	int	fd;
 

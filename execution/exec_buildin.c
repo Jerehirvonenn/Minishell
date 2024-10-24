@@ -10,9 +10,6 @@ Your shell must implement the following builtins:
 * env with no options or arguments
 *  exit with no options  */
 
-int	builtin_cd(t_ms *ms, char *cmd);
-void	builtin_export(t_ms *ms, char **cmd, int i, int j);
-
 bool	is_builtin(t_ast *ast)
 {
 	char	*cmd;
@@ -60,7 +57,7 @@ int	exec_builtin(t_ms *ms, t_ast *ast)
 	else if (!ft_strncmp("export", ast->exp_value[0], 7))
 	{
 		fprintf(stderr, "Entering exposrt command\n");//test
-		builtin_export(ms, ast->exp_value, 1, 0);
+		builtin_export(ms, ast->exp_value, 1);
 	}
 	else
 		fprintf(stderr, "Unknown command: %s\n", ast->exp_value[0]);

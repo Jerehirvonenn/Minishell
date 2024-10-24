@@ -12,5 +12,7 @@ extern int ms_signal;
 #include <stdlib.h>
 
 void	signal_handler();
+void	free_array(char **array);
+void	clean_ms(t_ms *ms);
 
 #endif
