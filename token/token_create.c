@@ -15,12 +15,19 @@ void	ft_free_token(t_token *head)
 
 t_token	*create_token(t_token_type type, char *value)
 {
-	t_token *token = malloc(sizeof(t_token));
+	t_token *token; 
+
+	token = (t_token *)malloc(sizeof(t_token));
+	if (!token)
+	{
+		printf("ERROR1\n");
+		return (NULL);
+	}
 	token->type = type;
 	token->value = value;
 	token->next = NULL;
 	token->prev = NULL;
-	return token;
+	return (token);
 }
 
 void	add_token_to_list(t_token **lst, t_token *new_token)

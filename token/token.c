@@ -51,13 +51,16 @@ char *ft_strndup(const char *src, int i)
     return dest;
 }
 
-void	create_operator_token(char **str, t_token **lst, t_token_type type)
+void	create_operator_token(char **str, t_token **lst, t_token_type type, t_ms *ms)
 {
 	t_token *node;
 
 	node = create_token(type, NULL);//create new node and add it to the back of the list
 	if (!node)
+	{
+		ms->quit = 1;
 		return ; //error handling needed
+	}
 	add_token_to_list(lst, node);
 	if (node->type == T_HERE_DOC || node->type == T_APEND)
 		(*str)++;
@@ -65,7 +68,7 @@ void	create_operator_token(char **str, t_token **lst, t_token_type type)
 }
 
 //how to handle empty quotes? create an emptry str?
-void	handle_quote(char **str, int *i)
+void	handle_quote(char **str, int *i, t_ms *ms)
 {
 	char	type;
 
@@ -81,14 +84,15 @@ void	handle_quote(char **str, int *i)
 	if (!(*str)[*i])  //fix error handling for incorrect quotes
 	{
 		printf("No closing quote");
-		exit(1);
+		ms->stop = 1;
+		return ;
 	}
 	(*i)++;
 	while ((*str)[*i] && !ft_isspace((*str)[*i]) && !ft_isoperator((*str)))
 	{
 		if ((*str)[*i] == '\'' || (*str)[*i] == '"')
 		{
-			handle_quote(str, i);
+			handle_quote(str, i, ms);
 			break;
 		}
 		else
@@ -96,7 +100,7 @@ void	handle_quote(char **str, int *i)
 	}
 }
 
-void	create_argument_token(char **str, t_token **lst, t_token_type type)
+void	create_argument_token(char **str, t_token **lst, t_token_type type, t_ms *ms)
 {
 	int 	i;
 	char	*line;
@@ -106,35 +110,60 @@ void	create_argument_token(char **str, t_token **lst, t_token_type type)
 	while ((*str)[i] && !ft_isoperator((*str)) && !ft_isspace((*str)[i]))
 	{
 		if ((*str)[i] == '\'' || (*str)[i] == '"')
-			handle_quote(str, &i); //WIP
+			handle_quote(str, &i, ms); //WIP
 		else
 			i++;
+		if (ms->stop == 1)
+			return;
 	}
 	line = ft_strndup(*str, i);
 	if (!line)
+	{
+		ms->quit = 1;
 		return ; //error handling needed
+	}
 	node = create_token(type, line);
 	if (!node)
+	{
+		free(line);
+		ms->quit = 1;
 		return ; //error handling needed
+	}
 	add_token_to_list(lst, node);
 	(*str) += i;
 }
 
-t_token	*ft_tokenize(char *str)
+t_token	*ft_tokenize(char *str, t_ms *ms)
 {
 	t_token *lst;
+	char	*temp;
 
 	lst = NULL;
+	temp = str;
 	while (*str)
 	{
 		while (ft_isspace(*str))
 			str++;
 		if (ft_isoperator(str))
-			create_operator_token(&str, &lst, ft_operator_type(str));
+			create_operator_token(&str, &lst, ft_operator_type(str), ms);
 		else
-			create_argument_token(&str, &lst, T_CMND);
+			create_argument_token(&str, &lst, T_CMND, ms);
 		while (ft_isspace(*str))
 			str++;
 	}
+	if (ms->stop || ms->quit)
+	{
+		printf("quit = %d stop %d\n", ms->quit, ms->stop);
+		ft_free_token(lst);
+		lst = NULL;
+		if (ms->quit)
+		{
+			//free what needs to be freed in ms
+			free(temp);
+			printf("minishell: cannot allocate memory\n");
+			exit(1);
+		}
+	}
+	free(temp);
 	return (lst);
 }

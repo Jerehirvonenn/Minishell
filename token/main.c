@@ -4,7 +4,7 @@ int ms_signal = 0;
 
 void		print_ast_tree(t_ast *root);
 const char	*token_type_to_str(t_token_type type);
-t_token	*ft_tokenize(char *str);
+t_token	*ft_tokenize(char *str, t_ms *ms);
 void	print_tokens(t_token *tokens);
 
 void	init_minishell(t_ms *ms_data, char **envp)
@@ -23,8 +23,6 @@ int	main(int ac, char **av, char **envp)
 {
 	char prompt[1000] = "minishell> ";
 	char *str;
-	t_token *lst;
-	t_ast	*tree;
 	t_ms	ms;
 
 	(void)ac;
@@ -33,20 +31,22 @@ int	main(int ac, char **av, char **envp)
 	signal_handler();
 	while (1)
 	{
+		//reset what needs to be resetted for start
 		str = readline(prompt);
 		if (!str)
 			return (1);
 		if (!*str)
 			continue;
-		lst = ft_tokenize(str);
-		print_tokens(lst);  //debug
+		ms.tokens  = ft_tokenize(str, &ms);
+		if (ms.stop)
+			continue;
+		print_tokens(ms.tokens); //DEBUG
 		//creating the ast tree;
-		tree = parsing_ast(lst);
-		print_ast_tree(tree);  //debug
-		ast_heredoc(tree, &ms);
-		execute_ast(tree, &ms);
-		ft_free_ast(tree);
-		ft_free_token(lst);
-		free(str);
+		ms.ast = parsing_ast(ms.tokens);
+		print_ast_tree(ms.ast);  //debug
+		ast_heredoc(ms.ast, &ms);
+		execute_ast(ms.ast, &ms);
+		ft_free_ast(ms.ast);
+		ft_free_token(ms.tokens);
 	}
 }
