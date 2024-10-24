@@ -43,6 +43,7 @@ int	main(int ac, char **av, char **envp)
 		print_tokens(ms.tokens); //DEBUG
 		//creating the ast tree;
 		ms.ast = parsing_ast(ms.tokens);
+		expand_ast(ms.ast, &ms);
 		print_ast_tree(ms.ast);  //debug
 		ast_heredoc(ms.ast, &ms);
 		execute_ast(ms.ast, &ms);
