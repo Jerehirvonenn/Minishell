@@ -1,5 +1,7 @@
 #include "../includes/minishell.h"
 
+void	parsing_malloc_failure(t_ms *ms, t_parsing *data, t_ast *node);
+
 void	ft_free_io_list(t_io *io_list)
 {
 	t_io	*temp;
@@ -17,6 +19,8 @@ void	ft_free_ast_node(t_ast *node)
 {
 	int	i;
 
+	if (!node)
+		return;
 	free(node->value);
 	i = 0;
 	while (node->exp_value && node->exp_value[i])
@@ -31,6 +35,8 @@ void	ft_free_ast_node(t_ast *node)
 
 void	ft_free_ast(t_ast *root)
 {
+	if (!root)
+		return ;
 	if (root->left)
 		ft_free_ast(root->left);
 	if (root->right)
@@ -84,7 +90,7 @@ t_io_type token_to_io_type(t_token_type type)
 		return (T_APPEND);
 }
 
-char	**append_args(char **args, char *to_add, t_ms *ms)
+char	**append_args(char **args, char *to_add, t_ms *ms, t_token **tokens)
 {
 	int len;
 	int i;
@@ -112,6 +118,7 @@ char	**append_args(char **args, char *to_add, t_ms *ms)
 	}
 	new_args[++i] = NULL;
 	free(args);
+	*tokens = (*tokens)->next;
 	return (new_args);
 }
 
@@ -138,37 +145,33 @@ t_io	*create_io_node(t_io_type type, char *value)
 }
 
 // Function to append an I/O node to the AST node's I/O list
-int	add_io_to_ast(t_ast *ast_node, t_io_type io_type, char *io_value)
+int	add_io_to_ast(t_ast *ast_node, t_io_type io_type, char *io_value, t_token **tokens)
 {
 	t_io	*new_io;
 	t_io	*last;
 
 	if (!ast_node)
 		return (1);
-	// Create a new I/O node
 	new_io = create_io_node(io_type, io_value);
 	if (!new_io)
-	{
-		ft_free_ast_node(ast_node);
-		return (1); // handle memory error
-	}
-	// If the AST node has no I/O redirections yet, set the new I/O node as the first one
+		return (1);
 	if (!ast_node->io_list)
 		ast_node->io_list = new_io;
 	else
 	{
-		// Traverse to the end of the I/O list and append the new I/O node
 		last = ast_node->io_list;
 		while (last->next)
 			last = last->next;
 		last->next = new_io;
 		new_io->prev = last;
 	}
+	*tokens = (*tokens)->next;
+	*tokens = (*tokens)->next;
 	return (0);
 }
 
 //tried to make 1 function that works on all ordres of cmnds and redirections. need more testing
-t_ast	*parse_command(t_token **tokens, t_ms *ms)
+t_ast	*parse_command(t_token **tokens, t_ms *ms, t_parsing *data)
 {
 	t_ast *node;
 
@@ -177,35 +180,30 @@ t_ast	*parse_command(t_token **tokens, t_ms *ms)
 	else
 		node = create_ast_node(T_CMND, NULL);
 	if (!node)
-	{
-		printf("minishell: cannot allocate memory");
-		ms->quit = 1;
-		return (NULL); //MALLOC FAILURE
-	}
+		parsing_malloc_failure(ms, data, NULL);
 	if (node->value)
 	{
-		node->exp_value = append_args(node->exp_value, (*tokens)->value, ms);
-		*tokens = (*tokens)->next;
+		node->exp_value = append_args(node->exp_value, (*tokens)->value, ms, tokens);
+		if (!node->exp_value)
+			parsing_malloc_failure(ms, data, node);
 	}
 	while (*tokens && ((*tokens)->type == T_CMND || ft_isredirection((*tokens)->type)))
 	{
 		if ((*tokens)->type == T_CMND)
 		{
 			if (!node->value)
-				node->value = (*tokens)->value;
-			node->exp_value = append_args(node->exp_value, (*tokens)->value, ms); //prog
-			*tokens = (*tokens)->next;
+				node->value = ft_strdup((*tokens)->value);
+			node->exp_value = append_args(node->exp_value, (*tokens)->value, ms, tokens); //prog
+			if (!node->exp_value)
+				parsing_malloc_failure(ms, data, node);
 		}
 		else if(ft_isredirection((*tokens)->type) && (*tokens)->next && (*tokens)->next->type ==T_CMND)
 		{
-			add_io_to_ast(node, token_to_io_type((*tokens)->type), (*tokens)->next->value); //WIP
-			*tokens = (*tokens)->next;
-			*tokens = (*tokens)->next;
+			if (add_io_to_ast(node, token_to_io_type((*tokens)->type), (*tokens)->next->value, tokens))
+				parsing_malloc_failure(ms, data, node);
 		}
 		else
 		{
-			printf("Syntax error\n");
-			ms->stop = 1;
 			ft_free_ast_node(node);
 			return (NULL);  //need to free current node
 		}
@@ -213,39 +211,70 @@ t_ast	*parse_command(t_token **tokens, t_ms *ms)
 	return (node);
 }
 
+void	parsing_malloc_failure(t_ms *ms, t_parsing *data, t_ast *node)
+{
+	printf("minishell: cannot allocate memoryi\n");
+	//free ms stuff
+	clean_ms(ms);
+	ft_free_token(ms->tokens);
+	//free parsing stuff
+	ft_free_ast(data->left);
+	ft_free_ast(data->right);
+	//free node if ther is one
+	if (node)
+		ft_free_ast_node(node);
+	exit(1);
+}
+
+t_ast	*parsing_error(t_ms *ms, t_ast *ast, t_ast *node)
+{
+	printf("minishell: parsing error\n");
+	ms->stop = 1;
+	ft_free_token(ms->tokens);
+	ft_free_ast(ast);
+	ft_free_ast(node);
+	return (NULL);
+}
+
+void	init_parsing_struct(t_parsing *data)
+{
+	data->left = NULL;
+	data->pipe = NULL;
+	data->right = NULL;
+}
+
+void	combine_pipeline(t_parsing *data)
+{
+	data->pipe->left = data->left;
+	data->pipe->right = data->right;
+	data->left = data->pipe;
+	data->right = NULL;
+	data->pipe = NULL;
+}
+
 t_ast	*parsing_ast(t_token *tokens, t_ms *ms)
 {
-	t_ast	*left;
-	t_ast	*right;
-	t_ast	*pipe;
+	t_parsing	data;
 
+	init_parsing_struct(&data);
 	if (!tokens || tokens->type == T_PIPE)
-	{
-		printf("parsing error\n"); //change and free tokens
-		ms->stop = 1;
-		return (NULL);
-	}
-	left = parse_command(&tokens, ms);
-	/*if (!left)
-	{
-		//stop or quit.
-	}*/
+		return (parsing_error(ms, NULL, NULL));
+	data.left = parse_command(&tokens, ms, &data);
+	if (!data.left)
+		return (parsing_error(ms, NULL, NULL));
 	while (tokens && tokens->type == T_PIPE)
 	{
 		tokens = tokens->next;
 		if (!tokens || tokens->type == T_PIPE)
-		{
-			printf("Parsing error\n");  //how to handle like bash?
-			ms->stop = 1;
-			return (NULL);
-		}
-		right = parse_command(&tokens, ms);
-		//create pipe and assing commands
-		pipe = create_ast_node(T_PIPE, NULL);
-		//make pipe node the new left
-		pipe->left = left;
-		pipe->right = right;
-		left = pipe;
+			return (parsing_error(ms, data.left, NULL));
+		data.right = parse_command(&tokens, ms, &data);
+		if (!data.right)
+			return (parsing_error(ms, data.left, NULL));
+		data.pipe = create_ast_node(T_PIPE, NULL);
+		if (!data.pipe)
+			parsing_malloc_failure(ms, &data, NULL);
+		combine_pipeline(&data);
 	}
-	return (left);
+	ft_free_token(tokens);
+	return (data.left);
 }

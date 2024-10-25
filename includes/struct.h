@@ -71,3 +71,10 @@ typedef struct s_ms
 	t_token		*tokens;	//linked list of tokens
 	t_ast   	*ast;		// Abstract syntax tree for the command(s)
 }	t_ms;
+
+typedef struct s_parsing
+{
+	t_ast	*left;
+	t_ast	*right;
+	t_ast	*pipe;
+}	t_parsing;
