@@ -17,9 +17,7 @@ void	ft_free_ast_node(t_ast *node)
 {
 	int	i;
 
-	//free value
 	free(node->value);
-	//free exp value
 	i = 0;
 	while (node->exp_value && node->exp_value[i])
 	{
@@ -27,9 +25,7 @@ void	ft_free_ast_node(t_ast *node)
 		i++;
 	}
 	free(node->exp_value);
-	//free I/O list
 	ft_free_io_list(node->io_list);
-	//free the ast node
 	free(node);
 }
 
@@ -57,7 +53,15 @@ t_ast	*create_ast_node(t_token_type type, char *str)
 		return (NULL); //handle memory error
 	new_node->type = type;
 	if (str)
+	{
 		new_node->value = ft_strdup(str);
+		if (!new_node->value)
+		{
+			//ms->stop = 1;
+			free(new_node);
+			return (NULL);
+		}
+	}
 	else
 		new_node->value = NULL;;
 	new_node->exp_value = NULL;
@@ -80,23 +84,33 @@ t_io_type token_to_io_type(t_token_type type)
 		return (T_APPEND);
 }
 
-char	**append_args(char **args, char *to_add)
+char	**append_args(char **args, char *to_add, t_ms *ms)
 {
 	int len;
 	int i;
 	char **new_args;
 
 	len = 0;
+	i = -1;
 	while (args && args[len])
 		len++;
 	new_args = (char **)malloc(sizeof(char *) * (len + 2));
 	if (!new_args)
+	{
+		free_array(args);
+		ms->stop = 1;
 		return (NULL); //WIP ERROR HANDLE
-	i = -1;
+	}
 	while (++i < len)
 		new_args[i] = args[i];
-	new_args[i++] = ft_strdup(to_add);
-	new_args[i] = NULL;
+	new_args[i] = ft_strdup(to_add);
+	if (!new_args[i])
+	{
+		free_array(args);
+		ms->stop = 1;
+		return (NULL);
+	}
+	new_args[++i] = NULL;
 	free(args);
 	return (new_args);
 }
@@ -109,9 +123,14 @@ t_io	*create_io_node(t_io_type type, char *value)
 
 	new_io = (t_io *)malloc(sizeof(t_io));
 	if (!new_io)
-		return (NULL); // handle memory error
+		return (NULL);
 	new_io->type = type;
 	new_io->value = ft_strdup(value); // Duplicate the value
+	if (!new_io->value)
+	{
+		free(new_io);
+		return (NULL);
+	}
 	new_io->heredoc_fd = -1;
 	new_io->next = NULL;
 	new_io->prev = NULL;
@@ -119,24 +138,23 @@ t_io	*create_io_node(t_io_type type, char *value)
 }
 
 // Function to append an I/O node to the AST node's I/O list
-void	add_io_to_ast(t_ast *ast_node, t_io_type io_type, char *io_value)
+int	add_io_to_ast(t_ast *ast_node, t_io_type io_type, char *io_value)
 {
 	t_io	*new_io;
 	t_io	*last;
 
 	if (!ast_node)
-		return; // safety check
-
+		return (1);
 	// Create a new I/O node
 	new_io = create_io_node(io_type, io_value);
 	if (!new_io)
-		return; // handle memory error
-
+	{
+		ft_free_ast_node(ast_node);
+		return (1); // handle memory error
+	}
 	// If the AST node has no I/O redirections yet, set the new I/O node as the first one
 	if (!ast_node->io_list)
-	{
 		ast_node->io_list = new_io;
-	}
 	else
 	{
 		// Traverse to the end of the I/O list and append the new I/O node
@@ -146,72 +164,27 @@ void	add_io_to_ast(t_ast *ast_node, t_io_type io_type, char *io_value)
 		last->next = new_io;
 		new_io->prev = last;
 	}
+	return (0);
 }
-//free token after use
 
-/*t_ast	*parse_command_reverse(t_token **token)
-{
-	t_ast *node;
-
-	node = create_ast_node(T_CMND, NULL);
-	if (!node)
-		return (NULL); //malloc failure
-	if ((*token)->type = T_PIPE)
-		exit (1);  //Parsing error WIP
-	while (ft_isredirection((*token)->type))
-		add_io(); //WIP
-	if ((*token)->type = T_CMND)
-		node->value = (*token)->value;
-	return (node);
-}*/
-/*
-t_ast	*parse_command(t_token **tokens)
-{
-	t_ast *node;
-
-	if (!(*tokens))
-		return (NULL);
-	//if ((*tokens)->type != T_CMND)
-	//	return (parse_command_reverese();) //make it work if it starts with io, check if its valid also
-	node = create_ast_node(T_CMND, (*tokens)->value);
-	if (!node)
-		return (NULL);
-	node->exp_value = append_args(node->exp_value, (*tokens)->value);
-	*tokens = (*tokens)->next;
-	while (*tokens && ((*tokens)->type == T_CMND || ft_isredirection((*tokens)->type))) //add workaround for also adding io
-	{
-		if ((*tokens)->type == T_CMND)
-		{
-			node->exp_value = append_args(node->exp_value, (*tokens)->value); //prog
-			*tokens = (*tokens)->next;
-		}
-		else if(ft_isredirection((*tokens)->type) && (*tokens)->next->type ==T_CMND)
-		{
-			add_io_to_ast(node, token_to_io_type((*tokens)->type), (*tokens)->next->value); //WIP
-			*tokens = (*tokens)->next;
-			*tokens = (*tokens)->next;
-		}
-		else
-			exit (1); //parse error
-	}
-	return (node);
-}*/
 //tried to make 1 function that works on all ordres of cmnds and redirections. need more testing
-t_ast	*parse_command(t_token **tokens)
+t_ast	*parse_command(t_token **tokens, t_ms *ms)
 {
 	t_ast *node;
 
-	if (!(*tokens))
-		return (NULL);
 	if ((*tokens)->type == T_CMND)
 		node = create_ast_node(T_CMND, (*tokens)->value);
 	else
 		node = create_ast_node(T_CMND, NULL);
 	if (!node)
+	{
+		printf("minishell: cannot allocate memory");
+		ms->quit = 1;
 		return (NULL); //MALLOC FAILURE
+	}
 	if (node->value)
 	{
-		node->exp_value = append_args(node->exp_value, (*tokens)->value);
+		node->exp_value = append_args(node->exp_value, (*tokens)->value, ms);
 		*tokens = (*tokens)->next;
 	}
 	while (*tokens && ((*tokens)->type == T_CMND || ft_isredirection((*tokens)->type)))
@@ -219,12 +192,8 @@ t_ast	*parse_command(t_token **tokens)
 		if ((*tokens)->type == T_CMND)
 		{
 			if (!node->value)
-			{
 				node->value = (*tokens)->value;
-				node->exp_value = append_args(node->exp_value, (*tokens)->value);
-			}
-			else
-				node->exp_value = append_args(node->exp_value, (*tokens)->value); //prog
+			node->exp_value = append_args(node->exp_value, (*tokens)->value, ms); //prog
 			*tokens = (*tokens)->next;
 		}
 		else if(ft_isredirection((*tokens)->type) && (*tokens)->next && (*tokens)->next->type ==T_CMND)
@@ -235,29 +204,42 @@ t_ast	*parse_command(t_token **tokens)
 		}
 		else
 		{
-			printf("No target for redirection\n");
-			exit(1);
+			printf("Syntax error\n");
+			ms->stop = 1;
+			ft_free_ast_node(node);
+			return (NULL);  //need to free current node
 		}
 	}
 	return (node);
 }
 
-t_ast	*parsing_ast(t_token *tokens)
+t_ast	*parsing_ast(t_token *tokens, t_ms *ms)
 {
 	t_ast	*left;
 	t_ast	*right;
 	t_ast	*pipe;
 
-	left = parse_command(&tokens);
+	if (!tokens || tokens->type == T_PIPE)
+	{
+		printf("parsing error\n"); //change and free tokens
+		ms->stop = 1;
+		return (NULL);
+	}
+	left = parse_command(&tokens, ms);
+	/*if (!left)
+	{
+		//stop or quit.
+	}*/
 	while (tokens && tokens->type == T_PIPE)
 	{
 		tokens = tokens->next;
-		if (tokens->type == T_PIPE)
+		if (!tokens || tokens->type == T_PIPE)
 		{
 			printf("Parsing error\n");  //how to handle like bash?
-			exit(1);
+			ms->stop = 1;
+			return (NULL);
 		}
-		right = parse_command(&tokens);
+		right = parse_command(&tokens, ms);
 		//create pipe and assing commands
 		pipe = create_ast_node(T_PIPE, NULL);
 		//make pipe node the new left

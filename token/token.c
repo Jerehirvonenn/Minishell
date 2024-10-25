@@ -153,9 +153,7 @@ t_token	*ft_tokenize(char *str, t_ms *ms)
 	}
 	if (ms->stop || ms->quit)
 	{
-		printf("quit = %d stop %d\n", ms->quit, ms->stop);
 		ft_free_token(lst);
-		lst = NULL;
 		if (ms->quit)
 		{
 			//free what needs to be freed in ms

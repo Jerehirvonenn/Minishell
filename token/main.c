@@ -7,16 +7,25 @@ const char	*token_type_to_str(t_token_type type);
 t_token	*ft_tokenize(char *str, t_ms *ms);
 void	print_tokens(t_token *tokens);
 
-void	init_minishell(t_ms *ms_data, char **envp)
+void	init_minishell(t_ms *ms, char **envp)
 {
-	ms_data->my_envp = envp;
-	ms_data->exit_code = 0;
-	ms_data->envp_size = 0;
-	ms_data->stop = 0;
-	ms_data->quit = 0;
-	ms_data->pwd = getcwd(NULL, 0);
-	ms_data->old_pwd = NULL;
-	ms_data->ast = NULL;
+	ms->my_envp = envp;
+	ms->exit_code = 0;
+	ms->envp_size = 0;
+	ms->stop = 0;
+	ms->quit = 0;
+	ms->pwd = getcwd(NULL, 0);
+	ms->old_pwd = NULL;
+	ms->ast = NULL;
+	ms->tokens = NULL;
+}
+
+void	reset_ms(t_ms *ms)
+{
+	ms->stop = 0;
+	ms->quit = 0;
+	ms->ast = NULL;
+	ms->tokens = NULL;
 }
 
 int	main(int ac, char **av, char **envp)
@@ -31,10 +40,11 @@ int	main(int ac, char **av, char **envp)
 	signal_handler();
 	while (1)
 	{
+		reset_ms(&ms);
 		//reset what needs to be resetted for start
 		str = readline(prompt);
 		if (!str)
-			return (1);
+			return (0);
 		if (!*str)
 			continue;
 		ms.tokens  = ft_tokenize(str, &ms);
@@ -42,7 +52,9 @@ int	main(int ac, char **av, char **envp)
 			continue;
 		print_tokens(ms.tokens); //DEBUG
 		//creating the ast tree;
-		ms.ast = parsing_ast(ms.tokens);
+		ms.ast = parsing_ast(ms.tokens, &ms);
+		if (ms.stop)
+			continue;
 		expand_ast(ms.ast, &ms);
 		print_ast_tree(ms.ast);  //debug
 		ast_heredoc(ms.ast, &ms);
