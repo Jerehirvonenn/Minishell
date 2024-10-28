@@ -3,13 +3,15 @@
 
 extern int ms_signal;
 
+#include <stdio.h>
+#include <stdlib.h>
+#include <readline/readline.h>
+#include <readline/history.h>
 #include "../Libft/libft.h"
 #include "struct.h"
 #include "token.h"
 #include "parsing.h"
 #include "execution.h"
-#include <stdio.h>
-#include <stdlib.h>
 
 void	signal_handler();
 void	free_array(char **array);

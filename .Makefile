@@ -3,9 +3,7 @@ NAME = minishell
 
 # Compiler and flags
 CC = gcc
-CFLAGS = -Wall -Wextra -Werror -I/opt/homebrew/opt/readline/include -I./includes -I./Libft
-#CFLAGS = -Wall -Wextra -Werror $(CPPFLAGS)  # Include CPPFLAGS for compilation
-LDFLAGS = -L/opt/homebrew/opt/readline/lib -lreadline  # Include LDFLAGS for linking
+CFLAGS = -Wall -Wextra -Werror
 
 # Directories
 LIBFT_DIR = ./Libft
@@ -41,7 +39,7 @@ all: $(LIBFT) $(NAME)
 
 # Build minishell executable
 $(NAME): $(OBJS)
-	$(CC) $(CFLAGS) $(OBJS) $(LIBFT) -o $(NAME) $(LDFLAGS)  # Include LDFLAGS here
+	$(CC) $(CFLAGS) $(OBJS) $(LIBFT) -o $(NAME) -lreadline
 
 # Compile source files into object files
 %.o: %.c

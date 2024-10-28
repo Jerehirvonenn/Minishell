@@ -1,14 +1,16 @@
+#include <stdio.h>
+#include <stdlib.h>
+#include <readline/readline.h>
+#include <readline/history.h>
 #include "../includes/minishell.h"
 
 void	ft_sigint_parent(int num)
 {
-	(void)num;
-
-	printf("Ctrl+C caught\n");
-	/*ft_putstr_fd("\n", 1);
-	rl_replace_line("", 0);
+	ms_signal = num;
+	ft_putstr_fd("\n", STDOUT_FILENO);
+	//rl_replace_line("", 0);
 	rl_on_new_line();
-	rl_redisplay();*/
+	rl_redisplay(); // Redraw the prompt
 }
 
 void	signal_handler()

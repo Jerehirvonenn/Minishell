@@ -26,6 +26,7 @@ void	reset_ms(t_ms *ms)
 	ms->quit = 0;
 	ms->ast = NULL;
 	ms->tokens = NULL;
+	ms_signal = 0;
 }
 
 int	main(int ac, char **av, char **envp)
@@ -37,16 +38,22 @@ int	main(int ac, char **av, char **envp)
 	(void)ac;
 	(void)av;
 	init_minishell(&ms, envp);
-	signal_handler();
 	while (1)
 	{
-		reset_ms(&ms);
+		signal_handler();
+		//printf("starting parsing\n");
 		//reset what needs to be resetted for start
+		reset_ms(&ms);
 		str = readline(prompt);
+		if (ms_signal)
+			continue;
 		if (!str)
 			return (0);
 		if (!*str)
+		{
+			free(str);
 			continue;
+		}
 		ms.tokens  = ft_tokenize(str, &ms);
 		if (ms.stop)
 			continue;
