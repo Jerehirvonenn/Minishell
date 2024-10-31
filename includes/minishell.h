@@ -17,4 +17,8 @@ void	signal_handler();
 void	free_array(char **array);
 void	clean_ms(t_ms *ms);
 
+//signals
+void	ft_sigint_parent(int num);
+void	ft_sigint_heredoc(int num);
+
 #endif

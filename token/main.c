@@ -1,4 +1,5 @@
 #include "../includes/minishell.h"
+#include <termios.h>
 
 int ms_signal = 0;
 
@@ -7,8 +8,12 @@ const char	*token_type_to_str(t_token_type type);
 t_token	*ft_tokenize(char *str, t_ms *ms);
 void	print_tokens(t_token *tokens);
 
+void	signal_handler_parent();
+
 void	init_minishell(t_ms *ms, char **envp)
 {
+	struct termios    term;
+
 	ms->my_envp = envp;
 	ms->exit_code = 0;
 	ms->envp_size = 0;
@@ -18,6 +23,9 @@ void	init_minishell(t_ms *ms, char **envp)
 	ms->old_pwd = NULL;
 	ms->ast = NULL;
 	ms->tokens = NULL;
+	tcgetattr(STDIN_FILENO, &term);
+	term.c_lflag &= ~ECHOCTL;
+	tcsetattr(STDIN_FILENO, TCSANOW, &term);
 }
 
 void	reset_ms(t_ms *ms)
@@ -40,13 +48,15 @@ int	main(int ac, char **av, char **envp)
 	init_minishell(&ms, envp);
 	while (1)
 	{
-		signal_handler();
-		//printf("starting parsing\n");
-		//reset what needs to be resetted for start
+		signal_handler_parent();
+		if (ms_signal)
+		{
+			ms_signal = 0;
+			continue;
+		}
 		reset_ms(&ms);
 		str = readline(prompt);
-		if (ms_signal)
-			continue;
+		ms_signal = 0;
 		if (!str)
 			return (0);
 		if (!*str)
@@ -54,6 +64,8 @@ int	main(int ac, char **av, char **envp)
 			free(str);
 			continue;
 		}
+		else
+			add_history(str);
 		ms.tokens  = ft_tokenize(str, &ms);
 		if (ms.stop)
 			continue;
@@ -65,6 +77,12 @@ int	main(int ac, char **av, char **envp)
 		expand_ast(ms.ast, &ms);
 		print_ast_tree(ms.ast);  //debug
 		ast_heredoc(ms.ast, &ms);
+		if (ms.stop)
+		{
+			ft_free_ast(ms.ast);
+			//printf("HEREDOC STOPPED BY SIGINT\n");
+			continue;
+		}
 		execute_ast(ms.ast, &ms);
 		ft_free_ast(ms.ast);
 		ft_free_token(ms.tokens);

@@ -17,6 +17,9 @@
  * bash: syntax error near unexpected token `>>' for missing redirections
  */
 
+void	signal_handler_heredoc();
+void	signal_handler_parent();
+
 int	ft_strcmp(char *s1, char *s2)
 {
 	while (*s1 && *s1 == *s2)
@@ -75,17 +78,25 @@ int	ft_heredoc_getline(char *delim, int fd_write, t_ms *ms)
 	int	expand;
 
 	//set signals for heredoc!!!
-	//removes quotes if delim have them, 1 means expansion is blocked, 0 expnasion on 
+	//removes quotes if delim have them, 1 means expansion is blocked, 0 expnasion on
+	signal_handler_heredoc();
 	expand = ft_delim_expansion(delim);
 	printf("DELIM IS %s\n", delim);   //DELETE
+	line = NULL;
 	while (1)
 	{
 		line = readline(">");
-		if (!ft_strcmp(line ,delim) || !line) //need to check for signal abort WIP, if delim is found or ctrl+c
+		if (!line || ms_signal || !ft_strcmp(line ,delim))
 			break;
-		if (expand == 0)
+		ms_signal = 0;
+		if (expand == 1)
 		{
 			line = expand_argument(line, ms);
+			write(fd_write, line, ft_strlen(line));   //need to check expanding
+			write(fd_write, "\n", 1);		//also func with check for write errors
+		}
+		else
+		{
 			write(fd_write, line, ft_strlen(line));   //need to check expanding
 			write(fd_write, "\n", 1);		//also func with check for write errors
 		}
@@ -93,7 +104,12 @@ int	ft_heredoc_getline(char *delim, int fd_write, t_ms *ms)
 		line = NULL;
 	}
 	free(line);
+	if (ms_signal)
+	{
+		ms->stop = 1;
+	}
 	//set signals back to normal
+	signal_handler_parent();
 	return(0);
 }
 
@@ -183,9 +199,11 @@ int	ft_heredoc(t_ms *ms, t_io *io)
 		ms->stop = 1;
 		return(1);
 	}
-	ft_heredoc_getline(io->value, fd_write, ms);
+	if (ft_heredoc_getline(io->value, fd_write, ms))
+		close(fd_write);
+	else
+		io->heredoc_fd = fd_read;
 	close(fd_write);
-	io->heredoc_fd = fd_read;
 	return (0);
 }
 
@@ -219,9 +237,9 @@ int	ast_heredoc(t_ast *tree, t_ms *ms)
 		}
 		io_temp = io_temp->next;
 	}
-	if (tree->left)
+	if (tree->left && !ms->stop)
 		ast_heredoc(tree->left, ms);
-	if (tree->right)
+	if (tree->right && !ms->stop)
 		ast_heredoc(tree->right, ms);
 	return (0);
 }

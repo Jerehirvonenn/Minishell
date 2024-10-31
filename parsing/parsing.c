@@ -9,6 +9,8 @@ void	ft_free_io_list(t_io *io_list)
 	while (io_list)
 	{
 		free(io_list->value);
+		if (io_list->type == T_HEREDOC && io_list->heredoc_fd != -1)
+			close(io_list->heredoc_fd);
 		temp = io_list;
 		io_list = io_list->next;
 		free(temp);
