@@ -77,8 +77,6 @@ int	ft_heredoc_getline(char *delim, int fd_write, t_ms *ms)
 	char	*line;
 	int	expand;
 
-	//set signals for heredoc!!!
-	//removes quotes if delim have them, 1 means expansion is blocked, 0 expnasion on
 	signal_handler_heredoc();
 	expand = ft_delim_expansion(delim);
 	printf("DELIM IS %s\n", delim);   //DELETE
@@ -91,24 +89,21 @@ int	ft_heredoc_getline(char *delim, int fd_write, t_ms *ms)
 		ms_signal = 0;
 		if (expand == 1)
 		{
-			line = expand_argument(line, ms);
-			write(fd_write, line, ft_strlen(line));   //need to check expanding
-			write(fd_write, "\n", 1);		//also func with check for write errors
+			line = expand_argument(line, ms);   //need malloc check or happens insie exp_arg? maybe add line to io->value so it gets freed
+			write(fd_write, line, ft_strlen(line));
+			write(fd_write, "\n", 1);		//check write errors?
 		}
 		else
 		{
-			write(fd_write, line, ft_strlen(line));   //need to check expanding
-			write(fd_write, "\n", 1);		//also func with check for write errors
+			write(fd_write, line, ft_strlen(line));
+			write(fd_write, "\n", 1);
 		}
 		free(line);
 		line = NULL;
 	}
 	free(line);
 	if (ms_signal)
-	{
 		ms->stop = 1;
-	}
-	//set signals back to normal
 	signal_handler_parent();
 	return(0);
 }
@@ -148,7 +143,7 @@ int	ft_createfile(int *fd_write, int *fd_read)
 	ft_strlcpy(filename, "/tmp/ms_", 64);
 	if (create_random_name(gen_name, temp))
 	{
-		printf("Error with random name\n");
+		printf("Error creating random name\n");
 		return(1);
 	}
 	ft_strlcat(filename, gen_name, 64);
@@ -156,14 +151,14 @@ int	ft_createfile(int *fd_write, int *fd_read)
 	*fd_read = open(filename, O_RDONLY, 0600);
 	if (*fd_write == -1 || *fd_read == -1)
 	{
-		printf("Error opening\n");
+		printf("Error opening heredoc file\n");
 		if (*fd_write != -1)
 			close(*fd_write);
 		if (*fd_read != -1)
 			close(*fd_read);
 		return (1);
 	}
-	//unlink(filename);
+	unlink(filename);
 	return(0);
 }
 
@@ -171,21 +166,23 @@ void	ft_empty_heredoc(t_ms *ms, t_io *io, char *delim)
 {
 	char *line;
 
-	printf("EMPTY HEREDOC!\n");
-	//set signal to heredoc!!!
+	printf("EMPTY HEREDOC!\n");  //DEL
+	signal_handler_heredoc();
 	remove_delim_quotes(delim);
-	(void)ms;  //DELETE, here to satisfy unused error
-	printf("DELIM IS %s\n", delim);   //DELETE
+	printf("DELIM IS %s\n", delim);   //DEL
 	while(1)
 	{
 		line = readline(">");
-		if (!ft_strcmp(line ,delim) || !line) //need to check for signal abort WIP, if delim is found or ctrl+c
+		if (!line || ms_signal || !ft_strcmp(line ,delim))
 			break;
 		free(line);
 		line = NULL;
 	}
 	free(line);
 	io->heredoc_fd = -1;
+	if (ms_signal)
+		ms->stop = 1;
+	signal_handler_parent();
 }
 
 //takes t_io heredo node and adds the read fd to it.
@@ -228,7 +225,7 @@ int	ast_heredoc(t_ast *tree, t_ms *ms)
 	io_temp = tree->io_list;
 	while (!ms->stop && tree->type == T_CMND && io_temp)
 	{
-		if (io_temp->type == T_HEREDOC)  //create func for nonused heredoc
+		if (io_temp->type == T_HEREDOC)
 		{
 			if (ft_heredoc_used(io_temp))
 				ft_empty_heredoc(ms, io_temp, io_temp->value);

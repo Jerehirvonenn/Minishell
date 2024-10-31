@@ -49,11 +49,6 @@ int	main(int ac, char **av, char **envp)
 	while (1)
 	{
 		signal_handler_parent();
-		if (ms_signal)
-		{
-			ms_signal = 0;
-			continue;
-		}
 		reset_ms(&ms);
 		str = readline(prompt);
 		ms_signal = 0;
@@ -80,11 +75,10 @@ int	main(int ac, char **av, char **envp)
 		if (ms.stop)
 		{
 			ft_free_ast(ms.ast);
-			//printf("HEREDOC STOPPED BY SIGINT\n");
 			continue;
 		}
 		execute_ast(ms.ast, &ms);
 		ft_free_ast(ms.ast);
-		ft_free_token(ms.tokens);
+		//ft_free_token(ms.tokens);
 	}
 }
