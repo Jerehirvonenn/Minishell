@@ -11,15 +11,13 @@ void	error_options(int error)
 		ft_putstr_fd("command not found: ", 2);
 }
 
-void	error_handler(char *file_name, int error, int exit_status)
+void	error_handler(char *file_name, int error)
 {
-	(void)exit_status; //DELETE
 	ft_putstr_fd("minishell: ", 2);
 	error_options(error);
 	if (file_name)
 		ft_putstr_fd(file_name, 2);
 	ft_putstr_fd("\n", 2);
-	exit (1);
 }
 
 // Input redirection >
@@ -29,7 +27,10 @@ static int	ft_in(t_io *io_list)
 
 	fd = open(io_list->value, O_RDONLY);
 	if (fd == -1)
-		error_handler(io_list->value, 2, 1);
+	{
+		error_handler(io_list->value, 2);
+		return (-1);
+	}
 	if(dup2(fd, STDIN_FILENO) == -1)
 	{
 		perror("dup2 input");
@@ -46,7 +47,10 @@ static int	ft_out(t_io *io_list)
 
 	fd = open(io_list->value, O_CREAT | O_WRONLY | O_TRUNC, 0644);
 	if (fd == -1)
-		error_handler(io_list->value, 1, 1);
+	{
+		error_handler(io_list->value, 1);
+		return (-1);
+	}
 	if (dup2(fd, STDOUT_FILENO) == -1)
 	{
 		perror("dup2 output");
@@ -63,7 +67,10 @@ static int	ft_append(t_io *io_list)
 
 	fd = open(io_list->value, O_WRONLY | O_CREAT | O_APPEND, 0644);
 	if (fd == -1)
-		error_handler(io_list->value, 1, 1);
+	{
+		error_handler(io_list->value, 1);
+		return (-1);
+	}
 	if (dup2(fd, STDOUT_FILENO) == -1)
 	{
 		perror("dup2 append");
@@ -107,7 +114,7 @@ int	redirection(t_ast *node)
 		else if (current_io->type == T_HEREDOC)
 			status = ft_heredoc(current_io);
 		if (status == -1) 
-			error_handler(current_io->value, 2, 1);
+			error_handler(current_io->value, 2);
 		current_io = current_io->next;
 	}
 	return (0);

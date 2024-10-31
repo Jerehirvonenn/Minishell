@@ -68,6 +68,7 @@ typedef struct s_ms
 	int		quit;	//indicate minishell should quit
 	char    	*pwd;		// Current working directory
 	char		*old_pwd;
+	int		fds[1024];
 	t_token		*tokens;	//linked list of tokens
 	t_ast   	*ast;		// Abstract syntax tree for the command(s)
 }	t_ms;

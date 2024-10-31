@@ -21,12 +21,12 @@ void	init_envp(t_ms *ms)
 	while (environ[ms->envp_size] != NULL)
 		ms->envp_size++;
 	ms->my_envp = (char **)malloc(sizeof (char *) * (ms->envp_size + 1));
-	/*if (!ms->my_envp)
+	if (!ms->my_envp)
 	{
 		clean_ms(ms);
 		printf("minishell: cannot allocate memory\n");
 		return ;//exit??
-	}*/
+	}
 	i = 0;
 	while (i < ms->envp_size)
 	{
@@ -54,6 +54,7 @@ void	init_envp(t_ms *ms)
  * Returns:
  *   The value of the environment variable if found, or NULL if not found.
  */
+//check in builtins
 char	*envp_exists(char *name, t_ms *ms)
 {
 	int		i;
@@ -69,7 +70,6 @@ char	*envp_exists(char *name, t_ms *ms)
 	{
 		if (ms->my_envp[i] == NULL)
 		{
-			fprintf(stderr, "Error: my_envp[%d] is NULL\n", i);//test
 			free(temp);
 			return (NULL);
 		}

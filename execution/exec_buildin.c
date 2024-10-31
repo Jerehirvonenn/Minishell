@@ -20,7 +20,10 @@ bool	is_builtin(t_ast *ast)
 	if (((len == 6) && !(ft_strncmp("export", cmd, len + 1))) //export there is something with it??
 		|| ((len == 2) && !ft_strncmp("cd", cmd, len + 1))
 		|| ((len == 5) && !ft_strncmp("unset", cmd, len + 1))
-		|| ((len == 4) && !ft_strncmp("exit", cmd, len + 1)))
+		|| ((len == 4) && !ft_strncmp("exit", cmd, len + 1))
+		|| ((len == 4) && !ft_strncmp("echo", cmd, len + 1))
+		|| ((len == 3) && !ft_strncmp("pwd", cmd, len + 1))
+		|| ((len == 3) && !ft_strncmp("env", cmd, len + 1)))
 		return (true);
 	return (false);
 }
@@ -32,7 +35,10 @@ int	exec_builtin(t_ms *ms, t_ast *ast)
 	ret = 0;
 	fprintf(stderr, "Command received: %s\n", ast->exp_value[0]);//test
 	if (!ft_strncmp("echo", ast->exp_value[0], 5))
+	{
+		fprintf(stderr, "Entering echo command\n");//test
 		builtin_echo(ms, ast->exp_value);
+	}
 	else if (!ft_strncmp("cd", ast->exp_value[0], 3))
 	{
 		fprintf(stderr, "Entering cd command\n");//test
@@ -65,6 +71,7 @@ int	exec_builtin(t_ms *ms, t_ast *ast)
 	return (1);
 }
 
+
 int	exec_bin(t_ms *ms, t_ast *node)
 {
 	int		ret;
@@ -78,14 +85,17 @@ int	exec_bin(t_ms *ms, t_ast *node)
 		if (ret == -1)
 		{
 			perror("execve");
-			exit(1); // Exit the child process after failure
+			free(cmd_path);
+			return (-1); //that means fail
 		}
 	}
 	else
 	{
 		fprintf(stderr, "Command not found: %s\n", node->value);
-		exit(127); // Ensure child process exits on failure
+		//free(cmd_path);
+		exit(127); // Ensure child process exits on failure or set ms->exit code?
 	}
+	free(cmd_path);
 	return (ret);
 }
 
@@ -95,19 +105,16 @@ void	child_process(t_ms *ms, t_ast *ast)
 	bool builtin;
 
 	builtin = is_builtin(ast);
-	fprintf(stderr, "In child_process, executing command: %s\n", ast->exp_value[0]);//test
 	if (builtin)
-		exec_builtin(ms, ast);
+	{
+		if (exec_builtin(ms, ast) != 1)
+			exit(EXIT_FAILURE);
+	}
 	else
 	{
-		fprintf(stderr, "exec_bin\n");
 		if (exec_bin(ms, ast) == -1)
-		{
-            		perror("Execution failed");
-            		exit(1);
-        	}
-		fprintf(stderr, "exec_bin after\n");
+			exit(EXIT_FAILURE);
 	}
-	exit(ms->exit_code);
+	exit(EXIT_SUCCESS);
 }
 

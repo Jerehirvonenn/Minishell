@@ -25,14 +25,16 @@ void	child_process(t_ms *ms, t_ast *ast);
 //////
 void	execute_ast(t_ast *node, t_ms *ms);
 
+//execution utils
+void	close_fd(int *close_fd);
+void	close_and_change_array(t_ms *ms, int *fd);
+void	close_multiple_fds(int *pipefd);
+void	close_array_fds(t_ms *ms);
+void	add_to_array(t_ms *ms, int fd);
+
 //executable
 char	*build_executable(t_ast *node, t_ms *ms);
-char	*find_executable(char *cmd, char *path, t_ms *ms);
-
-//execution_utils
-void	wait_for_processes(t_exec *exec);
-void	wait_for_command(t_exec *exec);
-int	count_commands(t_ast *node);
+char	*find_executable(char *cmd, char *path);
 
 //envp
 void	init_envp(t_ms *ms);
@@ -42,14 +44,14 @@ char	*envp_exists(char *name, t_ms *ms);
 int	redirection(t_ast *node);
 //error_hanfling (for redirections)
 void	error_options(int error);
-void	error_handler(char *file_name, int error, int exit_status);
+void	error_handler(char *file_name, int error);
 
 
 //builtins
 int	builtin_cd(t_ms *ms, char *cmd);
 void	builtin_echo(t_ms *ms, char **cmd);
 void	builtin_env(t_ms *ms, int i, int j);
-void	builtin_exit(t_ms *ms, char **cmd, t_exec *exec);
+//void	builtin_exit(t_ms *ms, char **cmd, t_exec *exec);
 void	builtin_export(t_ms *ms, char **cmd, int i);
 
 //EXPANSION

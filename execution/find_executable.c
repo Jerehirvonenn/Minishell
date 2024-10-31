@@ -14,14 +14,15 @@
  * Returns:
  * A string representing the full path to the executable if found, or NULL.
  */
-char	*find_executable(char *cmd, char *path, t_ms *ms)
+
+// find executeble -> build executeble > exec_bin -> child_process
+char	*find_executable(char *cmd, char *path)
 {
 	char	**envp_paths;
 	char	*exec;
 	int		i;
 
 	i = 0;
-	(void)ms; //DELETE
 	envp_paths = ft_split(path, ':');
 	if (!envp_paths)
 		return (NULL);
@@ -29,11 +30,15 @@ char	*find_executable(char *cmd, char *path, t_ms *ms)
 	{
 		exec = ft_strjoin(envp_paths[i++], cmd);
 		if (!exec)
-			return (NULL); //error
+			return (NULL);
 		if (access(exec, F_OK) == 0)
+		{
+			free_array(envp_paths);
 			return (exec);
+		}
 		free(exec);
 	}
+	free_array(envp_paths);
 	return (NULL);
 }
 
@@ -53,17 +58,27 @@ char	*build_executable(t_ast *node, t_ms *ms)
 {
 	char	*path;
 	char	*binary;
+	char	*find_exec;
 
 	if (!node || !*node->value)
 		return (NULL);
-	binary = node->value; // The command itself
+	binary = node->value;
 	if (!ft_strchr(binary, '/'))
 	{
-		binary = ft_strjoin("/", binary);
+		binary = ft_strjoin("/", binary);//MALLOC
+		if (!binary)
+			return (NULL);
 		path = envp_exists("PATH", ms);
 		if (!path)
+		{
+			free(binary);
 			return (NULL);
-		return (find_executable(binary, path, ms));
+		}
+		find_exec = find_executable(binary, path);//MALLOC
+		free(binary);
+		if (!find_exec)
+			return (NULL);
+		return (find_exec);
 	}
 	return (binary);
 }
