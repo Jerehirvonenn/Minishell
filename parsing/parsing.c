@@ -277,6 +277,6 @@ t_ast	*parsing_ast(t_token *tokens, t_ms *ms)
 			parsing_malloc_failure(ms, &data, NULL);
 		combine_pipeline(&data);
 	}
-	ft_free_token(tokens);
+	ft_free_token(ms->tokens);
 	return (data.left);
 }
