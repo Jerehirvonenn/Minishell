@@ -83,7 +83,7 @@ void	handle_quote(char **str, int *i, t_ms *ms)
 	}
 	if (!(*str)[*i])  //fix error handling for incorrect quotes
 	{
-		printf("minishell: No closing quote");
+		printf("minishell: No closing quote\n");
 		ms->stop = 1;
 		return ;
 	}

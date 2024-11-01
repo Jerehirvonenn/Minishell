@@ -20,12 +20,12 @@ AR = ar -rcs
 all: $(NAME)
 
 $(NAME): $(OBJECTS)
-	$(AR) -r $@ $?
+	$(AR) $@ $?
 
 bonus: .bonus
 
 .bonus: $(BOBJECTS)
-	$(AR) -r $(NAME) $?
+	$(AR) $(NAME) $?
 	touch .bonus
 
 %.o: %.c

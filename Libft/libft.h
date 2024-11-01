@@ -6,7 +6,7 @@
 /*   By: jhirvon <jhirvone@student.hive.fi>         +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/04/16 10:07:10 by jhirvon           #+#    #+#             */
-/*   Updated: 2024/04/25 09:44:41 by jhirvone         ###   ########.fr       */
+/*   Updated: 2024/11/01 13:05:59 by jhirvone         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -16,6 +16,7 @@
 # include <limits.h>
 # include <stdlib.h>
 # include <unistd.h>
+# include <stdint.h>
 
 int		ft_isalpha(int c);
 int		ft_isdigit(int c);
