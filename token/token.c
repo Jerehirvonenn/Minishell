@@ -83,7 +83,7 @@ void	handle_quote(char **str, int *i, t_ms *ms)
 	}
 	if (!(*str)[*i])  //fix error handling for incorrect quotes
 	{
-		printf("No closing quote");
+		printf("minishell: No closing quote");
 		ms->stop = 1;
 		return ;
 	}
@@ -140,7 +140,7 @@ t_token	*ft_tokenize(char *str, t_ms *ms)
 
 	lst = NULL;
 	temp = str;
-	while (*str)
+	while (*str && !ms->stop && !ms->quit)
 	{
 		while (ft_isspace(*str))
 			str++;
@@ -156,7 +156,7 @@ t_token	*ft_tokenize(char *str, t_ms *ms)
 		ft_free_token(lst);
 		if (ms->quit)
 		{
-			//free what needs to be freed in ms
+			clean_ms(ms);
 			free(temp);
 			printf("minishell: cannot allocate memory\n");
 			exit(1);
