@@ -147,8 +147,8 @@ int	ft_createfile(int *fd_write, int *fd_read)
 		return(1);
 	}
 	ft_strlcat(filename, gen_name, 64);
-	*fd_write = open(filename, O_CREAT | O_EXCL | O_WRONLY | O_TRUNC, 0600);
-	*fd_read = open(filename, O_RDONLY, 0600);
+	*fd_write = open(filename, O_CREAT | O_EXCL | O_WRONLY, 0600);
+	*fd_read = open(filename, O_RDONLY);
 	if (*fd_write == -1 || *fd_read == -1)
 	{
 		printf("Error opening heredoc file\n");
