@@ -55,7 +55,7 @@ void	create_operator_token(char **str, t_token **lst, t_token_type type, t_ms *m
 {
 	t_token *node;
 
-	node = create_token(type, NULL);//create new node and add it to the back of the list
+	node = create_token(type, NULL);
 	if (!node)
 	{
 		ms->quit = 1;
@@ -107,7 +107,7 @@ void	create_argument_token(char **str, t_token **lst, t_token_type type, t_ms *m
 	t_token	*node;
 
 	i = 0;
-	while ((*str)[i] && !ft_isoperator((*str)) && !ft_isspace((*str)[i]))
+	while ((*str)[i] && !ft_isoperator(((*str)+i)) && !ft_isspace((*str)[i]))
 	{
 		if ((*str)[i] == '\'' || (*str)[i] == '"')
 			handle_quote(str, &i, ms); //WIP

@@ -1,20 +1,32 @@
+/* ************************************************************************** */
+/*                                                                            */
+/*                                                        :::      ::::::::   */
+/*   main.c                                             :+:      :+:    :+:   */
+/*                                                    +:+ +:+         +:+     */
+/*   By: jhirvone <jhirvone@student.hive.fi>        +#+  +:+       +#+        */
+/*                                                +#+#+#+#+#+   +#+           */
+/*   Created: 2024/11/01 14:25:28 by jhirvone          #+#    #+#             */
+/*   Updated: 2024/11/04 11:51:28 by jhirvone         ###   ########.fr       */
+/*                                                                            */
+/* ************************************************************************** */
+
 #include "../includes/minishell.h"
 #include <termios.h>
 
-int ms_signal = 0;
+int	ms_signal = 0;
 
 void		print_ast_tree(t_ast *root);
 const char	*token_type_to_str(t_token_type type);
-t_token	*ft_tokenize(char *str, t_ms *ms);
-void	print_tokens(t_token *tokens);
+t_token		*ft_tokenize(char *str, t_ms *ms);
+void		print_tokens(t_token *tokens);
+void		signal_handler_parent(void);
 
-void	signal_handler_parent();
-
-void	init_minishell(t_ms *ms, char **envp)
+void	init_minishell(t_ms *ms)
 {
-	struct termios    term;
+	struct termios	term;
 
-	ms->my_envp = envp;
+	ms->envp_size = 0;
+	init_envp(ms);
 	ms->exit_code = 0;
 	ms->envp_size = 0;
 	ms->stop = 0;
@@ -39,13 +51,14 @@ void	reset_ms(t_ms *ms)
 
 int	main(int ac, char **av, char **envp)
 {
-	char prompt[1000] = "minishell> ";
-	char *str;
+	char	prompt[1000] = "minishell> ";
+	char	*str;
 	t_ms	ms;
 
 	(void)ac;
 	(void)av;
-	init_minishell(&ms, envp);
+	(void)envp;
+	init_minishell(&ms);
 	while (1)
 	{
 		signal_handler_parent();
@@ -53,32 +66,32 @@ int	main(int ac, char **av, char **envp)
 		str = readline(prompt);
 		ms_signal = 0;
 		if (!str)
-			return (0);
+			break;
 		if (!*str)
 		{
 			free(str);
-			continue;
+			continue ;
 		}
 		else
 			add_history(str);
-		ms.tokens  = ft_tokenize(str, &ms);
+		ms.tokens = ft_tokenize(str, &ms);
 		if (ms.stop)
-			continue;
+			continue ;
 		print_tokens(ms.tokens); //DEBUG
 		//creating the ast tree;
 		ms.ast = parsing_ast(ms.tokens, &ms);
 		if (ms.stop)
-			continue;
+			continue ;
 		expand_ast(ms.ast, &ms);
 		print_ast_tree(ms.ast);  //debug
 		ast_heredoc(ms.ast, &ms);
 		if (ms.stop)
 		{
 			ft_free_ast(ms.ast);
-			continue;
+			continue ;
 		}
 		execute_ast(ms.ast, &ms);
 		ft_free_ast(ms.ast);
-		//ft_free_token(ms.tokens);
 	}
+	clean_ms(&ms);
 }
