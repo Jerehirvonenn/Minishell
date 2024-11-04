@@ -65,7 +65,6 @@ t_ast	*create_ast_node(t_token_type type, char *str)
 		new_node->value = ft_strdup(str);
 		if (!new_node->value)
 		{
-			//ms->stop = 1;
 			free(new_node);
 			return (NULL);
 		}
@@ -115,6 +114,7 @@ char	**append_args(char **args, char *to_add, t_ms *ms, t_token **tokens)
 	if (!new_args[i])
 	{
 		free_array(args);
+		free(new_args);
 		ms->stop = 1;
 		return (NULL);
 	}
@@ -194,7 +194,11 @@ t_ast	*parse_command(t_token **tokens, t_ms *ms, t_parsing *data)
 		if ((*tokens)->type == T_CMND)
 		{
 			if (!node->value)
+			{
 				node->value = ft_strdup((*tokens)->value);
+				if(!node->value)
+					parsing_malloc_failure(ms, data, node);
+			}
 			node->exp_value = append_args(node->exp_value, (*tokens)->value, ms, tokens); //prog
 			if (!node->exp_value)
 				parsing_malloc_failure(ms, data, node);
@@ -207,7 +211,7 @@ t_ast	*parse_command(t_token **tokens, t_ms *ms, t_parsing *data)
 		else
 		{
 			ft_free_ast_node(node);
-			return (NULL);  //need to free current node
+			return (NULL);
 		}
 	}
 	return (node);
@@ -215,7 +219,7 @@ t_ast	*parse_command(t_token **tokens, t_ms *ms, t_parsing *data)
 
 void	parsing_malloc_failure(t_ms *ms, t_parsing *data, t_ast *node)
 {
-	printf("minishell: cannot allocate memoryi\n");
+	printf("minishell: cannot allocate memory\n");
 	//free ms stuff
 	clean_ms(ms);
 	ft_free_token(ms->tokens);

@@ -84,6 +84,7 @@ int	ft_heredoc_getline(char *delim, int fd_write, t_ms *ms)
 	while (1)
 	{
 		line = readline(">");
+		//if !line might need bash warning for exit without delimiter
 		if (!line || ms_signal || !ft_strcmp(line ,delim))
 			break;
 		ms_signal = 0;
