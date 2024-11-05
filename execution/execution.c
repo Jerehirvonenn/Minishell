@@ -1,5 +1,7 @@
 #include "../includes/minishell.h"
 
+void	signal_handler_exec();
+
 /*
    1.create a pipe
    2.check if left is pipe or command
@@ -228,6 +230,7 @@ void	execute_ast(t_ast *node,  t_ms *ms)
 {
 	int	i;
 
+	signal_handler_exec();
 	i = 0;
 	while (i < 1024)
 	{

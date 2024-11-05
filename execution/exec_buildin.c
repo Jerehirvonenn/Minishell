@@ -1,6 +1,6 @@
 #include "../includes/minishell.h"
 
-void	signal_handler_execution();
+void	signal_handler_child();
 
 /*
 Your shell must implement the following builtins:
@@ -81,7 +81,7 @@ int	exec_bin(t_ms *ms, t_ast *node)
 
 	ret = 0;
 	cmd_path = build_executable(node, ms);
-	signal_handler_execution();
+	signal_handler_child();
 	if (cmd_path)
 	{
 		ret = execve(cmd_path, node->exp_value, ms->my_envp);

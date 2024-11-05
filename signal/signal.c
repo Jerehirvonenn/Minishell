@@ -48,9 +48,28 @@ void	signal_handler_parent()
 	signal(SIGQUIT, SIG_IGN);
 }
 
-void	signal_handler_execution()
+void	ft_sigint_exec(int num)
 {
+	ms_signal = num;
+	ft_putstr_fd("\n", STDOUT_FILENO);
+	rl_on_new_line();
+	rl_replace_line("", 0);
+}
 
+void	ft_sigquit(int num)
+{
+	ms_signal = num;
+	printf("Quit (core dumped)\n");
+}
+
+void	signal_handler_exec()
+{
+	signal(SIGINT, ft_sigint_exec);
+	signal(SIGQUIT, ft_sigquit);
+}
+
+void	signal_handler_child()
+{
 	signal(SIGINT, SIG_DFL);
 	signal(SIGQUIT, SIG_DFL);
 }
