@@ -50,6 +50,7 @@ void	signal_handler_parent()
 
 void	signal_handler_execution()
 {
+
 	signal(SIGINT, SIG_DFL);
 	signal(SIGQUIT, SIG_DFL);
 }
