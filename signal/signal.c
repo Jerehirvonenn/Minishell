@@ -6,6 +6,10 @@
 
 //need signal handler for execution. chld funcs should not ignore ctrl+\?
 
+
+//TO DO! signal handler after heredoc for execution and child process
+//curr getting multiple minishell > prompts
+
 void	ft_sigint_parent(int num)
 {
 	ms_signal = num;
@@ -42,4 +46,12 @@ void	signal_handler_parent()
 	rl_event_hook = NULL;
 	signal(SIGINT, ft_sigint_parent);
 	signal(SIGQUIT, SIG_IGN);
+}
+
+void	signal_handler_execution()
+{
+	if (signal(SIGINT, SIG_DFL) == SIG_ERR)
+		return ;
+	if (signal(SIGQUIT, SIG_DFL) == SIG_ERR)
+		return ;
 }
