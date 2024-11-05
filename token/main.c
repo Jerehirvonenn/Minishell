@@ -6,7 +6,7 @@
 /*   By: jhirvone <jhirvone@student.hive.fi>        +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/11/01 14:25:28 by jhirvone          #+#    #+#             */
-/*   Updated: 2024/11/04 11:51:28 by jhirvone         ###   ########.fr       */
+/*   Updated: 2024/11/05 13:17:00 by jhirvone         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -64,7 +64,11 @@ int	main(int ac, char **av, char **envp)
 		signal_handler_parent();
 		reset_ms(&ms);
 		str = readline(prompt);
-		ms_signal = 0;
+		if (ms_signal)
+		{
+			ms_signal = 0;
+			ms.exit_code = 130;
+		}
 		if (!str)
 			break;
 		if (!*str)

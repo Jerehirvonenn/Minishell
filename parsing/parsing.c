@@ -48,7 +48,8 @@ void	ft_free_ast(t_ast *root)
 
 int	ft_isredirection(enum e_token_type type)
 {
-	return (type == T_IN_REDIR || type == T_OUT_REDIR || type == T_HERE_DOC || type == T_APEND);
+	return (type == T_IN_REDIR || type == T_OUT_REDIR
+		|| type == T_HERE_DOC || type == T_APEND);
 	exit(1);
 }
 
@@ -58,7 +59,7 @@ t_ast	*create_ast_node(t_token_type type, char *str)
 
 	new_node = (t_ast *)malloc(sizeof(t_ast));
 	if (!new_node)
-		return (NULL); //handle memory error
+		return (NULL);
 	new_node->type = type;
 	if (str)
 	{
@@ -282,5 +283,6 @@ t_ast	*parsing_ast(t_token *tokens, t_ms *ms)
 		combine_pipeline(&data);
 	}
 	ft_free_token(ms->tokens);
+	ms->tokens = NULL;
 	return (data.left);
 }
