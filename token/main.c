@@ -6,7 +6,7 @@
 /*   By: jhirvone <jhirvone@student.hive.fi>        +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/11/01 14:25:28 by jhirvone          #+#    #+#             */
-/*   Updated: 2024/11/05 13:17:00 by jhirvone         ###   ########.fr       */
+/*   Updated: 2024/11/05 15:15:53 by jhirvone         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -70,7 +70,10 @@ int	main(int ac, char **av, char **envp)
 			ms.exit_code = 130;
 		}
 		if (!str)
+		{
+			printf("exit\n");
 			break;
+		}
 		if (!*str)
 		{
 			free(str);

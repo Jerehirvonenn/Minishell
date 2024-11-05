@@ -72,7 +72,7 @@ int	ft_delim_expansion(char *delim)
 		return (0);
 }
 
-int	ft_heredoc_getline(char *delim, int fd_write, t_ms *ms)
+int	ft_heredoc_getline(t_io *io, char *delim, int fd_write, t_ms *ms)
 {
 	char	*line;
 	int	expand;
@@ -84,10 +84,10 @@ int	ft_heredoc_getline(char *delim, int fd_write, t_ms *ms)
 	while (1)
 	{
 		line = readline(">");
-		//if !line might need bash warning for exit without delimiter
+		io->value = line;
 		if (!line || ms_signal || !ft_strcmp(line ,delim))
 			break;
-		ms_signal = 0;
+		ms_signal = 0;   //NEEDED?
 		if (expand == 1)
 		{
 			line = expand_argument(line, ms);   //need malloc check or happens insie exp_arg? maybe add line to io->value so it gets freed
@@ -102,9 +102,15 @@ int	ft_heredoc_getline(char *delim, int fd_write, t_ms *ms)
 		free(line);
 		line = NULL;
 	}
-	free(line);
+	if (!line)
+		printf("minishell: warning: here-document delimited by end of-file (wanted %s)\n", delim);
 	if (ms_signal)
+	{
+		ms->exit_code = 130;
 		ms->stop = 1;
+	}
+	free(line);
+	io->value = NULL;
 	signal_handler_parent();
 	return(0);
 }
@@ -197,7 +203,7 @@ int	ft_heredoc(t_ms *ms, t_io *io)
 		ms->stop = 1;
 		return(1);
 	}
-	if (ft_heredoc_getline(io->value, fd_write, ms))
+	if (ft_heredoc_getline(io, io->value, fd_write, ms))
 		close(fd_write);
 	else
 		io->heredoc_fd = fd_read;
