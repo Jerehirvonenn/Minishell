@@ -1,34 +1,18 @@
+/* ************************************************************************** */
+/*                                                                            */
+/*                                                        :::      ::::::::   */
+/*   builtin_export.c                                   :+:      :+:    :+:   */
+/*                                                    +:+ +:+         +:+     */
+/*   By: vkuznets <vkuznets@student.hive.fi>        +#+  +:+       +#+        */
+/*                                                +#+#+#+#+#+   +#+           */
+/*   Created: 2024/11/05 11:48:53 by vkuznets          #+#    #+#             */
+/*   Updated: 2024/11/05 13:27:52 by vkuznets         ###   ########.fr       */
+/*                                                                            */
+/* ************************************************************************** */
+
 #include "../includes/minishell.h"
 
-char	*name_exists(char *arg, t_ms *ms)
-{
-	int	i;
-	int	len;
-	char	*name;
-
-	i = 0;
-	while (arg[i] != '\0' && arg[i] != '=')
-		i++;
-	name = ft_substr(arg, 0, i);
-	if (!name)
-		return (NULL);
-	len = ft_strlen(name);
-	i = 0;
-	while (ms->my_envp[i])
-	{
-		if (ft_strncmp(ms->my_envp[i], name, len) == 0
-			&& (ms->my_envp[i][len] == '\0' || ms->my_envp[i][len] == '='))
-		{
-			free(name);
-			return (ms->my_envp[i] + len);
-		}
-		i++;
-	}
-	free(name);
-	return (NULL);
-}
-
-int	content_check(char *arg, t_ms *ms)
+int	content_check(const char *arg, t_ms *ms)
 {
 	int		i;
 	char	*content;
@@ -44,7 +28,7 @@ int	content_check(char *arg, t_ms *ms)
 	return (0);
 }
 
-int	error_check(char *str)
+static int	error_check(char *str)
 {
 	int	i;
 
@@ -73,11 +57,11 @@ void	envp_update(t_ms *ms, char *content)
 	{
 		if (!ft_strncmp(ms->my_envp[i], content, size))
 		{
-			free(ms->my_envp[i]); // Free old value to prevent memory leaks
-			ms->my_envp[i] = ft_strdup(content); // Copy new content
+			free(ms->my_envp[i]);
+			ms->my_envp[i] = ft_strdup(content);
 			if (!ms->my_envp[i])
 				perror("envp update error");
-			return;
+			return ;
 		}
 		i++;
 	}
@@ -87,36 +71,26 @@ void	envp_add(t_ms *ms, char *content)
 {
 	char	**new_envp;
 	int		i;
-	int		j;
 
-	i = 0;
-	j = 0;
 	ms->envp_size += 1;
 	new_envp = malloc((ms->envp_size + 1) * sizeof(char *));
-	while (i < ms->envp_size)
+	if (!new_envp)
+		malloc_parent_failure(ms);
+	i = 0;
+	while (i < ms->envp_size - 1)
 	{
-		if (!ft_strncmp(ms->my_envp[j], "_=", 2))  // This part
-		{
-			new_envp[i] = ft_strdup(content); // Copy new variable here
-			if (!new_envp[i])
-			{
-				perror("new envp error");
-				return ;
-			}
-			i++;
-		}
-		new_envp[i] = ft_strdup(ms->my_envp[j]); // Copy old env variables
+		new_envp[i] = ft_strdup(ms->my_envp[i]);
 		if (!new_envp[i])
-		{
-			perror("new envp error");
-			return ;
-		}
+			handle_allocation_failure(new_envp, i, ms);
 		i++;
-		j++;
 	}
-	ms->my_envp = new_envp; // Update environment pointer
+	new_envp[i] = ft_strdup(content);
+	if (!new_envp[i])
+		handle_allocation_failure(new_envp, i, ms);
+	new_envp[i + 1] = NULL;
+	free_array(ms->my_envp);
+	ms->my_envp = new_envp;
 }
-
 
 void	builtin_export(t_ms *ms, char **cmd, int i)
 {
@@ -132,7 +106,7 @@ void	builtin_export(t_ms *ms, char **cmd, int i)
 		else
 		{
 			fprintf(stderr, "export: not a valid identifier\n");
-			ms->exit_code = 1;//or ehatever name is
+			ms->exit_code = 1;
 		}
 		i++;
 	}

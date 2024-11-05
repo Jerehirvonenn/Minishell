@@ -1,6 +1,18 @@
+/* ************************************************************************** */
+/*                                                                            */
+/*                                                        :::      ::::::::   */
+/*   expansion_cases.c                                  :+:      :+:    :+:   */
+/*                                                    +:+ +:+         +:+     */
+/*   By: vkuznets <vkuznets@student.hive.fi>        +#+  +:+       +#+        */
+/*                                                +#+#+#+#+#+   +#+           */
+/*   Created: 2024/11/05 13:14:57 by vkuznets          #+#    #+#             */
+/*   Updated: 2024/11/05 16:06:11 by vkuznets         ###   ########.fr       */
+/*                                                                            */
+/* ************************************************************************** */
+
 #include "../includes/minishell.h"
 
-// Handle environment variable expansion
+// Handle environment variable expansion //has 27 lines
 void	handle_envir(char **clean, char *ins, size_t *i, t_ms *ms)
 {
 	size_t	start;
@@ -9,25 +21,24 @@ void	handle_envir(char **clean, char *ins, size_t *i, t_ms *ms)
 	char	*envir_value;
 	char	*temp;
 
-	start = *i + 1;//start at next symbol after $
+	start = *i + 1;
 	while (ft_isalnum(ins[start]) || ins[start] == '_')
 		start++;
-	len = start - (*i + 1);//calculate the length of var
+	len = start - (*i + 1);
 	envir_name = ft_substr(ins, *i + 1, len);//MALLOC
 	if (!envir_name)
 	{
-		ft_free_ast(ms->ast);
-		clean_ms(ms);
 		free(*clean);
-		printf("minishell: cannot allocate memory\n");
-		exit(1);
+		malloc_parent_failure(ms);
 	}
 	envir_value = envp_exists(envir_name, ms);
 	free(envir_name);
 	if (envir_value)
 	{
-		temp = ft_strjoin(*clean, envir_value);
+		temp = ft_strjoin(*clean, envir_value); //MALLOC
 		free(*clean);
+		if (!temp)
+			malloc_parent_failure(ms);
 		*clean = temp;
 	}
 	*i = start; // Move the index after the environment variable
@@ -37,27 +48,26 @@ void	handle_envir(char **clean, char *ins, size_t *i, t_ms *ms)
 void	handle_exit_code(char **clean, size_t *i, t_ms *ms)
 {
 	char	*substr;
+	char	*temp_clean;
 
-	substr = ft_itoa(ms->exit_code);
+	fprintf(stderr, "%d\n", ms->exit_code);
+	substr = ft_itoa(ms->exit_code); //MALLOC
 	if (!substr)
 	{
-		ft_free_ast(ms->ast);
-		clean_ms(ms);
 		free(*clean);
-		printf("minishell: cannot allocate memory\n");
-		exit(1);
+		malloc_parent_failure(ms);
 	}
-	*clean = ft_strjoin(*clean, substr);
-	if (!*clean)
+	temp_clean = ft_strjoin(*clean, substr); //MALLOC
+	if (!temp_clean)
 	{
-		free(substr);
-		ft_free_ast(ms->ast);
-		clean_ms(ms);
 		free(*clean);
-		printf("minishell: cannot allocate memory\n");
-		exit(1);
+		free(substr);
+		malloc_parent_failure(ms);
 	}
+	free(*clean);
+	*clean = temp_clean;
 	*i += 2;
+	free(substr); //its no longer needed
 }
 
 void	handle_normal_char(char **clean, char *ins, size_t *i, t_ms *ms)
@@ -67,14 +77,11 @@ void	handle_normal_char(char **clean, char *ins, size_t *i, t_ms *ms)
 
 	str[0] = ins[*i];
 	str[1] = '\0';
-	temp = ft_strjoin(*clean, str);
+	temp = ft_strjoin(*clean, str); //MALLOC
 	if (!temp)
 	{
-		ft_free_ast(ms->ast);
-		clean_ms(ms);
 		free(*clean);
-		printf("minishell: cannot allocate memory\n");
-		exit(1);
+		malloc_parent_failure(ms);
 	}
 	free(*clean);
 	*clean = temp;
@@ -91,16 +98,16 @@ void	handle_quoted_literal(char **clean, char *ins, size_t *i, t_ms *ms)
 	{
 		if (quote_char == '"' && ins[*i] == '$')
 		{
-			// Handle variable expansion inside double quotes
 			if (ft_isalnum(ins[*i + 1]) || ins[*i + 1] == '_')
 				handle_envir(clean, ins, i, ms);
+			else if (ins[*i + 1] == '?')
+				handle_exit_code(clean, i, ms);
 			else
 				handle_normal_char(clean, ins, i, ms);
 		}
 		else
 			handle_normal_char(clean, ins, i, ms);
 	}
-	// Move past the closing quote if found
 	if (ins[*i] == quote_char)
 		(*i)++;
 }

@@ -1,28 +1,28 @@
+/* ************************************************************************** */
+/*                                                                            */
+/*                                                        :::      ::::::::   */
+/*   expansion.c                                        :+:      :+:    :+:   */
+/*                                                    +:+ +:+         +:+     */
+/*   By: vkuznets <vkuznets@student.hive.fi>        +#+  +:+       +#+        */
+/*                                                +#+#+#+#+#+   +#+           */
+/*   Created: 2024/11/05 13:55:09 by vkuznets          #+#    #+#             */
+/*   Updated: 2024/11/05 13:55:56 by vkuznets         ###   ########.fr       */
+/*                                                                            */
+/* ************************************************************************** */
+
 #include "../includes/minishell.h"
 
 // Updated handle_cases function to manage quotes
 static void	handle_cases(char **clean, char *ins, size_t *i, t_ms *ms)
 {
 	if (ft_isquote(ins[*i]))
-	{
-	//	fprintf(stderr, "quotation\n");
 		handle_quoted_literal(clean, ins, i, ms);
-	}
 	else if (ins[*i] == '$' && ft_isdelim(ins[*i + 1]))
-	{
-	//	fprintf(stderr, "delimetr\n");
 		handle_normal_char(clean, ins, i, ms);
-	}
 	else if (ins[*i] == '$' && ins[*i + 1] == '?')
-	{
-	//	fprintf(stderr, "exit code\n");
 		handle_exit_code(clean, i, ms);
-	}
 	else if (ins[*i] == '$' && (ft_isalnum(ins[*i + 1]) || ins[*i + 1] == '_'))
-	{
-	//	fprintf(stderr, "env var\n");
 		handle_envir(clean, ins, i, ms);
-	}
 	else
 		handle_normal_char(clean, ins, i, ms);
 }
@@ -35,18 +35,14 @@ char	*expand_argument(char *arg, t_ms *ms)
 
 	expanded_arg = ft_strdup("");
 	if (!expanded_arg)
-	{
-		ft_free_ast(ms->ast);
-		clean_ms(ms);
-		printf("minishell: cannot allocate memory\n");
-		exit(1);
-	}
+		malloc_parent_failure(ms);
 	j = 0;
 	while (arg[j])
 		handle_cases(&expanded_arg, arg, &j, ms);
 	return (expanded_arg);
 }
 
+//has 31 line
 void	expand_ast(t_ast *node, t_ms *ms)
 {
 	size_t	i;
@@ -61,12 +57,7 @@ void	expand_ast(t_ast *node, t_ms *ms)
 	{
 		new_value = expand_argument(node->exp_value[i], ms);
 		if (!new_value)
-		{
-			ft_free_ast(ms->ast);
-			clean_ms(ms);
-			printf("minishell: cannot allocate memory\n");
-			exit(1);
-		}
+			malloc_parent_failure(ms);
 		free(node->exp_value[i]);
 		node->exp_value[i] = new_value;
 		i++;
@@ -75,12 +66,7 @@ void	expand_ast(t_ast *node, t_ms *ms)
 		{
 			new_value = expand_argument(temp_io->value, ms);
 			if (!new_value)
-			{
-				ft_free_ast(ms->ast);
-				clean_ms(ms);
-				printf("minishell: cannot allocate memory\n");
-				exit(1);
-			}
+				malloc_parent_failure(ms);
 			free(temp_io->value);
 			temp_io->value = new_value;
 			temp_io = temp_io->next;

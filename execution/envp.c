@@ -1,3 +1,15 @@
+/* ************************************************************************** */
+/*                                                                            */
+/*                                                        :::      ::::::::   */
+/*   envp.c                                             :+:      :+:    :+:   */
+/*                                                    +:+ +:+         +:+     */
+/*   By: vkuznets <vkuznets@student.hive.fi>        +#+  +:+       +#+        */
+/*                                                +#+#+#+#+#+   +#+           */
+/*   Created: 2024/11/05 10:04:15 by vkuznets          #+#    #+#             */
+/*   Updated: 2024/11/05 13:22:19 by vkuznets         ###   ########.fr       */
+/*                                                                            */
+/* ************************************************************************** */
+
 #include "../includes/minishell.h"
 
 /**
@@ -13,30 +25,28 @@
  * The `my_envp` array is null-terminated for proper use with execve
  * and other functions expecting environment variables.
  */
-void	init_envp(t_ms *ms)
+void	init_envp(t_ms *ms, char **envp)
 {
-	extern char	**environ;
-	int			i;
+	int	i;
 
-	while (environ[ms->envp_size] != NULL)
+	while (envp[ms->envp_size] != NULL)
 		ms->envp_size++;
 	ms->my_envp = (char **)malloc(sizeof (char *) * (ms->envp_size + 1));
 	if (!ms->my_envp)
 	{
-		clean_ms(ms);
 		printf("minishell: cannot allocate memory\n");
-		return ;//exit??
+		exit(1);
 	}
 	i = 0;
 	while (i < ms->envp_size)
 	{
-		ms->my_envp[i] = ft_strdup(environ[i]);
-		if (!ms->my_envp[i]) 
+		ms->my_envp[i] = ft_strdup(envp[i]);
+		if (!ms->my_envp[i])
 		{
 			while (i > 0)
 				free(ms->my_envp[--i]);
 			free(ms->my_envp);
-			return ;//return or exit?
+			exit(1);
 		}
 		i++;
 	}
@@ -64,15 +74,10 @@ char	*envp_exists(char *name, t_ms *ms)
 	i = 0;
 	temp = ft_strjoin(name, "=");
 	if (!temp)
-		return (NULL);
+		malloc_parent_failure(ms);
 	len = ft_strlen(temp);
 	while (ms->my_envp[i++])
 	{
-		if (ms->my_envp[i] == NULL)
-		{
-			free(temp);
-			return (NULL);
-		}
 		if (ft_strnstr(ms->my_envp[i], temp, len))
 		{
 			free(temp);

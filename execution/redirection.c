@@ -4,9 +4,9 @@
 void	error_options(int error)
 {
 	if (error == 1)
-		ft_putstr_fd("Permission denied", 2);
+		ft_putstr_fd("Permission denied: ", 2);
 	else if (error == 2)
-		ft_putstr_fd("No such file or directory", 2);
+		ft_putstr_fd("No such file or directory: ", 2);
 	else if (error == 3)
 		ft_putstr_fd("command not found: ", 2);
 }

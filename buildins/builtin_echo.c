@@ -1,5 +1,16 @@
+/* ************************************************************************** */
+/*                                                                            */
+/*                                                        :::      ::::::::   */
+/*   builtin_echo.c                                     :+:      :+:    :+:   */
+/*                                                    +:+ +:+         +:+     */
+/*   By: vkuznets <vkuznets@student.hive.fi>        +#+  +:+       +#+        */
+/*                                                +#+#+#+#+#+   +#+           */
+/*   Created: 2024/11/05 12:12:19 by vkuznets          #+#    #+#             */
+/*   Updated: 2024/11/05 12:12:48 by vkuznets         ###   ########.fr       */
+/*                                                                            */
+/* ************************************************************************** */
+
 #include "../includes/minishell.h"
-#include <stdbool.h>
 
 static int	check_flags(char *str)
 {
@@ -19,21 +30,18 @@ static int	check_flags(char *str)
 	return (0);
 }
 
-void	builtin_echo(t_ms *ms, char **cmd)
+void	builtin_echo(char **cmd)
 {
-	(void)ms;
-	int	i;
+	int		i;
 	bool	flag;
 
 	i = 1;
 	flag = false;
-	//if check_flags returns 0 (indicating a valid -n flag), it sets n_flag to true and moves to the next argument.
 	while (cmd[i] && check_flags(cmd[i]) == 0)
 	{
 		flag = true;
 		i++;
 	}
-	//If no arguments are left (cmd[i] == NULL), and the -n flag was not set, it prints a newline (\n) using ft_putchar_fd, ensuring that no extra text is output
 	if (!cmd[i] && flag == false)
 		ft_putchar_fd('\n', 1);
 	while (cmd[i])
@@ -46,14 +54,3 @@ void	builtin_echo(t_ms *ms, char **cmd)
 		i++;
 	}
 }
-
-/*int main(int argc, char **argv) {
-    t_shell ms;
-
-    if (argc > 1) 
-        mini_echo(&ms, argv);
-    else
-        printf("Usage: ./echo [text] [-n]\n");
-
-    return 0;
-}*/

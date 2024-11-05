@@ -1,24 +1,26 @@
+/* ************************************************************************** */
+/*                                                                            */
+/*                                                        :::      ::::::::   */
+/*   builtin_env.c                                      :+:      :+:    :+:   */
+/*                                                    +:+ +:+         +:+     */
+/*   By: vkuznets <vkuznets@student.hive.fi>        +#+  +:+       +#+        */
+/*                                                +#+#+#+#+#+   +#+           */
+/*   Created: 2024/11/05 12:14:06 by vkuznets          #+#    #+#             */
+/*   Updated: 2024/11/05 12:14:10 by vkuznets         ###   ########.fr       */
+/*                                                                            */
+/* ************************************************************************** */
+
 #include"../includes/minishell.h"
 
-void	builtin_env(t_ms *ms, int i, int j)
+void	builtin_env(t_ms *ms)
 {
+	int	i;
+
+	i = 0;
 	while (ms->my_envp[i] != NULL)
 	{
-		j = 0;
-		while (ms->my_envp[i][j] != '=' && ms->my_envp[i][j] != '\0')
-			j++;
-		if (ms->my_envp[i][j] == '=')
+		if (strchr(ms->my_envp[i], '='))
 			ft_putendl_fd(ms->my_envp[i], 1);
 		i++;
 	}
 }
-
-/*int	main(int ac, char **av, char **envp)
-{
-	t_shell ms;
-
-	ms.envp_size = 0;
-	init_envp(&ms, envp);
-	ms.excode = -1;  // Set a non-zero initial value for testing
-	mini_env(&ms, 0, 0);
-}*/

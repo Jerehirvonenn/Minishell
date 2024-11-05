@@ -21,14 +21,13 @@ t_token		*ft_tokenize(char *str, t_ms *ms);
 void		print_tokens(t_token *tokens);
 void		signal_handler_parent(void);
 
-void	init_minishell(t_ms *ms)
+void	init_minishell(t_ms *ms, char **envp)
 {
 	struct termios	term;
 
 	ms->envp_size = 0;
-	init_envp(ms);
+	init_envp(ms, envp);
 	ms->exit_code = 0;
-	ms->envp_size = 0;
 	ms->stop = 0;
 	ms->quit = 0;
 	ms->pwd = getcwd(NULL, 0);
@@ -57,8 +56,7 @@ int	main(int ac, char **av, char **envp)
 
 	(void)ac;
 	(void)av;
-	(void)envp;
-	init_minishell(&ms);
+	init_minishell(&ms, envp);
 	while (1)
 	{
 		signal_handler_parent();

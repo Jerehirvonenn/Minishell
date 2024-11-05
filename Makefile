@@ -3,9 +3,11 @@ NAME = minishell
 
 # Compiler and flags
 CC = gcc
-CFLAGS = -Wall -Wextra -Werror -I/opt/homebrew/opt/readline/include -I./includes -I./Libft
+#CFLAGS = -Wall -Wextra -Werror -I/opt/homebrew/opt/readline/include -I./includes -I./Libft
 #CFLAGS = -Wall -Wextra -Werror $(CPPFLAGS)  # Include CPPFLAGS for compilation
-LDFLAGS = -L/opt/homebrew/opt/readline/lib -lreadline  # Include LDFLAGS for linking
+#LDFLAGS = -L/opt/homebrew/opt/readline/lib -lreadline  # Include LDFLAGS for linking
+CFLAGS = -Wall -Wextra -Werror -I/usr/local/opt/readline/include -I./includes -I./Libft
+LDFLAGS = -L/usr/local/opt/readline/lib -lreadline
 
 # Directories
 LIBFT_DIR = ./Libft
@@ -22,7 +24,7 @@ LIBFT = $(LIBFT_DIR)/libft.a
 
 # Source files
 PARSING_SRCS = $(PARSING_DIR)/parsing.c $(PARSING_DIR)/here_doc.c
-TOKEN_SRCS = $(TOKEN_DIR)/print_ast.c $(TOKEN_DIR)/token.c $(TOKEN_DIR)/token_create.c $(TOKEN_DIR)/main.c signal/signal.c $(EXP_DIR)/expansion.c $(EXP_DIR)/expansion_cases.c $(EXP_DIR)/expansion_utils.c $(EXEC_DIR)/envp.c $(EXEC_DIR)/exec_buildin.c $(EXEC_DIR)/find_executable.c $(EXEC_DIR)/redirection.c $(EXEC_DIR)/execution.c $(EXEC_DIR)/execution_utils.c $(BLT_DIR)/builtin_export.c $(BLT_DIR)/builtin_exit.c $(BLT_DIR)/builtin_env.c $(BLT_DIR)/builtin_echo.c $(BLT_DIR)/builtin_cd.c $(UTL_DIR)/clean.c
+TOKEN_SRCS = $(TOKEN_DIR)/print_ast.c $(TOKEN_DIR)/token.c $(TOKEN_DIR)/token_create.c $(TOKEN_DIR)/main.c signal/signal.c $(EXP_DIR)/expansion.c $(EXP_DIR)/expansion_cases.c $(EXP_DIR)/expansion_utils.c $(EXEC_DIR)/envp.c $(EXEC_DIR)/exec_buildin.c $(EXEC_DIR)/find_executable.c $(EXEC_DIR)/redirection.c $(EXEC_DIR)/execution.c $(EXEC_DIR)/execution_utils.c $(BLT_DIR)/builtin_export.c $(BLT_DIR)/builtin_exit.c $(BLT_DIR)/builtin_env.c $(BLT_DIR)/builtin_echo.c $(BLT_DIR)/builtin_cd.c $(BLT_DIR)/builtin_unset.c $(UTL_DIR)/clean.c
 
 # Object files
 PARSING_OBJS = $(PARSING_SRCS:.c=.o)
