@@ -114,7 +114,7 @@ int	redirection(t_ast *node)
 		else if (current_io->type == T_HEREDOC)
 			status = ft_heredoc(current_io);
 		if (status == -1) 
-			error_handler(current_io->value, 2);
+			return (-1);
 		current_io = current_io->next;
 	}
 	return (0);

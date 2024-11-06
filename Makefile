@@ -24,7 +24,13 @@ LIBFT = $(LIBFT_DIR)/libft.a
 
 PARSING_SRCS = \
     $(PARSING_DIR)/parsing.c \
-    $(PARSING_DIR)/here_doc.c
+    $(PARSING_DIR)/parsing_error_init.c \
+    $(PARSING_DIR)/parsing_node.c \
+    $(PARSING_DIR)/heredoc.c \
+    $(PARSING_DIR)/heredoc_file.c \
+    $(PARSING_DIR)/heredoc_read.c \
+    $(PARSING_DIR)/clean_ast.c \
+    $(PARSING_DIR)/parsing_utils.c
 
 TOKEN_SRCS = \
     $(TOKEN_DIR)/print_ast.c \
