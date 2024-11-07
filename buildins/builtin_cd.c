@@ -6,7 +6,7 @@
 /*   By: vkuznets <vkuznets@student.hive.fi>        +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/11/05 10:10:44 by vkuznets          #+#    #+#             */
-/*   Updated: 2024/11/07 13:44:35 by vkuznets         ###   ########.fr       */
+/*   Updated: 2024/11/07 16:04:55 by jhirvone         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -99,7 +99,11 @@ int	builtin_cd(t_ms *ms, t_ast *ast, char *cmd)
 		printf("minishell: cd: too many arguments\n");
 		return (-1);
 	}
-
+	if (ast->no_exp && !ft_strncmp(ast->no_exp, "\"\"", 3))
+	{
+		update_pwds(ms);
+		return (0);
+	}
 	fprintf(stderr, "cmd = %s\n", cmd);
 	fprintf(stderr, "ast = %s\n", ast->value);
 	if (!cmd || (ft_strncmp(cmd, "~", 2) == 0) || !*cmd)

@@ -43,6 +43,7 @@ typedef struct s_ast
 	t_token_type		type;
 	char		*value;
 	char		**exp_value;
+	char		*no_exp;
 	t_io		*io_list;
 	int		pid;
 	struct s_ast	*left;
