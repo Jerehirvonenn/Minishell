@@ -6,11 +6,13 @@
 /*   By: jhirvone <jhirvone@student.hive.fi>        +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/11/06 15:49:46 by jhirvone          #+#    #+#             */
-/*   Updated: 2024/11/06 16:12:25 by jhirvone         ###   ########.fr       */
+/*   Updated: 2024/11/07 13:15:34 by jhirvone         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "../includes/minishell.h"
+
+const char *token_type_to_str(t_token_type type);
 
 void	parsing_malloc_failure(t_ms *ms, t_parsing *data, t_ast *node)
 {
@@ -24,9 +26,18 @@ void	parsing_malloc_failure(t_ms *ms, t_parsing *data, t_ast *node)
 	exit(1);
 }
 
-t_ast	*parsing_error(t_ms *ms, t_ast *ast, t_ast *node)
+t_ast	*parsing_error(t_ms *ms, t_ast *ast, t_ast *node, t_token *token)
 {
-	printf("minishell: parsing error\n");
+	const char *str;
+
+	printf("minishell: syntax error near unexpected token `");
+	if (token)
+	{
+		str = token_type_to_str(token->type);
+		printf("%s'\n", str);
+	}
+	else
+		printf("newline'\n");
 	ms->stop = 1;
 	ft_free_token(ms->tokens);
 	ft_free_ast(ast);

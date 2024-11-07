@@ -6,7 +6,7 @@
 /*   By: jhirvone <jhirvone@student.hive.fi>        +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/11/06 16:05:45 by jhirvone          #+#    #+#             */
-/*   Updated: 2024/11/06 16:13:55 by jhirvone         ###   ########.fr       */
+/*   Updated: 2024/11/07 13:20:20 by jhirvone         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -82,6 +82,8 @@ t_ast	*parse_command(t_token **tokens, t_ms *ms, t_parsing *data)
 		}
 		else
 		{
+			if (ft_isredirection((*tokens)->type))
+				*tokens = (*tokens)->next;
 			ft_free_ast_node(node);
 			return (NULL);
 		}
@@ -95,18 +97,18 @@ t_ast	*parsing_ast(t_token *tokens, t_ms *ms)
 
 	init_parsing_struct(&data);
 	if (!tokens || tokens->type == T_PIPE)
-		return (parsing_error(ms, NULL, NULL));
+		return (parsing_error(ms, NULL, NULL, tokens));
 	data.left = parse_command(&tokens, ms, &data);
 	if (!data.left)
-		return (parsing_error(ms, NULL, NULL));
+		return (parsing_error(ms, NULL, NULL, tokens));
 	while (tokens && tokens->type == T_PIPE)
 	{
 		tokens = tokens->next;
 		if (!tokens || tokens->type == T_PIPE)
-			return (parsing_error(ms, data.left, NULL));
+			return (parsing_error(ms, data.left, NULL, tokens));
 		data.right = parse_command(&tokens, ms, &data);
 		if (!data.right)
-			return (parsing_error(ms, data.left, NULL));
+			return (parsing_error(ms, data.left, NULL, tokens));
 		data.pipe = create_ast_node(T_PIPE, NULL);
 		if (!data.pipe)
 			parsing_malloc_failure(ms, &data, NULL);

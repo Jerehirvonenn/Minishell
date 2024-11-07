@@ -22,7 +22,7 @@ int	add_io(t_ast *ast_node, t_io_type io_type, char *io_value, t_token **tokens)
 void	parsing_malloc_failure(t_ms *ms, t_parsing *data, t_ast *node);
 void	init_parsing_struct(t_parsing *data);
 void	combine_pipeline(t_parsing *data);
-t_ast	*parsing_error(t_ms *ms, t_ast *ast, t_ast *node);
+t_ast	*parsing_error(t_ms *ms, t_ast *ast, t_ast *node, t_token *token);
 
 
 //heredoc.c
