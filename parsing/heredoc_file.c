@@ -6,7 +6,7 @@
 /*   By: jhirvone <jhirvone@student.hive.fi>        +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/11/06 11:43:50 by jhirvone          #+#    #+#             */
-/*   Updated: 2024/11/06 12:21:13 by jhirvone         ###   ########.fr       */
+/*   Updated: 2024/11/07 11:09:50 by jhirvone         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -47,7 +47,7 @@ int	ft_createfile(int *fd_write, int *fd_read)
 	ft_strlcpy(filename, "/tmp/ms_", 64);
 	if (create_random_name(gen_name, temp))
 	{
-		printf("Error creating random name\n");
+		printf("minishell: Error creating random name\n");
 		return (1);
 	}
 	ft_strlcat(filename, gen_name, 64);
@@ -55,7 +55,7 @@ int	ft_createfile(int *fd_write, int *fd_read)
 	*fd_read = open(filename, O_RDONLY);
 	if (*fd_write == -1 || *fd_read == -1)
 	{
-		printf("Error opening heredoc file\n");
+		printf("minishell: Error opening heredoc file\n");
 		if (*fd_write != -1)
 			close(*fd_write);
 		if (*fd_read != -1)

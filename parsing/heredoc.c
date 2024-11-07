@@ -6,7 +6,7 @@
 /*   By: jhirvone <jhirvone@student.hive.fi>        +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/11/06 12:07:32 by jhirvone          #+#    #+#             */
-/*   Updated: 2024/11/06 15:08:37 by jhirvone         ###   ########.fr       */
+/*   Updated: 2024/11/07 11:21:50 by jhirvone         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -33,10 +33,8 @@ void	ft_empty_heredoc(t_ms *ms, t_io *io, char *delim)
 {
 	char	*line;
 
-	printf("EMPTY HEREDOC!\n");  //DEL
 	signal_handler_heredoc();
 	remove_delim_quotes(delim);
-	printf("DELIM IS %s\n", delim);   //DEL
 	while (1)
 	{
 		line = readline(">");
