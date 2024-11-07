@@ -6,7 +6,7 @@
 /*   By: vkuznets <vkuznets@student.hive.fi>        +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/11/05 10:10:44 by vkuznets          #+#    #+#             */
-/*   Updated: 2024/11/05 14:50:03 by vkuznets         ###   ########.fr       */
+/*   Updated: 2024/11/07 13:44:35 by vkuznets         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -26,7 +26,11 @@ static char	*find_the_path(char *str, t_ms *ms)
 		{
 			p = ft_substr(ms->my_envp[i], len, ft_strlen(ms->my_envp[i]) - len);
 			if (!p)
+			{
+				fprintf(stderr, "hello\n");
 				malloc_parent_failure(ms);
+				return NULL;
+			}
 			return (p);
 		}
 		i++;
@@ -44,6 +48,7 @@ static int	change_dir_path(t_ms *ms, char *str)
 	tmp = find_the_path(str, ms);
 	if (!tmp)
 	{
+		printf("minishell: cd: %s not set\n", tmp); //?
 		ms->pwd = NULL;
 		return (-1);
 	}
@@ -75,27 +80,33 @@ static void	update_pwds(t_ms *ms)
 		malloc_parent_failure(ms);
 }
 
-static int	arg_count(t_ms *ms)
+static int	arg_count(t_ast *ast)
 {
 	int	i;
 
 	i = 0;
-	while (ms->ast->exp_value[i])
+	while (ast->exp_value[i])
 		i++;
 	return (i);
 }
 
-void	builtin_cd(t_ms *ms, char *cmd)
+int	builtin_cd(t_ms *ms, t_ast *ast, char *cmd)
 {
 	int	ret;
 
-	if (arg_count(ms) > 2)
+	if (arg_count(ast) > 2)
 	{
 		printf("minishell: cd: too many arguments\n");
-		return ;
+		return (-1);
 	}
-	if (!cmd || (ft_strncmp(cmd, "~", 2) == 0))
+
+	fprintf(stderr, "cmd = %s\n", cmd);
+	fprintf(stderr, "ast = %s\n", ast->value);
+	if (!cmd || (ft_strncmp(cmd, "~", 2) == 0) || !*cmd)
+	{
+		fprintf(stderr, "1\n");
 		ret = change_dir_path(ms, "HOME=");
+	}
 	else if (ft_strncmp(cmd, "-", 2) == 0)
 	{
 		ret = chdir(ms->old_pwd);
@@ -108,9 +119,9 @@ void	builtin_cd(t_ms *ms, char *cmd)
 	if (ret != 0)
 	{
 		printf("minishell: cd: %s: No such file or directory\n", cmd);
-		return ;
+		return (-1);
 	}
-	fprintf(stderr, "here\n");
-	if (cmd && (ft_strncmp(cmd, "~", 2) != 0))
+	if (cmd && (ft_strncmp(cmd, "~", 2) != 0) && *cmd)
 		update_pwds(ms);
+	return (ret);
 }

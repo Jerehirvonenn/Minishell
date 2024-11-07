@@ -6,7 +6,7 @@
 /*   By: vkuznets <vkuznets@student.hive.fi>        +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/11/05 13:55:09 by vkuznets          #+#    #+#             */
-/*   Updated: 2024/11/05 13:55:56 by vkuznets         ###   ########.fr       */
+/*   Updated: 2024/11/07 15:08:15 by jhirvone         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -15,8 +15,12 @@
 // Updated handle_cases function to manage quotes
 static void	handle_cases(char **clean, char *ins, size_t *i, t_ms *ms)
 {
-	if (ft_isquote(ins[*i]))
+	if (ft_isquote(ins[*i]) || (ins[*i] == '$' && (ins[*i + 1] == '"' || ins[*i + 1] == '\'')))
+	{
+		if (ins[*i] == '$') // Handle cases like $"..."
+			(*i)++;
 		handle_quoted_literal(clean, ins, i, ms);
+	}
 	else if (ins[*i] == '$' && ft_isdelim(ins[*i + 1]))
 		handle_normal_char(clean, ins, i, ms);
 	else if (ins[*i] == '$' && ins[*i + 1] == '?')

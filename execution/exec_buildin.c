@@ -5,8 +5,8 @@
 /*                                                    +:+ +:+         +:+     */
 /*   By: vkuznets <vkuznets@student.hive.fi>        +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
-/*   Created: 2024/11/05 14:22:50 by vkuznets          #+#    #+#             */
-/*   Updated: 2024/11/05 15:59:49 by vkuznets         ###   ########.fr       */
+/*   Created: 2024/11/06 15:15:41 by vkuznets          #+#    #+#             */
+/*   Updated: 2024/11/07 13:01:30 by vkuznets         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -41,12 +41,15 @@ bool	is_child_builtin(t_ast *ast)
 	return (false);
 }
 
-void	exec_builtin(t_ms *ms, t_ast *ast)
+int	exec_builtin(t_ms *ms, t_ast *ast)
 {
+	int	ret;
+
+	ret = 0;
 	if (!ft_strncmp("echo", ast->exp_value[0], 5))
 		builtin_echo(ast->exp_value);
 	else if (!ft_strncmp("cd", ast->exp_value[0], 3))
-		builtin_cd(ms, ast->exp_value[1]);
+		ret = builtin_cd(ms, ast, ast->exp_value[1]);
 	else if (!ft_strncmp("env", ast->exp_value[0], 3))
 		builtin_env(ms);
 	else if (!ft_strncmp("pwd", ast->exp_value[0], 4))
@@ -59,6 +62,7 @@ void	exec_builtin(t_ms *ms, t_ast *ast)
 		builtin_unset(ms, ast->exp_value);
 	else
 		printf("Command not found: %s\n", ast->exp_value[0]);
+	return (ret);
 }
 
 
@@ -71,19 +75,45 @@ int	exec_bin(t_ms *ms, t_ast *node)
 	cmd_path = build_executable(node, ms);
 	if (cmd_path)
 	{
+		if (access(cmd_path, F_OK))
+		{
+			ft_putstr_fd("minishell: ", 2);
+			ft_putstr_fd(node->exp_value[0], 2);
+			ft_putstr_fd(": No such file or directory\n", 2);
+			free(cmd_path);
+			ms->exit_code = 127;
+			return (-1);
+		}
 		ret = execve(cmd_path, node->exp_value, ms->my_envp);
 		if (ret == -1)
 		{
-			perror("execve");
-			ft_free_ast(ms->ast);
-			clean_ms(ms);
+			if (access(cmd_path, X_OK))
+			{
+				ft_putstr_fd("minishell: ", 2);
+				ft_putstr_fd(node->exp_value[0], 2);
+				ft_putstr_fd(": Permission denied\n", 2);
+				ms->exit_code = 126;
+				free(cmd_path);
+				return (-1);
+			}
+			else if (access(cmd_path, F_OK))
+			{
+				ft_putstr_fd("minishell: ", 2);
+				ft_putstr_fd(node->exp_value[0], 2);
+				ft_putstr_fd(": No such file or directory\n", 2);
+				free(cmd_path);
+				return (-1);
+			}
+			ms->exit_code = 1;
 			free(cmd_path);
 			return (-1); //that means fail
 		}
 	}
 	else
 	{
-		printf("Command not found: %s\n", node->exp_value[0]);
+		ft_putstr_fd(node->exp_value[0], 2);
+		ft_putstr_fd(": command not found\n", 2);
+
 		ft_free_ast(ms->ast);
 		clean_ms(ms);
 		exit(127);
@@ -92,22 +122,20 @@ int	exec_bin(t_ms *ms, t_ast *node)
 	return (ret);
 }
 
-void	signal_handler_child();
-
 // Function to handle command execution in the child process
 void	child_process(t_ms *ms, t_ast *ast)
 {
-	signal_handler_child();
-	if (is_child_builtin(ast))
+	if (is_child_builtin(ast) || is_builtin(ast))
 	{
-		exec_builtin(ms, ast); //bacause none of child functions are here
+		if (exec_builtin(ms, ast) == -1) //bacause none of child functions are here
+			exit(EXIT_FAILURE);
 		ft_free_ast(ms->ast);
 		clean_ms(ms);
 	}
 	else
 	{
 		if (exec_bin(ms, ast) == -1)
-			exit(EXIT_FAILURE);
+			exit(ms->exit_code);
 	}
 }
 

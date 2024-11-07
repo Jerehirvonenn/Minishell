@@ -6,7 +6,7 @@
 /*   By: vkuznets <vkuznets@student.hive.fi>        +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/11/05 13:57:04 by vkuznets          #+#    #+#             */
-/*   Updated: 2024/11/05 16:40:47 by vkuznets         ###   ########.fr       */
+/*   Updated: 2024/11/07 15:12:16 by jhirvone         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -32,7 +32,7 @@ void	execute_middle_command(t_ast *node, t_ms *ms, int *pipefd, int *write_pipe)
 			exit(EXIT_FAILURE);
 		}
 		close_array_fds(ms);
-		if (redirection(node) == -1) //REDIRECTION
+		if (redirection(node) == -1)
 			exit(EXIT_FAILURE);
 		child_process(ms, node);
 		exit(EXIT_SUCCESS);
@@ -61,7 +61,7 @@ void	execute_last_command(t_ast *node, t_ms *ms, int *pipefd)
 			exit(EXIT_FAILURE);
 		}
 		close_array_fds(ms);
-		if (redirection(node) == 1)
+		if (redirection(node) == -1)
 			exit(EXIT_FAILURE);
 		child_process(ms, node);
 		exit(EXIT_SUCCESS);
@@ -81,7 +81,7 @@ void	execute_first_command(t_ast *node, t_ms *ms, int *pipefd)
 	}
 	else if (node->pid == 0)
 	{
-		if (dup2(pipefd[1], 1) == -1) 
+		if (dup2(pipefd[1], 1) == -1)
 		{
 			perror("dup2 first cmd fails");
 			close_array_fds(ms);
@@ -89,8 +89,8 @@ void	execute_first_command(t_ast *node, t_ms *ms, int *pipefd)
 			exit(EXIT_FAILURE);
 		}
 		close_array_fds(ms);
-		if (redirection(node) == -1) //REDIRECTION
-			exit(EXIT_FAILURE);//??
+		if (redirection(node) == -1)
+			exit(EXIT_FAILURE);
 		child_process(ms, node);
 		exit(EXIT_SUCCESS);
 	}
@@ -113,7 +113,11 @@ void	execute_command(t_ast *node, t_ms *ms)
 		else if (node->pid == 0)
 		{
 			if (redirection(node) == -1)
+			{
+				ft_free_ast(ms->ast);
+				clean_ms(ms);
 				exit(EXIT_FAILURE);
+			}
 			child_process(ms, node);
 			exit(EXIT_SUCCESS);
 		}
@@ -123,6 +127,7 @@ void	execute_command(t_ast *node, t_ms *ms)
 void	execute_pipe(t_ast *node, t_ms *ms, int *write_pipe)
 {	
 	int	pipefd[2];
+
 	if (pipe(pipefd) == -1)
 	{
 		perror("pipe2 failure");
@@ -130,7 +135,6 @@ void	execute_pipe(t_ast *node, t_ms *ms, int *write_pipe)
 		ms->stop = 1;
 		return ;
 	}
-
 	add_to_array(ms, pipefd[0]);
 	add_to_array(ms, pipefd[1]);
 	if (node->left && node->left->type == T_PIPE)
@@ -169,12 +173,11 @@ void	ft_waiting(t_ast *node, t_ms *ms)
 {
 	static int	status;
 
-	//NEEd to fix
 	if (node->pid != -1 && node->type == T_CMND)
 	{
 		if (node->type == T_CMND)
 			waitpid(node->pid, &status, 0);
-		if (WIFEXITED(status)) // Check if the process terminated normally
+		if (WIFEXITED(status))
 			ms->exit_code = WEXITSTATUS(status);
 	}
 	if (node->left)
@@ -183,9 +186,9 @@ void	ft_waiting(t_ast *node, t_ms *ms)
 		ft_waiting(node->right, ms);
 }
 
-void	signal_handler_exec();
+void	signal_handler_exec(void);
 
-void	execute_ast(t_ast *node,  t_ms *ms)
+void	execute_ast(t_ast *node, t_ms *ms)
 {
 	int	i;
 
