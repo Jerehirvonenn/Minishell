@@ -6,7 +6,7 @@
 /*   By: jhirvone <jhirvone@student.hive.fi>        +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/11/01 14:25:28 by jhirvone          #+#    #+#             */
-/*   Updated: 2024/11/06 11:27:53 by jhirvone         ###   ########.fr       */
+/*   Updated: 2024/11/08 13:22:39 by jhirvone         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -19,7 +19,6 @@ void		print_ast_tree(t_ast *root);
 const char	*token_type_to_str(t_token_type type);
 t_token		*ft_tokenize(char *str, t_ms *ms);
 void		print_tokens(t_token *tokens);
-void		signal_handler_parent(void);
 
 void	init_minishell(t_ms *ms, char **envp)
 {
@@ -48,6 +47,33 @@ void	reset_ms(t_ms *ms)
 	ms_signal = 0;
 }
 
+int	just_whitespace(t_ms *ms, char *str)
+{
+	int	i;
+	char	*temp;
+
+	i = 0;
+	while (ft_isspace(str[i]))
+		i++;
+	temp = ft_strdup(str + i);
+	if (!temp)
+	{
+		clean_ms(ms);
+		exit(1);
+	}
+	if (str[i] == '$')
+		temp = expand_argument(temp, ms);
+	i = 0;
+	while (temp[i])
+	{
+		if (!ft_isspace(temp[i]))
+			return (0);
+		i++;
+	}
+	free(temp);
+	return (1);
+}
+
 int	main(int ac, char **av, char **envp)
 {
 	char	prompt[1000] = "minishell> ";
@@ -72,7 +98,7 @@ int	main(int ac, char **av, char **envp)
 			printf("exit\n");
 			break ;
 		}
-		if (!*str)
+		if (!*str || just_whitespace(&ms, str))
 		{
 			free(str);
 			continue ;

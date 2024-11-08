@@ -6,7 +6,7 @@
 /*   By: vkuznets <vkuznets@student.hive.fi>        +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/11/05 13:55:09 by vkuznets          #+#    #+#             */
-/*   Updated: 2024/11/07 16:11:59 by jhirvone         ###   ########.fr       */
+/*   Updated: 2024/11/08 13:35:52 by jhirvone         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -57,8 +57,8 @@ void	expand_ast(t_ast *node, t_ms *ms)
 		return ;
 	i = 0;
 	new_value = NULL;
-	if (!ft_strncmp(node->value, "cd", 3) && node->exp_value[1]
-		&& !ft_strncmp(node->exp_value[1], "\"\"", 3))
+	if (node->value && !ft_strncmp(node->value, "cd", 3)
+		&& node->exp_value[1] && !ft_strncmp(node->exp_value[1], "\"\"", 3))
 	{
 		node->no_exp = "\"\"";
 	}
