@@ -43,6 +43,7 @@ TOKEN_SRCS = \
 EXPANSION_SRCS = \
     $(EXP_DIR)/expansion.c \
     $(EXP_DIR)/expansion_cases.c \
+    $(EXP_DIR)/mini_exp.c \
     $(EXP_DIR)/expansion_utils.c
 
 EXECUTION_SRCS = \

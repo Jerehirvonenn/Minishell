@@ -6,7 +6,7 @@
 /*   By: jhirvone <jhirvone@student.hive.fi>        +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/11/01 14:25:28 by jhirvone          #+#    #+#             */
-/*   Updated: 2024/11/08 13:22:39 by jhirvone         ###   ########.fr       */
+/*   Updated: 2024/11/08 17:37:49 by jhirvone         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -14,6 +14,8 @@
 #include <termios.h>
 
 int	ms_signal = 0;
+
+void	mini_exp(t_ms *ms, t_ast *node);
 
 void		print_ast_tree(t_ast *root);
 const char	*token_type_to_str(t_token_type type);
@@ -49,10 +51,13 @@ void	reset_ms(t_ms *ms)
 
 int	just_whitespace(t_ms *ms, char *str)
 {
+	// handle case with more than one | in a row
 	int	i;
 	char	*temp;
 
 	i = 0;
+	if (ft_strchr(str, '\'') || ft_strchr(str, '\"'))
+		return (0);
 	while (ft_isspace(str[i]))
 		i++;
 	temp = ft_strdup(str + i);
@@ -112,6 +117,7 @@ int	main(int ac, char **av, char **envp)
 		ms.ast = parsing_ast(ms.tokens, &ms);
 		if (ms.stop)
 			continue ;
+		mini_exp(&ms, ms.ast);
 		expand_ast(ms.ast, &ms);
 		print_ast_tree(ms.ast);//debug
 		ast_heredoc(ms.ast, &ms);
