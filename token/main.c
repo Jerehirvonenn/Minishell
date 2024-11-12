@@ -54,6 +54,8 @@ void	reset_ms(t_ms *ms)
 int	just_whitespace(char *str)
 {
 	int	i;
+
+	i = 0;
 	while (str[i])
 	{
 		if (!ft_isspace(str[i]))
