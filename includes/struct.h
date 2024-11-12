@@ -34,6 +34,7 @@ typedef struct s_io
 	t_io_type	type;
 	char		*value;
 	int		heredoc_fd;
+	int		amb_exp;
 	struct s_io	*prev;
 	struct s_io	*next;
 }	t_io;
@@ -46,6 +47,7 @@ typedef struct s_ast
 	char		*no_exp;
 	t_io		*io_list;
 	int		pid;
+	int		empty;
 	struct s_ast	*left;
 	struct s_ast	*right;
 }	t_ast;
@@ -69,6 +71,8 @@ typedef struct s_ms
 	int		quit;	//indicate minishell should quit
 	char    	*pwd;		// Current working directory
 	char		*old_pwd;
+	char		*tmp1;
+	char		*tmp2;
 	int		fds[1024];
 	t_token		*tokens;	//linked list of tokens
 	t_ast   	*ast;		// Abstract syntax tree for the command(s)

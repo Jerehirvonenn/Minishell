@@ -6,7 +6,7 @@
 /*   By: jhirvone <jhirvone@student.hive.fi>        +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/11/08 14:00:08 by jhirvone          #+#    #+#             */
-/*   Updated: 2024/11/08 17:25:06 by jhirvone         ###   ########.fr       */
+/*   Updated: 2024/11/12 15:32:26 by jhirvone         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -18,11 +18,10 @@
 
 //maybe do to io list also to catch ambigious redirection
 
-void	remove_string_i(t_ms *ms, char **array, int i)
+void	remove_string_i(char **array, int i)
 {
 	int	size;
 
-	(void)ms;
 	size = 0;
 	while (array[size])
 		size++;
@@ -57,16 +56,19 @@ void	clean_empty_exp(t_ms *ms, t_ast *node)
 		tmp = ft_strdup(node->exp_value[i]);
 		if (!tmp)
 		{
-			//HANDLE MALLOC FAILURE
+			ft_free_ast(ms->ast);
+			clean_ms(ms);
 			exit(1);
 		}
-		expansion = expand_argument(tmp, ms); //figure out how to handle malloc failure
+		ms->tmp1 = tmp;
+		expansion = expand_argument(tmp, ms);
 		printf("EXPANSION AFTER%s\n", expansion);
 		free(tmp);
+		ms->tmp1 = NULL;
 		if (!*expansion)
 		{
 			printf("Removing bad expansion\n");
-			remove_string_i(ms, node->exp_value, i);
+			remove_string_i(node->exp_value, i);
 		}
 		else
 			i++;
@@ -76,17 +78,35 @@ void	clean_empty_exp(t_ms *ms, t_ast *node)
 
 int	replace_cmnd(t_ms *ms, t_ast *node)
 {
-	(void)ms;
 	free(node->value);
 	if (node->exp_value && node->exp_value[0])
 	{
 		node->value = ft_strdup(node->exp_value[0]);
+		if (!node->value)
+		{////need messages for malloc failure
+			ft_free_ast(ms->ast);
+			clean_ms(ms);
+			exit(1);
+		}
+		node->empty = 0;
 	}
 	else
 	{
 		node->value = ft_strdup("");
+		if (!node->value)
+		{
+			ft_free_ast(ms->ast);
+			clean_ms(ms);
+			exit(1);
+		}
 		node->exp_value[0] = ft_strdup("");
-		//SET AST NODE TO DONT RUN MODE
+		if (!node->exp_value[0])
+		{
+			ft_free_ast(ms->ast);
+			clean_ms(ms);
+			exit(1);
+		}
+		node->empty = 1;
 	}
 	return (0);
 }
@@ -98,24 +118,73 @@ void	check_cmnd_change(t_ms *ms, t_ast *node)
 
 	if (!*node->value || ft_strchr(node->value, '\'') || ft_strchr(node->value, '\"'))
 		return ;
-
 	printf("COMMAND BEFORE%s\n", node->value);
 	tmp = ft_strdup(node->value);
 	if (!tmp)
 	{
-		//HANDLE MALLOC FAILURE
+		ft_free_ast(ms->ast);
+		clean_ms(ms);
 		exit(1);
 	}
+	ms->tmp1 = tmp;
 	expansion = expand_argument(tmp, ms); //figure out how to handle malloc failure
 	printf("COMMAND AFTER%s\n", expansion);
 	free(tmp);
+	ms->tmp1 = expansion;
 	if (!*expansion)
 	{
 		printf("replacing cmnd value\n");
 		replace_cmnd(ms, node);
 	}
-	else
-		free(expansion);
+	free(expansion);
+	ms->tmp1 = NULL;
+}
+
+
+//if $doesnt_exist in redirection
+//make sure real expansion doesnt expand if ambigious is there
+void	check_ambigious(t_ms *ms, t_io *io)
+{
+	char	*tmp;
+	char	*expansion;
+
+	while(io)
+	{
+		if (io->type == T_HEREDOC)
+		{
+			io = io->next;
+			continue ;
+		}
+		else
+		{
+			printf("IO BEFORE%s\n", io->value);
+			tmp = ft_strdup(io->value);
+			if (!tmp)
+			{
+				ft_free_ast(ms->ast);
+				clean_ms(ms);
+				exit(1);
+			}
+			ms->tmp1 = tmp;
+			expansion = expand_argument(tmp, ms);
+			printf("IO AFTER%s\n", expansion);
+			free(tmp);
+			ms->tmp1 = NULL;
+			if (!*expansion)
+			{
+				printf("AMBIGIOUS REDIRECTION\n");
+				free(expansion);
+				io->amb_exp = 1;
+			}
+			else
+			{
+				free(io->value);
+				io->value = expansion;
+				io->amb_exp = 0;
+			}
+		}
+		io = io->next;
+	}
 }
 
 void	mini_exp(t_ms *ms, t_ast *node)
@@ -128,6 +197,10 @@ void	mini_exp(t_ms *ms, t_ast *node)
 		{
 			clean_empty_exp(ms, node);
 			check_cmnd_change(ms, node);
+		}
+		if (node->io_list)
+		{
+			check_ambigious(ms, node->io_list);
 		}
 	}
 	if (node->left)

@@ -6,7 +6,7 @@
 /*   By: jhirvone <jhirvone@student.hive.fi>        +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/11/01 14:25:28 by jhirvone          #+#    #+#             */
-/*   Updated: 2024/11/08 17:37:49 by jhirvone         ###   ########.fr       */
+/*   Updated: 2024/11/12 16:30:16 by jhirvone         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -35,6 +35,8 @@ void	init_minishell(t_ms *ms, char **envp)
 	ms->old_pwd = NULL;
 	ms->ast = NULL;
 	ms->tokens = NULL;
+	ms->tmp1 = NULL;
+	ms->tmp2 = NULL;
 	tcgetattr(STDIN_FILENO, &term);
 	term.c_lflag &= ~ECHOCTL;
 	tcsetattr(STDIN_FILENO, TCSANOW, &term);
@@ -49,33 +51,15 @@ void	reset_ms(t_ms *ms)
 	ms_signal = 0;
 }
 
-int	just_whitespace(t_ms *ms, char *str)
+int	just_whitespace(char *str)
 {
-	// handle case with more than one | in a row
 	int	i;
-	char	*temp;
-
-	i = 0;
-	if (ft_strchr(str, '\'') || ft_strchr(str, '\"'))
-		return (0);
-	while (ft_isspace(str[i]))
-		i++;
-	temp = ft_strdup(str + i);
-	if (!temp)
+	while (str[i])
 	{
-		clean_ms(ms);
-		exit(1);
-	}
-	if (str[i] == '$')
-		temp = expand_argument(temp, ms);
-	i = 0;
-	while (temp[i])
-	{
-		if (!ft_isspace(temp[i]))
+		if (!ft_isspace(str[i]))
 			return (0);
 		i++;
 	}
-	free(temp);
 	return (1);
 }
 
@@ -103,7 +87,7 @@ int	main(int ac, char **av, char **envp)
 			printf("exit\n");
 			break ;
 		}
-		if (!*str || just_whitespace(&ms, str))
+		if (!*str || just_whitespace(str))
 		{
 			free(str);
 			continue ;

@@ -6,7 +6,7 @@
 /*   By: jhirvone <jhirvone@student.hive.fi>        +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/11/06 11:54:14 by jhirvone          #+#    #+#             */
-/*   Updated: 2024/11/06 15:11:43 by jhirvone         ###   ########.fr       */
+/*   Updated: 2024/11/12 16:37:24 by jhirvone         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -59,21 +59,25 @@ int	ft_heredoc_getline(t_io *io, char *delim, int fd_write, t_ms *ms)
 	char	*line;
 	int		expand;
 
+	if (!io)    //take io away
+		exit(1);
 	signal_handler_heredoc();
 	expand = ft_delim_expansion(delim);
 	line = NULL;
 	while (1)
 	{
 		line = readline(">");
-		io->value = line;
 		if (!line || ms_signal || !ft_strcmp(line, delim))
 			break ;
 		ms_signal = 0;
 		if (expand == 0)
 		{
+			ms->tmp1 = line;
 			line = expand_argument(line, ms);
 			write(fd_write, line, ft_strlen(line));
 			write(fd_write, "\n", 1);//check write errors
+			free(ms->tmp1);  //is this whats suppsoe to happen?
+			ms->tmp1 = NULL;
 		}
 		else
 		{
@@ -91,7 +95,6 @@ int	ft_heredoc_getline(t_io *io, char *delim, int fd_write, t_ms *ms)
 		ms->stop = 1;
 	}
 	free(line);
-	io->value = NULL;
 	signal_handler_parent();
 	return (0);
 }

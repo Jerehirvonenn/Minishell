@@ -6,7 +6,7 @@
 /*   By: vkuznets <vkuznets@student.hive.fi>        +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/11/05 10:11:45 by vkuznets          #+#    #+#             */
-/*   Updated: 2024/11/05 12:06:08 by vkuznets         ###   ########.fr       */
+/*   Updated: 2024/11/12 14:44:31 by jhirvone         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -51,4 +51,8 @@ void	clean_ms(t_ms *ms)
 	ms->pwd = NULL;
 	free(ms->old_pwd);
 	ms->old_pwd = NULL;
+	free(ms->tmp1);
+	ms->tmp1 = NULL;
+	free(ms->tmp2);
+	ms->tmp2 = NULL;
 }
