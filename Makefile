@@ -52,7 +52,8 @@ EXECUTION_SRCS = \
     $(EXEC_DIR)/find_executable.c \
     $(EXEC_DIR)/redirection.c \
     $(EXEC_DIR)/execution.c \
-    $(EXEC_DIR)/execution_utils.c
+    $(EXEC_DIR)/execution_utils.c \
+    $(EXEC_DIR)/redirection_parent.c
 
 BUILTIN_SRCS = \
     $(BLT_DIR)/builtin_export.c \
@@ -63,7 +64,8 @@ BUILTIN_SRCS = \
     $(BLT_DIR)/builtin_unset.c
 
 UTILS_SRCS = \
-    $(UTL_DIR)/clean.c
+    $(UTL_DIR)/clean.c \
+    $(UTL_DIR)/writing_utils.c
 
 # Combined source files
 OBJS = $(PARSING_SRCS) $(TOKEN_SRCS) $(EXPANSION_SRCS) $(EXECUTION_SRCS) $(BUILTIN_SRCS) $(UTILS_SRCS)

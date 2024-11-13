@@ -6,11 +6,12 @@
 /*   By: vkuznets <vkuznets@student.hive.fi>        +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/11/06 15:15:41 by vkuznets          #+#    #+#             */
-/*   Updated: 2024/11/07 13:01:30 by vkuznets         ###   ########.fr       */
+/*   Updated: 2024/11/13 14:54:17 by jhirvone         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "../includes/minishell.h"
+#include <sys/stat.h>
 
 bool	is_builtin(t_ast *ast)
 {
@@ -50,8 +51,16 @@ int	exec_builtin(t_ms *ms, t_ast *ast)
 		builtin_echo(ast->exp_value);
 	else if (!ft_strncmp("cd", ast->exp_value[0], 3))
 		ret = builtin_cd(ms, ast, ast->exp_value[1]);
-	else if (!ft_strncmp("env", ast->exp_value[0], 3))
+	else if (!ft_strncmp("env", ast->exp_value[0], 3)) //implement with no options or arguments
+	{
+		if (ast->exp_value[1])
+		{
+			error_msg("env: '", ast->exp_value[1], "': No such file or directory\n");
+			ms->exit_code = 127;
+			return (-1);
+		}
 		builtin_env(ms);
+	}
 	else if (!ft_strncmp("pwd", ast->exp_value[0], 4))
 		printf("%s\n", ms->pwd);
 	else if (!ft_strncmp("exit", ast->exp_value[0], 5))
@@ -77,9 +86,7 @@ int	exec_bin(t_ms *ms, t_ast *node)
 	{
 		if (access(cmd_path, F_OK))
 		{
-			ft_putstr_fd("minishell: ", 2);
-			ft_putstr_fd(node->exp_value[0], 2);
-			ft_putstr_fd(": No such file or directory\n", 2);
+			error_msg("minishell: ", node->exp_value[0], ": No such file or directory\n");
 			free(cmd_path);
 			ms->exit_code = 127;
 			return (-1);
@@ -89,31 +96,26 @@ int	exec_bin(t_ms *ms, t_ast *node)
 		{
 			if (access(cmd_path, X_OK))
 			{
-				ft_putstr_fd("minishell: ", 2);
-				ft_putstr_fd(node->exp_value[0], 2);
-				ft_putstr_fd(": Permission denied\n", 2);
-				ms->exit_code = 126;
+				error_msg("minishell: ", node->exp_value[0], ": Permission denied\n");
 				free(cmd_path);
+				ms->exit_code = 126;
 				return (-1);
 			}
-			else if (access(cmd_path, F_OK))
+			else
 			{
-				ft_putstr_fd("minishell: ", 2);
-				ft_putstr_fd(node->exp_value[0], 2);
-				ft_putstr_fd(": No such file or directory\n", 2);
+				error_msg("minishell: ", node->exp_value[0], ": Is a directory\n");
 				free(cmd_path);
+				ms->exit_code = 126;
 				return (-1);
 			}
 			ms->exit_code = 1;
 			free(cmd_path);
-			return (-1); //that means fail
+			return (-1);
 		}
 	}
 	else
 	{
-		ft_putstr_fd(node->exp_value[0], 2);
-		ft_putstr_fd(": command not found\n", 2);
-
+		error_msg(NULL, node->exp_value[0], ": command not found\n");
 		ft_free_ast(ms->ast);
 		clean_ms(ms);
 		exit(127);
@@ -125,17 +127,31 @@ int	exec_bin(t_ms *ms, t_ast *node)
 // Function to handle command execution in the child process
 void	child_process(t_ms *ms, t_ast *ast)
 {
+	if (ast->empty == 1)
+	{
+		ft_free_ast(ms->ast);
+		clean_ms(ms);
+		exit(0);
+	}
 	if (is_child_builtin(ast) || is_builtin(ast))
 	{
-		if (exec_builtin(ms, ast) == -1) //bacause none of child functions are here
-			exit(EXIT_FAILURE);
+		if (exec_builtin(ms, ast) == -1)
+		{
+			ft_free_ast(ms->ast);
+			clean_ms(ms);
+			exit(ms->exit_code); //do i need to change it to ms exit code?
+		}
 		ft_free_ast(ms->ast);
 		clean_ms(ms);
 	}
 	else
 	{
 		if (exec_bin(ms, ast) == -1)
+		{
+			ft_free_ast(ms->ast);
+			clean_ms(ms);
 			exit(ms->exit_code);
+		}
 	}
 }
 

@@ -6,7 +6,7 @@
 /*   By: vkuznets <vkuznets@student.hive.fi>        +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/11/05 13:57:04 by vkuznets          #+#    #+#             */
-/*   Updated: 2024/11/07 15:12:16 by jhirvone         ###   ########.fr       */
+/*   Updated: 2024/11/13 13:35:07 by vkuznets         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -33,7 +33,11 @@ void	execute_middle_command(t_ast *node, t_ms *ms, int *pipefd, int *write_pipe)
 		}
 		close_array_fds(ms);
 		if (redirection(node) == -1)
+		{
+			ft_free_ast(ms->ast);
+			clean_ms(ms);
 			exit(EXIT_FAILURE);
+		}
 		child_process(ms, node);
 		exit(EXIT_SUCCESS);
 	}
@@ -62,7 +66,11 @@ void	execute_last_command(t_ast *node, t_ms *ms, int *pipefd)
 		}
 		close_array_fds(ms);
 		if (redirection(node) == -1)
+		{
+			ft_free_ast(ms->ast);
+			clean_ms(ms);
 			exit(EXIT_FAILURE);
+		}
 		child_process(ms, node);
 		exit(EXIT_SUCCESS);
 	}
@@ -90,17 +98,30 @@ void	execute_first_command(t_ast *node, t_ms *ms, int *pipefd)
 		}
 		close_array_fds(ms);
 		if (redirection(node) == -1)
+		{
+			ft_free_ast(ms->ast);
+			clean_ms(ms);
 			exit(EXIT_FAILURE);
+		}
 		child_process(ms, node);
 		exit(EXIT_SUCCESS);
 	}
 	close_and_change_array(ms, &pipefd[1]);
 }
 
+int	redirection_parent(t_ast *node);
 void	execute_command(t_ast *node, t_ms *ms)
 {
 	if (is_builtin(node))
+	{
+		// check if there is >> or > redir and create a file
+		if (node->io_list)
+		{
+			if (redirection_parent(node) == -1)
+				return ; //right?
+		}
 		exec_builtin(ms, node);
+	}
 	else
 	{
 		node->pid = fork();
@@ -185,8 +206,6 @@ void	ft_waiting(t_ast *node, t_ms *ms)
 	if (node->right)
 		ft_waiting(node->right, ms);
 }
-
-void	signal_handler_exec(void);
 
 void	execute_ast(t_ast *node, t_ms *ms)
 {

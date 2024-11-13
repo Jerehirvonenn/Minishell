@@ -6,7 +6,7 @@
 /*   By: vkuznets <vkuznets@student.hive.fi>        +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/11/06 12:25:41 by vkuznets          #+#    #+#             */
-/*   Updated: 2024/11/07 13:42:21 by vkuznets         ###   ########.fr       */
+/*   Updated: 2024/11/13 14:55:30 by jhirvone         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -31,11 +31,12 @@ void	error_handler(char *file_name, int error)
 	ft_putstr_fd("\n", 2);
 }
 
-// <
 static int	ft_in(t_io *io_list)
 {
 	int	fd;
 
+	if (io_list->amb_exp == 1)
+		return (-2);
 	fd = open(io_list->value, O_RDONLY);
 	if (fd == -1)
 	{
@@ -60,11 +61,12 @@ static int	ft_in(t_io *io_list)
 	return (0);
 }
 
-// >
 static int	ft_out(t_io *io_list)
 {
 	int	fd;
 
+	if (io_list->amb_exp == 1)
+		return (-2);
 	fd = open(io_list->value, O_CREAT | O_WRONLY | O_TRUNC, 0644);
 	if (fd == -1)
 	{
@@ -89,11 +91,12 @@ static int	ft_out(t_io *io_list)
 	return (0);
 }
 
-//Appending >>
 static int	ft_append(t_io *io_list)
 {
 	int	fd;
 
+	if (io_list->amb_exp == 1)
+		return (-2);
 	fd = open(io_list->value, O_WRONLY | O_CREAT | O_APPEND, 0644);
 	if (fd == -1)
 	{
@@ -118,7 +121,6 @@ static int	ft_append(t_io *io_list)
 	return (0);
 }
 
-//Heredoc <<
 static int	ft_heredoc(t_io *io_list)
 {
 	if (io_list->heredoc_fd == -1)
@@ -152,6 +154,11 @@ int	redirection(t_ast *node)
 			status = ft_heredoc(current_io);
 		if (status == -1)
 			return (-1);
+		else if (status == -2)
+		{
+			error_msg("minishell: ", node->io_list->value, ": ambiguous redirect\n");
+			return (-1);
+		}
 		current_io = current_io->next;
 	}
 	return (0);

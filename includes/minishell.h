@@ -13,6 +13,10 @@ extern int ms_signal;
 #include "parsing.h"
 #include "execution.h"
 
+//writing_utils.c
+void	error_msg(char *first_line, char *cmd, char *second_line);
+
+//clean.c
 void	free_array(char **array);
 void	clean_ms(t_ms *ms);
 

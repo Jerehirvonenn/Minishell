@@ -39,8 +39,9 @@ void	builtin_export(t_ms *ms, char **cmd, int i);
 void	builtin_unset(t_ms *ms, char **cmd);
 
 //ENVP
+void	envp_update(t_ms *ms, char *content);
 void	init_envp(t_ms *ms, char **envp);
-char *envp_exists(char *name, t_ms *ms);
+char	*envp_exists(char *name, t_ms *ms);
 char	*name_exists(const char *arg, t_ms *ms);
 
 //EXECUTION

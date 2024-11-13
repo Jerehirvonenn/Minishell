@@ -6,7 +6,7 @@
 /*   By: vkuznets <vkuznets@student.hive.fi>        +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/11/05 13:14:57 by vkuznets          #+#    #+#             */
-/*   Updated: 2024/11/06 16:05:39 by vkuznets         ###   ########.fr       */
+/*   Updated: 2024/11/13 14:49:30 by jhirvone         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -50,7 +50,6 @@ void	handle_exit_code(char **clean, size_t *i, t_ms *ms)
 	char	*substr;
 	char	*temp_clean;
 
-	fprintf(stderr, "%d\n", ms->exit_code);
 	substr = ft_itoa(ms->exit_code); //MALLOC
 	if (!substr)
 	{

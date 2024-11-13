@@ -6,7 +6,7 @@
 /*   By: vkuznets <vkuznets@student.hive.fi>        +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/11/06 12:24:56 by vkuznets          #+#    #+#             */
-/*   Updated: 2024/11/07 11:04:13 by vkuznets         ###   ########.fr       */
+/*   Updated: 2024/11/12 15:21:49 by vkuznets         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -70,9 +70,9 @@ char	*build_executable(t_ast *node, t_ms *ms)
 	char	*binary;
 	char	*find_exec;
 
-	if (!node || !*node->value)
+	if (!node || ft_strlen(node->exp_value[0]) == 0)
 		return (NULL);
-	binary = node->value;
+	binary = node->exp_value[0];
 	if (!ft_strchr(binary, '/'))
 	{
 		binary = ft_strjoin("/", binary);
@@ -90,5 +90,8 @@ char	*build_executable(t_ast *node, t_ms *ms)
 			return (NULL);
 		return (find_exec);
 	}
-	return (binary);
+	char *binary_cpy = ft_strdup(binary); //MALLOC
+	if (!binary_cpy)
+		malloc_parent_failure(ms); //?
+	return (binary_cpy);
 }

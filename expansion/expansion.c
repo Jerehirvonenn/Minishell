@@ -6,7 +6,7 @@
 /*   By: vkuznets <vkuznets@student.hive.fi>        +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/11/05 13:55:09 by vkuznets          #+#    #+#             */
-/*   Updated: 2024/11/08 13:35:52 by jhirvone         ###   ########.fr       */
+/*   Updated: 2024/11/13 14:16:18 by jhirvone         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -73,8 +73,13 @@ void	expand_ast(t_ast *node, t_ms *ms)
 		node->exp_value[i] = new_value;
 		i++;
 		temp_io = node->io_list;
-		while (temp_io && temp_io->value && temp_io->type != T_HEREDOC)
+		while (temp_io && temp_io->value)
 		{
+			if (temp_io->type == T_HEREDOC || temp_io->amb_exp == 1)
+			{
+				temp_io = temp_io->next;
+				continue ;
+			}
 			new_value = expand_argument(temp_io->value, ms);
 			if (!new_value)
 				malloc_parent_failure(ms);
