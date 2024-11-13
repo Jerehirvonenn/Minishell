@@ -6,17 +6,15 @@
 /*   By: jhirvone <jhirvone@student.hive.fi>        +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/11/06 15:49:46 by jhirvone          #+#    #+#             */
-/*   Updated: 2024/11/13 13:45:04 by jhirvone         ###   ########.fr       */
+/*   Updated: 2024/11/13 17:07:51 by jhirvone         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "../includes/minishell.h"
 
-const char *token_type_to_str(t_token_type type);
-
 void	parsing_malloc_failure(t_ms *ms, t_parsing *data, t_ast *node)
 {
-	printf("minishell: cannot allocate memory\n");
+	ft_putstr_fd("minishell: cannot allocate memory\n", 2);
 	clean_ms(ms);
 	ft_free_token(ms->tokens);
 	ft_free_ast(data->left);
@@ -28,16 +26,17 @@ void	parsing_malloc_failure(t_ms *ms, t_parsing *data, t_ast *node)
 
 t_ast	*parsing_error(t_ms *ms, t_ast *ast, t_ast *node, t_token *token)
 {
-	const char *str;
+	const char	*str;
 
-	printf("minishell: syntax error near unexpected token `");
+	ft_putstr_fd("minishell: syntax error near unexpected token `", 2);
 	if (token)
 	{
 		str = token_type_to_str(token->type);
-		printf("%s'\n", str);
+		ft_putstr_fd((char *)str, 2);
+		ft_putstr_fd("\'\n", 2);
 	}
 	else
-		printf("newline'\n");
+		ft_putstr_fd("newline'\n", 2);
 	ms->stop = 1;
 	ft_free_token(ms->tokens);
 	ft_free_ast(ast);

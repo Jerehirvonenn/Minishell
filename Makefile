@@ -24,6 +24,7 @@ LIBFT = $(LIBFT_DIR)/libft.a
 
 PARSING_SRCS = \
     $(PARSING_DIR)/parsing.c \
+    $(PARSING_DIR)/parse_cmnd.c \
     $(PARSING_DIR)/parsing_error_init.c \
     $(PARSING_DIR)/parsing_node.c \
     $(PARSING_DIR)/heredoc.c \

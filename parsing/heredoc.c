@@ -6,28 +6,11 @@
 /*   By: jhirvone <jhirvone@student.hive.fi>        +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/11/06 12:07:32 by jhirvone          #+#    #+#             */
-/*   Updated: 2024/11/07 11:21:50 by jhirvone         ###   ########.fr       */
+/*   Updated: 2024/11/13 18:12:53 by jhirvone         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "../includes/minishell.h"
-
-/*Step by step
- * 1. Generate a filename by using random bits from /dev/urandom
- * 2.create a temptorary file with the random name to /tmp/ms_$NAME
- * 3. open writing and reading fd for the created file and use
- * unlink to make sure it it destroyed after closing all existing fds of it
- *
- * 4.check if the heredoc is actually used? /if there is anotherredirectin after
- * 	4.A if so normal read
- * 	4.B if not file is not needed and heredoc info is not actully saved anywhere
- * 5.read with readline check for termianting word and EOF and ctrl+c
- * 6.check if the line needs to be expanded or nor based on quotes in the termianting word
- * 7.
- * /
- *
- * bash: syntax error near unexpected token `>>' for missing redirections
- */
 
 void	ft_empty_heredoc(t_ms *ms, t_io *io, char *delim)
 {
@@ -44,7 +27,8 @@ void	ft_empty_heredoc(t_ms *ms, t_io *io, char *delim)
 		line = NULL;
 	}
 	if (!line)
-		printf("minishell: warning: here-document delimited by end of-file (wanted %s)\n", delim);
+		error_msg("minishell: warning: here-document delimited "
+			"by end of-file (wanted `", delim, "\')\n");
 	if (ms_signal)
 		ms->stop = 1;
 	free(line);
@@ -62,7 +46,7 @@ int	ft_heredoc(t_ms *ms, t_io *io)
 		ms->stop = 1;
 		return (1);
 	}
-	if (ft_heredoc_getline(io, io->value, fd_write, ms))
+	if (ft_heredoc_getline(io->value, fd_write, ms))
 		close(fd_write);
 	else
 		io->heredoc_fd = fd_read;

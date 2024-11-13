@@ -10,6 +10,7 @@ void	ft_free_ast_node(t_ast *node);
 void	ft_free_io_list(t_io *io_list);
 
 //parsing.c
+char	**append_args(char **args, char *to_add, t_ms *ms, t_token **tokens);
 t_ast	*parsing_ast(t_token *tokens, t_ms *ms);
 
 //parsing_node.c
@@ -32,12 +33,16 @@ int	ast_heredoc(t_ast *tree, t_ms *ms);
 int	ft_createfile(int *fd_write, int *fd_read);
 
 //heredoc_read.c
-int	ft_heredoc_getline(t_io *io, char *delim, int fd_write, t_ms *ms);
+int	ft_heredoc_getline(char *delim, int fd_write, t_ms *ms);
 void	remove_delim_quotes(char *delim);
 
 //parsing_utils.c
+t_io_type token_to_io_type(t_token_type type);
+const char *token_type_to_str(t_token_type type);
 int	ft_strcmp(char *s1, char *s2);
 int	ft_isredirection(enum e_token_type type);
-t_io_type token_to_io_type(t_token_type type);
+
+//parse_cmnd.c
+t_ast *parse_command(t_token **tokens, t_ms *ms, t_parsing *data);
 
 #endif

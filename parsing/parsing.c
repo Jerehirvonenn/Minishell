@@ -6,7 +6,7 @@
 /*   By: jhirvone <jhirvone@student.hive.fi>        +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/11/06 16:05:45 by jhirvone          #+#    #+#             */
-/*   Updated: 2024/11/07 13:20:20 by jhirvone         ###   ########.fr       */
+/*   Updated: 2024/11/13 17:40:20 by jhirvone         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -43,52 +43,6 @@ char	**append_args(char **args, char *to_add, t_ms *ms, t_token **tokens)
 	free(args);
 	*tokens = (*tokens)->next;
 	return (new_args);
-}
-
-t_ast	*parse_command(t_token **tokens, t_ms *ms, t_parsing *data)
-{
-	t_ast	*node;
-
-	if ((*tokens)->type == T_CMND)
-		node = create_ast_node(T_CMND, (*tokens)->value);
-	else
-		node = create_ast_node(T_CMND, NULL);
-	if (!node)
-		parsing_malloc_failure(ms, data, NULL);
-	if (node->value)
-	{
-		node->exp_value = append_args(node->exp_value, (*tokens)->value, ms, tokens);
-		if (!node->exp_value)
-			parsing_malloc_failure(ms, data, node);
-	}
-	while (*tokens && ((*tokens)->type == T_CMND || ft_isredirection((*tokens)->type)))
-	{
-		if ((*tokens)->type == T_CMND)
-		{
-			if (!node->value)
-			{
-				node->value = ft_strdup((*tokens)->value);
-				if (!node->value)
-					parsing_malloc_failure(ms, data, node);
-			}
-			node->exp_value = append_args(node->exp_value, (*tokens)->value, ms, tokens); //prog
-			if (!node->exp_value)
-				parsing_malloc_failure(ms, data, node);
-		}
-		else if (ft_isredirection((*tokens)->type) && (*tokens)->next && (*tokens)->next->type == T_CMND)
-		{
-			if (add_io(node, token_to_io_type((*tokens)->type), (*tokens)->next->value, tokens))
-				parsing_malloc_failure(ms, data, node);
-		}
-		else
-		{
-			if (ft_isredirection((*tokens)->type))
-				*tokens = (*tokens)->next;
-			ft_free_ast_node(node);
-			return (NULL);
-		}
-	}
-	return (node);
 }
 
 t_ast	*parsing_ast(t_token *tokens, t_ms *ms)

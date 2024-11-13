@@ -6,7 +6,7 @@
 /*   By: jhirvone <jhirvone@student.hive.fi>        +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/11/06 11:14:40 by jhirvone          #+#    #+#             */
-/*   Updated: 2024/11/13 13:48:52 by jhirvone         ###   ########.fr       */
+/*   Updated: 2024/11/13 16:10:12 by jhirvone         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -19,7 +19,7 @@ static void	error_quit(t_ms *ms, char *str)
 {
 	clean_ms(ms);
 	free(str);
-	printf("minishell: cannot allocate memory\n");
+	ft_putstr_fd("minishell: cannot allocate memory\n", 2);
 	exit(1);
 }
 
@@ -28,7 +28,7 @@ static int	error_set(t_ms *ms, char *str, int type)
 	free(str);
 	if (type == 1)
 	{
-		printf("minishell: No closing quote\n");
+		ft_putstr_fd("minishell: No closing quote\n", 2);
 		ms->exit_code = 2;
 		ms->stop = 1;
 	}

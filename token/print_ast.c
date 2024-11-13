@@ -8,21 +8,6 @@ void print_indent(int level)
         printf("  ");
 }
 
-// Function to convert t_token_type to a readable string for printing
-const char *token_type_to_str(t_token_type type)
-{
-    switch (type)
-    {
-        case T_PIPE: return "PIPE (|)";
-        case T_IN_REDIR: return "IN REDIR";
-        case T_OUT_REDIR: return "OUT_REDIR";
-        case T_CMND: return "COMMAND";
-	case T_HERE_DOC: return "HEREDOC";
-	case T_APEND: return "APPEND";
-        default: return "UNKNOWN";
-    }
-}
-
 // Function to convert t_io_type to a readable string for printing
 const char *io_type_to_str(t_io_type type)
 {

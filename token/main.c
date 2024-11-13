@@ -6,7 +6,7 @@
 /*   By: jhirvone <jhirvone@student.hive.fi>        +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/11/01 14:25:28 by jhirvone          #+#    #+#             */
-/*   Updated: 2024/11/13 15:01:41 by jhirvone         ###   ########.fr       */
+/*   Updated: 2024/11/13 17:37:09 by jhirvone         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -15,12 +15,9 @@
 
 int	ms_signal = 0;
 
-void	mini_exp(t_ms *ms, t_ast *node);
-
 void		print_ast_tree(t_ast *root);
-const char	*token_type_to_str(t_token_type type);
-t_token		*ft_tokenize(char *str, t_ms *ms);
 void		print_tokens(t_token *tokens);
+const char	*token_type_to_str(t_token_type type);
 
 void	init_minishell(t_ms *ms, char **envp)
 {
@@ -99,13 +96,13 @@ int	main(int ac, char **av, char **envp)
 		ms.tokens = ft_tokenize(str, &ms);
 		if (ms.stop)
 			continue ;
-		print_tokens(ms.tokens);//DEBUG
+		//print_tokens(ms.tokens);//DEBUG
 		ms.ast = parsing_ast(ms.tokens, &ms);
 		if (ms.stop)
 			continue ;
 		mini_exp(&ms, ms.ast);
 		expand_ast(ms.ast, &ms);
-		print_ast_tree(ms.ast);//debug
+		//print_ast_tree(ms.ast);//debug
 		ast_heredoc(ms.ast, &ms);
 		if (ms.stop)
 		{

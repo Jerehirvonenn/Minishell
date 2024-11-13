@@ -6,7 +6,7 @@
 /*   By: jhirvone <jhirvone@student.hive.fi>        +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/11/06 11:52:01 by jhirvone          #+#    #+#             */
-/*   Updated: 2024/11/06 16:15:01 by jhirvone         ###   ########.fr       */
+/*   Updated: 2024/11/13 17:09:45 by jhirvone         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -38,4 +38,22 @@ t_io_type	token_to_io_type(t_token_type type)
 		return (T_HEREDOC);
 	else
 		return (T_APPEND);
+}
+
+const char	*token_type_to_str(t_token_type type)
+{
+	if (type == T_PIPE)
+		return ("|");
+	else if (type == T_IN_REDIR)
+		return ("<");
+	else if (type == T_OUT_REDIR)
+		return (">");
+	else if (type == T_CMND)
+		return ("CMND");
+	else if (type == T_HERE_DOC)
+		return ("<<");
+	else if (type == T_APEND)
+		return (">>");
+	else
+		return ("UNKNOWN");
 }

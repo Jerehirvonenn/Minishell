@@ -18,6 +18,7 @@
 #include <readline/history.h>
 #include <string.h>
 #include <errno.h>
+#include <termios.h>
 
 //EXPANSION
 char	*expand_argument(char *arg, t_ms *ms);
@@ -27,6 +28,7 @@ void	handle_exit_code(char **clean, size_t *i, t_ms *ms);
 void	handle_normal_char(char **clean, char *ins, size_t *i, t_ms *ms);
 void	handle_quoted_literal(char **clean, char *ins, size_t *i, t_ms *ms);
 void	remove_string_i(char **array, int i);
+void	mini_exp(t_ms *ms, t_ast *node);
 int	ft_isquote(char c);
 int	ft_isdelim(char c);
 

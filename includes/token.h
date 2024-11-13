@@ -5,6 +5,9 @@
 #include <readline/history.h>
 #include <stdlib.h>
 
+//token.c
+t_token		*ft_tokenize(char *str, t_ms *ms);
+
 //token_create.c
 t_token	*create_token(t_token_type type, char *value);
 void	add_token_to_list(t_token **lst, t_token *new_token);
