@@ -26,6 +26,7 @@ void	handle_envir(char **clean, char *ins, size_t *i, t_ms *ms);
 void	handle_exit_code(char **clean, size_t *i, t_ms *ms);
 void	handle_normal_char(char **clean, char *ins, size_t *i, t_ms *ms);
 void	handle_quoted_literal(char **clean, char *ins, size_t *i, t_ms *ms);
+void	remove_string_i(char **array, int i);
 int	ft_isquote(char c);
 int	ft_isdelim(char c);
 

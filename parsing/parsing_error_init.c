@@ -6,7 +6,7 @@
 /*   By: jhirvone <jhirvone@student.hive.fi>        +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/11/06 15:49:46 by jhirvone          #+#    #+#             */
-/*   Updated: 2024/11/07 13:15:34 by jhirvone         ###   ########.fr       */
+/*   Updated: 2024/11/13 13:45:04 by jhirvone         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -42,6 +42,7 @@ t_ast	*parsing_error(t_ms *ms, t_ast *ast, t_ast *node, t_token *token)
 	ft_free_token(ms->tokens);
 	ft_free_ast(ast);
 	ft_free_ast(node);
+	ms->exit_code = 2;
 	return (NULL);
 }
 

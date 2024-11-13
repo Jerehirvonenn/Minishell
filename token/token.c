@@ -6,7 +6,7 @@
 /*   By: jhirvone <jhirvone@student.hive.fi>        +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/11/06 11:14:40 by jhirvone          #+#    #+#             */
-/*   Updated: 2024/11/06 11:26:19 by jhirvone         ###   ########.fr       */
+/*   Updated: 2024/11/13 13:48:52 by jhirvone         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -29,6 +29,7 @@ static int	error_set(t_ms *ms, char *str, int type)
 	if (type == 1)
 	{
 		printf("minishell: No closing quote\n");
+		ms->exit_code = 2;
 		ms->stop = 1;
 	}
 	else if (type == 2)
