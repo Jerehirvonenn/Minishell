@@ -6,7 +6,7 @@
 /*   By: vkuznets <vkuznets@student.hive.fi>        +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/11/14 14:03:38 by vkuznets          #+#    #+#             */
-/*   Updated: 2024/11/14 14:15:47 by vkuznets         ###   ########.fr       */
+/*   Updated: 2024/11/14 14:53:59 by vkuznets         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -55,8 +55,6 @@ typedef struct s_ast
 {
 	t_token_type		type;
 	t_io				*io_list;
-	struct s_ast		*left;
-	struct s_ast		*right;
 	char				*value;
 	char				**exp_value;
 	char				*no_exp;

@@ -6,14 +6,12 @@
 /*   By: vkuznets <vkuznets@student.hive.fi>        +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/11/14 13:59:04 by vkuznets          #+#    #+#             */
-/*   Updated: 2024/11/14 14:45:20 by vkuznets         ###   ########.fr       */
+/*   Updated: 2024/11/14 14:55:02 by vkuznets         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #ifndef PARSING_H
 # define PARSING_H
-
-# include "main.h"
 
 /* clean_ast.c */
 void		ft_free_ast(t_ast *root);
@@ -21,8 +19,8 @@ void		ft_free_ast_node(t_ast *node);
 void		ft_free_io_list(t_io *io_list);
 
 /* parsing.c */
-char		**append_args(char **args, char *to_add,
-				t_ms *ms, t_token **tokens);
+char		**append_args(char **args, char *to_add, t_ms *ms,
+				t_token **tokens);
 t_ast		*parsing_ast(t_token *tokens, t_ms *ms);
 
 /* parsing_node.c */
