@@ -41,6 +41,7 @@ t_io_type token_to_io_type(t_token_type type);
 const char *token_type_to_str(t_token_type type);
 int	ft_strcmp(char *s1, char *s2);
 int	ft_isredirection(enum e_token_type type);
+int	heredoc_write(t_ms *ms, char *line, int fd);
 
 //parse_cmnd.c
 t_ast *parse_command(t_token **tokens, t_ms *ms, t_parsing *data);

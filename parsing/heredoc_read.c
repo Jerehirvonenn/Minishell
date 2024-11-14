@@ -6,7 +6,7 @@
 /*   By: jhirvone <jhirvone@student.hive.fi>        +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/11/06 11:54:14 by jhirvone          #+#    #+#             */
-/*   Updated: 2024/11/13 18:11:54 by jhirvone         ###   ########.fr       */
+/*   Updated: 2024/11/14 10:50:26 by jhirvone         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -54,21 +54,34 @@ static int	ft_delim_expansion(char *delim)
 		return (0);
 }
 
-int	heredoc_write(t_ms *ms, char *line, int fd)
+static void	handle_heredoc_exit(char *line, char *delim, t_ms *ms)
 {
-	if (write(fd, line, ft_strlen(line)) == -1)
+	if (!line)
+		error_msg("minishell: warning: "
+			"here-document delimited by end of-file (wanted `",
+			delim, "\')\n");
+	if (ms_signal)
 	{
-		ft_putstr_fd("minishell: error writing to Heredoc", 2);
+		ms->exit_code = 130;
 		ms->stop = 1;
-		return (1);
 	}
-	if (write(fd, "\n", 1) == -1)
+	free(line);
+}
+
+static void	handle_expansion(char *line, t_ms *ms, int fd_write)
+{
+	ms->tmp1 = line;
+	line = expand_argument(line, ms);
+	if (heredoc_write(ms, line, fd_write))
 	{
-		ft_putstr_fd("minishell: error writing to Heredoc", 2);
-		ms->stop = 1;
-		return (1);
+		free(ms->tmp1);
+		ms->tmp1 = NULL;
 	}
-	return (0);
+	else
+	{
+		free(ms->tmp1);
+		ms->tmp1 = NULL;
+	}
 }
 
 int	ft_heredoc_getline(char *delim, int fd_write, t_ms *ms)
@@ -86,31 +99,13 @@ int	ft_heredoc_getline(char *delim, int fd_write, t_ms *ms)
 			break ;
 		ms_signal = 0;
 		if (expand == 0)
-		{
-			ms->tmp1 = line;
-			line = expand_argument(line, ms);
-			if (heredoc_write(ms, line, fd_write))
-			{
-				free(ms->tmp1);
-				break ;
-			}
-			free(ms->tmp1);
-			ms->tmp1 = NULL;
-		}
-		else
-			if (heredoc_write(ms, line, fd_write))
-				break ;
+			handle_expansion(line, ms, fd_write);
+		else if (heredoc_write(ms, line, fd_write))
+			break ;
 		free(line);
 		line = NULL;
 	}
-	if (!line)
-		error_msg("minishell: warning: here-document delimited by end of-file (wanted `", delim, "\')\n");
-	if (ms_signal)
-	{
-		ms->exit_code = 130;
-		ms->stop = 1;
-	}
-	free(line);
+	handle_heredoc_exit(line, delim, ms);
 	signal_handler_parent();
 	return (0);
 }

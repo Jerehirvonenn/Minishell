@@ -57,3 +57,20 @@ const char	*token_type_to_str(t_token_type type)
 	else
 		return ("UNKNOWN");
 }
+
+int	heredoc_write(t_ms *ms, char *line, int fd)
+{
+	if (write(fd, line, ft_strlen(line)) == -1)
+	{
+		ft_putstr_fd("minishell: error writing to Heredoc", 2);
+		ms->stop = 1;
+		return (1);
+	}
+	if (write(fd, "\n", 1) == -1)
+	{
+		ft_putstr_fd("minishell: error writing to Heredoc", 2);
+		ms->stop = 1;
+		return (1);
+	}
+	return (0);
+}

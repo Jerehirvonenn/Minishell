@@ -6,11 +6,20 @@
 /*   By: jhirvone <jhirvone@student.hive.fi>        +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/11/06 16:05:45 by jhirvone          #+#    #+#             */
-/*   Updated: 2024/11/13 17:40:20 by jhirvone         ###   ########.fr       */
+/*   Updated: 2024/11/14 10:26:51 by jhirvone         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "../includes/minishell.h"
+
+static char	**append_fail(t_ms *ms, char **args, char **new_args)
+{
+	free_array(args);
+	if (new_args)
+		free(new_args);
+	ms->stop = 1;
+	return (NULL);
+}
 
 char	**append_args(char **args, char *to_add, t_ms *ms, t_token **tokens)
 {
@@ -24,21 +33,12 @@ char	**append_args(char **args, char *to_add, t_ms *ms, t_token **tokens)
 		len++;
 	new_args = (char **)malloc(sizeof(char *) * (len + 2));
 	if (!new_args)
-	{
-		free_array(args);
-		ms->stop = 1;
-		return (NULL);
-	}
+		return (append_fail(ms, args, NULL));
 	while (++i < len)
 		new_args[i] = args[i];
 	new_args[i] = ft_strdup(to_add);
 	if (!new_args[i])
-	{
-		free_array(args);
-		free(new_args);
-		ms->stop = 1;
-		return (NULL);
-	}
+		return (append_fail(ms, args, new_args));
 	new_args[++i] = NULL;
 	free(args);
 	*tokens = (*tokens)->next;
