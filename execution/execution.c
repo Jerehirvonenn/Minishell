@@ -6,7 +6,7 @@
 /*   By: vkuznets <vkuznets@student.hive.fi>        +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/11/05 13:57:04 by vkuznets          #+#    #+#             */
-/*   Updated: 2024/11/14 10:38:44 by vkuznets         ###   ########.fr       */
+/*   Updated: 2024/11/14 18:20:53 by vkuznets         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -72,7 +72,12 @@ void	execute_ast(t_ast *node, t_ms *ms)
 	int	i;
 
 	i = 0;
-	signal_handler_exec();
+	if(signal_handler_exec() == -1)
+	{
+		ft_free_ast(ms->ast);
+		clean_ms(ms);
+		exit(1);
+	}
 	while (i < 1024)
 		ms->fds[i++] = -1;
 	if (!node)

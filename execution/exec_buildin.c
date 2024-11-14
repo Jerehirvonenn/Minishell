@@ -6,7 +6,7 @@
 /*   By: vkuznets <vkuznets@student.hive.fi>        +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/11/06 15:15:41 by vkuznets          #+#    #+#             */
-/*   Updated: 2024/11/14 10:26:17 by vkuznets         ###   ########.fr       */
+/*   Updated: 2024/11/14 18:29:46 by vkuznets         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -84,6 +84,8 @@ int	exec_builtin(t_ms *ms, t_ast *ast)
 // Function to handle command execution in the child process
 void	child_process(t_ms *ms, t_ast *ast)
 {
+	if (signal_handler_child() == -1)
+		clean_and_exit(ms, 1);
 	if (ast->empty == 1)
 		clean_and_exit(ms, 0);
 	if (is_child_builtin(ast) || is_builtin(ast))
