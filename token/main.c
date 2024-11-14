@@ -6,7 +6,7 @@
 /*   By: jhirvone <jhirvone@student.hive.fi>        +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/11/01 14:25:28 by jhirvone          #+#    #+#             */
-/*   Updated: 2024/11/14 17:12:51 by jhirvone         ###   ########.fr       */
+/*   Updated: 2024/11/14 18:13:57 by jhirvone         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -26,12 +26,19 @@ static void	time_to_quit(t_ms *ms)
 	exit(ms->exit_code);
 }
 
+static void	signal_fail(t_ms *ms)
+{
+	clean_ms(ms);
+	exit(1);
+}
+
 char	*check_input(t_ms *ms)
 {
 	char	*str;
 	char	*prompt;
 
-	signal_handler_parent();
+	if (signal_handler_parent())
+		signal_fail(ms);
 	reset_ms(ms);
 	prompt = "minishell> ";
 	str = readline(prompt);
@@ -89,6 +96,10 @@ int	main(int ac, char **av, char **envp)
 	(void)ac;
 	(void)av;
 	init_minishell(&ms, envp);
-	signal_handler_parent();
+	if(signal_handler_parent())
+	{
+		clean_ms(&ms);
+		exit(1);
+	}
 	minishell(ms);
 }

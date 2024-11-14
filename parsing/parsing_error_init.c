@@ -6,7 +6,7 @@
 /*   By: jhirvone <jhirvone@student.hive.fi>        +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/11/06 15:49:46 by jhirvone          #+#    #+#             */
-/*   Updated: 2024/11/13 17:07:51 by jhirvone         ###   ########.fr       */
+/*   Updated: 2024/11/14 18:35:30 by jhirvone         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -59,4 +59,13 @@ void	combine_pipeline(t_parsing *data)
 	data->left = data->pipe;
 	data->right = NULL;
 	data->pipe = NULL;
+}
+
+void	hdoc_signal_failure(t_ms *ms, int fd)
+{
+	clean_ms(ms);
+	ft_free_ast(ms->ast);
+	if (fd != -1)
+		close(fd);
+	exit(1);
 }

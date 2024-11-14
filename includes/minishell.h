@@ -6,7 +6,7 @@
 /*   By: vkuznets <vkuznets@student.hive.fi>        +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/11/14 14:16:21 by vkuznets          #+#    #+#             */
-/*   Updated: 2024/11/14 15:36:27 by jhirvone         ###   ########.fr       */
+/*   Updated: 2024/11/14 18:24:00 by jhirvone         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -34,10 +34,10 @@ void	free_array(char **array);
 void	clean_ms(t_ms *ms);
 
 //signals
-void	signal_handler_child(void);
-void	signal_handler_exec(void);
-void	signal_handler_parent(void);
-void	signal_handler_heredoc(void);
+int		signal_handler_child(void);
+int		signal_handler_exec(void);
+int		signal_handler_parent(void);
+int		signal_handler_heredoc(t_ms *ms);
 
 //main_utils.c
 void	init_minishell(t_ms *ms, char **envp);

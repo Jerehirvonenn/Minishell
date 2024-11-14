@@ -6,7 +6,7 @@
 /*   By: jhirvone <jhirvone@student.hive.fi>        +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/11/14 11:55:19 by jhirvone          #+#    #+#             */
-/*   Updated: 2024/11/14 11:55:50 by jhirvone         ###   ########.fr       */
+/*   Updated: 2024/11/14 18:28:51 by jhirvone         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -34,17 +34,39 @@ int	ft_readline_event(void)
 	return (0);
 }
 
-void	signal_handler_heredoc(void)
+int	signal_handler_heredoc(t_ms *ms)
 {
 	rl_event_hook = ft_readline_event;
-	signal(SIGINT, ft_sigint_heredoc);
-	signal(SIGQUIT, SIG_IGN);
+	if (signal(SIGINT, ft_sigint_heredoc) == SIG_ERR)
+	{
+		ft_putstr_fd("minishell: failed to set signal handlers\n", 2);
+		clean_ms(ms);
+		ft_free_ast(ms->ast);
+		exit(1);
+	}
+	if (signal(SIGQUIT, SIG_IGN) == SIG_ERR)
+	{
+		ft_putstr_fd("minishell: failed to set signal handlers\n", 2);
+		clean_ms(ms);
+		ft_free_ast(ms->ast);
+		exit(1);
+	}
+	return (0);
 }
 
-void	signal_handler_parent(void)
+int	signal_handler_parent(void)
 {
 	rl_done = 0;
 	rl_event_hook = NULL;
-	signal(SIGINT, ft_sigint_parent);
-	signal(SIGQUIT, SIG_IGN);
+	if (signal(SIGINT, ft_sigint_parent) == SIG_ERR)
+	{
+		ft_putstr_fd("minishell: failed to set signal handlers\n", 2);
+		return (-1);
+	}
+	if (signal(SIGQUIT, SIG_IGN) == SIG_ERR)
+	{
+		ft_putstr_fd("minishell: failed to set signal handlers\n", 2);
+		return (-1);
+	}
+	return (0);
 }

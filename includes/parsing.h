@@ -6,7 +6,7 @@
 /*   By: vkuznets <vkuznets@student.hive.fi>        +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/11/14 13:59:04 by vkuznets          #+#    #+#             */
-/*   Updated: 2024/11/14 14:55:02 by vkuznets         ###   ########.fr       */
+/*   Updated: 2024/11/14 18:37:55 by jhirvone         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -33,6 +33,7 @@ int			add_io(t_ast *ast_node, t_io_type io_type,
 void		parsing_malloc_failure(t_ms *ms, t_parsing *data, t_ast *node);
 void		init_parsing_struct(t_parsing *data);
 void		combine_pipeline(t_parsing *data);
+void		hdoc_signal_failure(t_ms *ms, int fd);
 t_ast		*parsing_error(t_ms *ms, t_ast *ast, t_ast *node, t_token *token);
 
 /* heredoc.c */

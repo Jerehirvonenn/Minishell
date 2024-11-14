@@ -6,7 +6,7 @@
 /*   By: jhirvone <jhirvone@student.hive.fi>        +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/11/06 11:54:14 by jhirvone          #+#    #+#             */
-/*   Updated: 2024/11/14 13:49:32 by jhirvone         ###   ########.fr       */
+/*   Updated: 2024/11/14 18:36:03 by jhirvone         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -90,7 +90,7 @@ int	ft_heredoc_getline(char *delim, int fd_write, t_ms *ms)
 	int		expand;
 
 	ms->heredoc = 1;
-	signal_handler_heredoc();
+	signal_handler_heredoc(ms);
 	expand = ft_delim_expansion(delim);
 	line = NULL;
 	while (!ms->stop && !ms->quit)
@@ -107,7 +107,8 @@ int	ft_heredoc_getline(char *delim, int fd_write, t_ms *ms)
 		line = NULL;
 	}
 	handle_heredoc_exit(line, delim, ms);
-	signal_handler_parent();
+	if (signal_handler_parent())
+		hdoc_signal_failure(ms, fd_write);
 	ms->heredoc = 0;
 	return (0);
 }

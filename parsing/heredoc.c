@@ -6,7 +6,7 @@
 /*   By: jhirvone <jhirvone@student.hive.fi>        +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/11/06 12:07:32 by jhirvone          #+#    #+#             */
-/*   Updated: 2024/11/13 18:12:53 by jhirvone         ###   ########.fr       */
+/*   Updated: 2024/11/14 18:38:33 by jhirvone         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -16,7 +16,7 @@ void	ft_empty_heredoc(t_ms *ms, t_io *io, char *delim)
 {
 	char	*line;
 
-	signal_handler_heredoc();
+	signal_handler_heredoc(ms);
 	remove_delim_quotes(delim);
 	while (1)
 	{
@@ -33,7 +33,8 @@ void	ft_empty_heredoc(t_ms *ms, t_io *io, char *delim)
 		ms->stop = 1;
 	free(line);
 	io->heredoc_fd = -1;
-	signal_handler_parent();
+	if (signal_handler_parent())
+		hdoc_signal_failure(ms, -1);
 }
 
 int	ft_heredoc(t_ms *ms, t_io *io)
@@ -46,11 +47,8 @@ int	ft_heredoc(t_ms *ms, t_io *io)
 		ms->stop = 1;
 		return (1);
 	}
-	if (ft_heredoc_getline(io->value, fd_write, ms))
-		close(fd_write);
-	else
-		io->heredoc_fd = fd_read;
-	close(fd_write);
+	io->heredoc_fd = fd_read;
+	ft_heredoc_getline(io->value, fd_write, ms);
 	return (0);
 }
 

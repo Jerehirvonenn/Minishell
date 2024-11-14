@@ -6,7 +6,7 @@
 /*   By: jhirvone <jhirvone@student.hive.fi>        +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/11/14 11:54:51 by jhirvone          #+#    #+#             */
-/*   Updated: 2024/11/14 11:55:15 by jhirvone         ###   ########.fr       */
+/*   Updated: 2024/11/14 18:27:59 by jhirvone         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -26,14 +26,32 @@ void	ft_sigquit(int num)
 	printf("Quit (core dumped)\n");
 }
 
-void	signal_handler_exec(void)
+int	signal_handler_exec(void)
 {
-	signal(SIGINT, ft_sigint_exec);
-	signal(SIGQUIT, ft_sigquit);
+	if (signal(SIGINT, ft_sigint_exec) == SIG_ERR)
+	{
+		ft_putstr_fd("minishell: failed to set signal handlers\n", 2);
+		return (-1);
+	}
+	if (signal(SIGQUIT, ft_sigquit) == SIG_ERR)
+	{
+		ft_putstr_fd("minishell: failed to set signal handlers\n", 2);
+		return (-1);
+	}
+	return (0);
 }
 
-void	signal_handler_child(void)
+int	signal_handler_child(void)
 {
-	signal(SIGINT, SIG_DFL);
-	signal(SIGQUIT, SIG_DFL);
+	if (signal(SIGINT, SIG_DFL) == SIG_ERR)
+	{
+		ft_putstr_fd("minishell: failed to set signal handlers\n", 2);
+		return (-1);
+	}
+	if (signal(SIGQUIT, SIG_DFL) == SIG_ERR)
+	{
+		ft_putstr_fd("minishell: failed to set signal handlers\n", 2);
+		return (-1);
+	}
+	return (0);
 }
