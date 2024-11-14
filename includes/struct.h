@@ -69,6 +69,7 @@ typedef struct s_ms
 	int     	envp_size;	// Size of the environment variables
 	int		stop;	//indicate the minishell should stop and start new round
 	int		quit;	//indicate minishell should quit
+	int		heredoc;
 	char    	*pwd;		// Current working directory
 	char		*old_pwd;
 	char		*tmp1;

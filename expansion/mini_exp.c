@@ -6,7 +6,7 @@
 /*   By: jhirvone <jhirvone@student.hive.fi>        +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/11/08 14:00:08 by jhirvone          #+#    #+#             */
-/*   Updated: 2024/11/13 13:15:11 by jhirvone         ###   ########.fr       */
+/*   Updated: 2024/11/14 13:34:38 by jhirvone         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -90,7 +90,8 @@ static void	check_ambigious(t_ms *ms, t_io *io)
 
 	while (io)
 	{
-		if (io->type == T_HEREDOC)
+		if (io->type == T_HEREDOC || ft_strchr(io->value, '\'')
+			|| ft_strchr(io->value, '\"') || !*io->value)
 			io = io->next;
 		else
 		{

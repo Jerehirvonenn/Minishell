@@ -6,7 +6,7 @@
 /*   By: jhirvone <jhirvone@student.hive.fi>        +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/11/01 14:25:28 by jhirvone          #+#    #+#             */
-/*   Updated: 2024/11/13 17:37:09 by jhirvone         ###   ########.fr       */
+/*   Updated: 2024/11/14 13:48:45 by jhirvone         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -28,6 +28,7 @@ void	init_minishell(t_ms *ms, char **envp)
 	ms->exit_code = 0;
 	ms->stop = 0;
 	ms->quit = 0;
+	ms->heredoc = 0;
 	ms->pwd = getcwd(NULL, 0);
 	ms->old_pwd = NULL;
 	ms->ast = NULL;
