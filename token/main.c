@@ -6,7 +6,7 @@
 /*   By: jhirvone <jhirvone@student.hive.fi>        +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/11/01 14:25:28 by jhirvone          #+#    #+#             */
-/*   Updated: 2024/11/14 13:48:45 by jhirvone         ###   ########.fr       */
+/*   Updated: 2024/11/14 17:12:51 by jhirvone         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -19,91 +19,57 @@ void		print_ast_tree(t_ast *root);
 void		print_tokens(t_token *tokens);
 const char	*token_type_to_str(t_token_type type);
 
-void	init_minishell(t_ms *ms, char **envp)
+static void	time_to_quit(t_ms *ms)
 {
-	struct termios	term;
-
-	ms->envp_size = 0;
-	init_envp(ms, envp);
-	ms->exit_code = 0;
-	ms->stop = 0;
-	ms->quit = 0;
-	ms->heredoc = 0;
-	ms->pwd = getcwd(NULL, 0);
-	ms->old_pwd = NULL;
-	ms->ast = NULL;
-	ms->tokens = NULL;
-	ms->tmp1 = NULL;
-	ms->tmp2 = NULL;
-	tcgetattr(STDIN_FILENO, &term);
-	term.c_lflag &= ~ECHOCTL;
-	tcsetattr(STDIN_FILENO, TCSANOW, &term);
+	ft_putstr_fd("exit\n", 1);
+	clean_ms(ms);
+	exit(ms->exit_code);
 }
 
-void	reset_ms(t_ms *ms)
+char	*check_input(t_ms *ms)
 {
-	ms->stop = 0;
-	ms->quit = 0;
-	ms->ast = NULL;
-	ms->tokens = NULL;
-	ms_signal = 0;
-}
-
-int	just_whitespace(char *str)
-{
-	int	i;
-
-	i = 0;
-	while (str[i])
-	{
-		if (!ft_isspace(str[i]))
-			return (0);
-		i++;
-	}
-	return (1);
-}
-
-int	main(int ac, char **av, char **envp)
-{
-	char	prompt[1000] = "minishell> ";
 	char	*str;
-	t_ms	ms;
+	char	*prompt;
 
-	(void)ac;
-	(void)av;
-	init_minishell(&ms, envp);
+	signal_handler_parent();
+	reset_ms(ms);
+	prompt = "minishell> ";
+	str = readline(prompt);
+	if (ms_signal)
+	{
+		ms_signal = 0;
+		ms->exit_code = 130;
+	}
+	if (!str)
+		time_to_quit(ms);
+	if (!*str || just_whitespace(str))
+	{
+		free(str);
+		ms->stop = 1;
+		return (NULL);
+	}
+	else
+		add_history(str);
+	return (str);
+}
+
+void	minishell(t_ms ms)
+{
+	char	*str;
+
 	while (1)
 	{
-		signal_handler_parent();
-		reset_ms(&ms);
-		str = readline(prompt);
-		if (ms_signal)
-		{
-			ms_signal = 0;
-			ms.exit_code = 130;
-		}
-		if (!str)
-		{
-			printf("exit\n");
-			break ;
-		}
-		if (!*str || just_whitespace(str))
-		{
-			free(str);
+		str = check_input(&ms);
+		if (ms.stop)
 			continue ;
-		}
-		else
-			add_history(str);
 		ms.tokens = ft_tokenize(str, &ms);
 		if (ms.stop)
 			continue ;
-		//print_tokens(ms.tokens);//DEBUG
 		ms.ast = parsing_ast(ms.tokens, &ms);
 		if (ms.stop)
 			continue ;
 		mini_exp(&ms, ms.ast);
 		expand_ast(ms.ast, &ms);
-		//print_ast_tree(ms.ast);//debug
 		ast_heredoc(ms.ast, &ms);
 		if (ms.stop)
 		{
@@ -114,4 +80,15 @@ int	main(int ac, char **av, char **envp)
 		ft_free_ast(ms.ast);
 	}
 	clean_ms(&ms);
+}
+
+int	main(int ac, char **av, char **envp)
+{
+	t_ms	ms;
+
+	(void)ac;
+	(void)av;
+	init_minishell(&ms, envp);
+	signal_handler_parent();
+	minishell(ms);
 }

@@ -6,7 +6,7 @@
 /*   By: vkuznets <vkuznets@student.hive.fi>        +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/11/14 14:16:21 by vkuznets          #+#    #+#             */
-/*   Updated: 2024/11/14 14:17:52 by vkuznets         ###   ########.fr       */
+/*   Updated: 2024/11/14 15:36:27 by jhirvone         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -22,6 +22,7 @@
 # include "token.h"
 # include "parsing.h"
 # include "execution.h"
+# include "termios.h"
 
 extern int	ms_signal;
 
@@ -37,5 +38,10 @@ void	signal_handler_child(void);
 void	signal_handler_exec(void);
 void	signal_handler_parent(void);
 void	signal_handler_heredoc(void);
+
+//main_utils.c
+void	init_minishell(t_ms *ms, char **envp);
+void	reset_ms(t_ms *ms);
+int		just_whitespace(char *str);
 
 #endif

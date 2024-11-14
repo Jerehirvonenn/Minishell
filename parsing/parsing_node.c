@@ -6,7 +6,7 @@
 /*   By: jhirvone <jhirvone@student.hive.fi>        +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/11/06 16:01:48 by jhirvone          #+#    #+#             */
-/*   Updated: 2024/11/13 15:04:56 by jhirvone         ###   ########.fr       */
+/*   Updated: 2024/11/14 17:49:31 by jhirvone         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -35,6 +35,7 @@ t_ast	*create_ast_node(t_token_type type, char *str)
 	new_node->io_list = NULL;
 	new_node->pid = -1;
 	new_node->empty = 0;
+	new_node->no_exp = 0;
 	new_node->left = NULL;
 	new_node->right = NULL;
 	return (new_node);
@@ -55,6 +56,7 @@ t_io	*create_io_node(t_io_type type, char *value)
 		return (NULL);
 	}
 	new_io->heredoc_fd = -1;
+	new_io->amb_exp = 0;
 	new_io->next = NULL;
 	new_io->prev = NULL;
 	return (new_io);

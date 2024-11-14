@@ -6,7 +6,7 @@
 /*   By: vkuznets <vkuznets@student.hive.fi>        +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/11/05 13:55:09 by vkuznets          #+#    #+#             */
-/*   Updated: 2024/11/14 13:59:07 by jhirvone         ###   ########.fr       */
+/*   Updated: 2024/11/14 17:47:46 by jhirvone         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -16,7 +16,7 @@
 static void	handle_cases(char **clean, char *ins, size_t *i, t_ms *ms)
 {
 	if (!ms->heredoc && (ft_isquote(ins[*i]) || (ins[*i] == '$'
-			&& (ins[*i + 1] == '"' || ins[*i + 1] == '\''))))
+				&& (ins[*i + 1] == '"' || ins[*i + 1] == '\''))))
 	{
 		if (ins[*i] == '$')
 			(*i)++;
@@ -52,10 +52,10 @@ static void	handle_cd_special_case(t_ast *node)
 	if (node->value && !ft_strncmp(node->value, "cd", 3)
 		&& node->exp_value[1] && !ft_strncmp(node->exp_value[1], "\"\"", 3))
 	{
-		node->no_exp = "\"\"";
+		node->no_exp = 1;
 	}
 	else
-		node->no_exp = NULL;
+		node->no_exp = 0;
 }
 
 static void	expand_io_list(t_io *temp_io, t_ms *ms)

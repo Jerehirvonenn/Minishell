@@ -6,7 +6,7 @@
 /*   By: vkuznets <vkuznets@student.hive.fi>        +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/11/14 14:03:38 by vkuznets          #+#    #+#             */
-/*   Updated: 2024/11/14 14:53:59 by vkuznets         ###   ########.fr       */
+/*   Updated: 2024/11/14 17:48:51 by jhirvone         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -57,7 +57,7 @@ typedef struct s_ast
 	t_io				*io_list;
 	char				*value;
 	char				**exp_value;
-	char				*no_exp;
+	int					no_exp;
 	int					pid;
 	int					empty;
 	struct s_ast		*left;

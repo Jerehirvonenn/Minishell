@@ -6,7 +6,7 @@
 /*   By: vkuznets <vkuznets@student.hive.fi>        +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/11/05 10:10:44 by vkuznets          #+#    #+#             */
-/*   Updated: 2024/11/14 11:46:47 by vkuznets         ###   ########.fr       */
+/*   Updated: 2024/11/14 17:53:51 by jhirvone         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -97,15 +97,22 @@ int	builtin_cd(t_ms *ms, t_ast *ast, char *cmd)
 
 	if (check_cd_args(ast, ms) == -1)
 		return (-1);
-	if (check_filename_length(cmd, ms) == -1)
+	if (check_filename_length(cmd, ms))
 		return (-1);
+	if (ast->no_exp == 1)
+		return (0);
 	if (!cmd || (ft_strncmp(cmd, "~", 2) == 0) || !*cmd)
 		ret = change_dir_path(ms, "HOME=");
 	else if (ft_strncmp(cmd, "-", 2) == 0)
 	{
-		ret = chdir(ms->old_pwd);
-		if (ret != -1)
-			printf("%s\n", ms->old_pwd);
+		if (!ms->old_pwd)
+			printf("%s\n", ms->pwd);
+		else
+		{
+			ret = chdir(ms->old_pwd);
+			if (ret != -1)
+				printf("%s\n", ms->old_pwd);
+		}
 	}
 	else if (ft_strncmp(cmd, "..", 3) == 0)
 		ret = chdir(cmd);

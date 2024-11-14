@@ -6,7 +6,7 @@
 /*   By: vkuznets <vkuznets@student.hive.fi>        +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/11/14 11:27:10 by vkuznets          #+#    #+#             */
-/*   Updated: 2024/11/14 11:36:07 by vkuznets         ###   ########.fr       */
+/*   Updated: 2024/11/14 17:52:20 by jhirvone         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -47,6 +47,8 @@ int	handle_cd_error(char *cmd, t_ms *ms)
 // Check for file name length and handle errors
 int	check_filename_length(char *cmd, t_ms *ms)
 {
+	if (!cmd)
+		return (0);
 	if (ft_strlen(cmd) > 255)
 	{
 		error_msg("minishell: cd: ", cmd, ": File name too long\n");

@@ -6,7 +6,7 @@
 /*   By: vkuznets <vkuznets@student.hive.fi>        +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/11/06 12:25:41 by vkuznets          #+#    #+#             */
-/*   Updated: 2024/11/13 17:05:22 by vkuznets         ###   ########.fr       */
+/*   Updated: 2024/11/14 17:17:37 by jhirvone         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -112,12 +112,11 @@ int	redirection(t_ast *node)
 			status = ft_append(current_io);
 		else if (current_io->type == T_HEREDOC)
 			status = ft_heredoc(current_io);
-		if (status == -1)
-			return (-1);
-		else if (status == -2)
+		if (status < 0)
 		{
-			error_msg("minishell: ", node->io_list->value,
-				": ambiguous redirect\n");
+			if (status == -2)
+				error_msg("minishell: ", node->io_list->value,
+					": ambiguous redirect\n");
 			return (-1);
 		}
 		current_io = current_io->next;
