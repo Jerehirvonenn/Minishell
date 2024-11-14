@@ -6,30 +6,11 @@
 /*   By: vkuznets <vkuznets@student.hive.fi>        +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/11/06 12:25:41 by vkuznets          #+#    #+#             */
-/*   Updated: 2024/11/13 14:55:30 by jhirvone         ###   ########.fr       */
+/*   Updated: 2024/11/13 17:05:22 by vkuznets         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "../includes/minishell.h"
-
-void	error_options(int error)
-{
-	if (error == 1)
-		ft_putstr_fd(": Permission denied", 2);
-	else if (error == 2)
-		ft_putstr_fd(": No such file or directory", 2);
-	else if (error == 3)
-		ft_putstr_fd("Command not found: ", 2);
-}
-
-void	error_handler(char *file_name, int error)
-{
-	ft_putstr_fd("minishell: ", 2);
-	if (file_name)
-		ft_putstr_fd(file_name, 2);
-	error_options(error);
-	ft_putstr_fd("\n", 2);
-}
 
 static int	ft_in(t_io *io_list)
 {
@@ -40,16 +21,9 @@ static int	ft_in(t_io *io_list)
 	fd = open(io_list->value, O_RDONLY);
 	if (fd == -1)
 	{
-		if (access(io_list->value, F_OK))
-		{
-			error_handler(io_list->value, 2);
+		if (check_file_access(io_list->value, F_OK, 2) == -1
+			|| check_file_access(io_list->value, R_OK, 1) == -1)
 			return (-1);
-		}
-		else if (access(io_list->value, R_OK))
-		{
-			error_handler(io_list->value, 1);
-			return (-1);
-		}
 	}
 	if (dup2(fd, STDIN_FILENO) == -1)
 	{
@@ -70,16 +44,9 @@ static int	ft_out(t_io *io_list)
 	fd = open(io_list->value, O_CREAT | O_WRONLY | O_TRUNC, 0644);
 	if (fd == -1)
 	{
-		if (access(io_list->value, F_OK))
-		{
-			error_handler(io_list->value, 2);
+		if (check_file_access(io_list->value, F_OK, 2) == -1
+			|| check_file_access(io_list->value, W_OK, 1) == -1)
 			return (-1);
-		}
-		else if (access(io_list->value, W_OK))
-		{
-			error_handler(io_list->value, 1);
-			return (-1);
-		}
 	}
 	if (dup2(fd, STDOUT_FILENO) == -1)
 	{
@@ -100,16 +67,9 @@ static int	ft_append(t_io *io_list)
 	fd = open(io_list->value, O_WRONLY | O_CREAT | O_APPEND, 0644);
 	if (fd == -1)
 	{
-		if (access(io_list->value, F_OK)) //noaccess DO I NEED TO ADD CREATING ERMISSION??
-		{
-			error_handler(io_list->value, 2);
+		if (check_file_access(io_list->value, F_OK, 2) == -1
+			|| check_file_access(io_list->value, W_OK, 1) == -1)
 			return (-1);
-		}
-		else if (access(io_list->value, W_OK))
-		{
-			error_handler(io_list->value, 1);
-			return (-1);
-		}
 	}
 	if (dup2(fd, STDOUT_FILENO) == -1)
 	{
@@ -156,7 +116,8 @@ int	redirection(t_ast *node)
 			return (-1);
 		else if (status == -2)
 		{
-			error_msg("minishell: ", node->io_list->value, ": ambiguous redirect\n");
+			error_msg("minishell: ", node->io_list->value,
+				": ambiguous redirect\n");
 			return (-1);
 		}
 		current_io = current_io->next;

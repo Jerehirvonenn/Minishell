@@ -6,7 +6,7 @@
 /*   By: vkuznets <vkuznets@student.hive.fi>        +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/11/06 12:24:56 by vkuznets          #+#    #+#             */
-/*   Updated: 2024/11/12 15:21:49 by vkuznets         ###   ########.fr       */
+/*   Updated: 2024/11/14 10:49:12 by vkuznets         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -64,34 +64,41 @@ char	*find_executable(char *cmd, char *path)
  * Returns:
  *   The full path to the executable if found, or NULL if not found.
  */
-char	*build_executable(t_ast *node, t_ms *ms)
+static char	*find_binary_path(char *binary, t_ms *ms)
 {
 	char	*path;
-	char	*binary;
-	char	*find_exec;
+	char	*full_binary;
+	char	*found_exec;
 
-	if (!node || ft_strlen(node->exp_value[0]) == 0)
+	full_binary = ft_strjoin("/", binary);
+	if (!full_binary)
 		return (NULL);
-	binary = node->exp_value[0];
-	if (!ft_strchr(binary, '/'))
+	path = envp_exists("PATH", ms);
+	if (!path)
 	{
-		binary = ft_strjoin("/", binary);
-		if (!binary)
-			return (NULL);
-		path = envp_exists("PATH", ms);
-		if (!path)
-		{
-			free(binary);
-			return (NULL);
-		}
-		find_exec = find_executable(binary, path);
-		free(binary);
-		if (!find_exec)
-			return (NULL);
-		return (find_exec);
+		free(full_binary);
+		return (NULL);
 	}
-	char *binary_cpy = ft_strdup(binary); //MALLOC
+	found_exec = find_executable(full_binary, path);
+	free(full_binary);
+	if (!found_exec)
+		return (NULL);
+	return (found_exec);
+}
+
+// Main function to determine the full path of an executable
+char	*build_executable(t_ast *node, t_ms *ms)
+{
+	char	*binary;
+	char	*binary_cpy;
+
+	binary = node->exp_value[0];
+	if (!node || ft_strlen(binary) == 0)
+		return (NULL);
+	if (!ft_strchr(binary, '/'))
+		return (find_binary_path(binary, ms));
+	binary_cpy = ft_strdup(binary);
 	if (!binary_cpy)
-		malloc_parent_failure(ms); //?
+		malloc_parent_failure(ms);
 	return (binary_cpy);
 }

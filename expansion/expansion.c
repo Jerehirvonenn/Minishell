@@ -6,7 +6,7 @@
 /*   By: vkuznets <vkuznets@student.hive.fi>        +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/11/05 13:55:09 by vkuznets          #+#    #+#             */
-/*   Updated: 2024/11/13 14:16:18 by jhirvone         ###   ########.fr       */
+/*   Updated: 2024/11/14 11:59:26 by vkuznets         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -15,9 +15,10 @@
 // Updated handle_cases function to manage quotes
 static void	handle_cases(char **clean, char *ins, size_t *i, t_ms *ms)
 {
-	if (ft_isquote(ins[*i]) || (ins[*i] == '$' && (ins[*i + 1] == '"' || ins[*i + 1] == '\'')))
+	if (ft_isquote(ins[*i]) || (ins[*i] == '$'
+			&& (ins[*i + 1] == '"' || ins[*i + 1] == '\'')))
 	{
-		if (ins[*i] == '$') // Handle cases like $"..."
+		if (ins[*i] == '$')
 			(*i)++;
 		handle_quoted_literal(clean, ins, i, ms);
 	}
@@ -46,17 +47,8 @@ char	*expand_argument(char *arg, t_ms *ms)
 	return (expanded_arg);
 }
 
-//has 31 line
-void	expand_ast(t_ast *node, t_ms *ms)
+static void	handle_cd_special_case(t_ast *node)
 {
-	size_t	i;
-	char	*new_value;
-	t_io	*temp_io;
-
-	if (!node)
-		return ;
-	i = 0;
-	new_value = NULL;
 	if (node->value && !ft_strncmp(node->value, "cd", 3)
 		&& node->exp_value[1] && !ft_strncmp(node->exp_value[1], "\"\"", 3))
 	{
@@ -64,6 +56,38 @@ void	expand_ast(t_ast *node, t_ms *ms)
 	}
 	else
 		node->no_exp = NULL;
+}
+
+static void	expand_io_list(t_io *temp_io, t_ms *ms)
+{
+	char	*new_value;
+
+	while (temp_io && temp_io->value)
+	{
+		if (temp_io->type == T_HEREDOC || temp_io->amb_exp == 1)
+		{
+			temp_io = temp_io->next;
+			continue ;
+		}
+		new_value = expand_argument(temp_io->value, ms);
+		if (!new_value)
+			malloc_parent_failure(ms);
+		free(temp_io->value);
+		temp_io->value = new_value;
+		temp_io = temp_io->next;
+	}
+}
+
+void	expand_ast(t_ast *node, t_ms *ms)
+{
+	size_t	i;
+	char	*new_value;
+
+	if (!node)
+		return ;
+	i = 0;
+	new_value = NULL;
+	handle_cd_special_case(node);
 	while (node->exp_value && node->exp_value[i])
 	{
 		new_value = expand_argument(node->exp_value[i], ms);
@@ -72,22 +96,8 @@ void	expand_ast(t_ast *node, t_ms *ms)
 		free(node->exp_value[i]);
 		node->exp_value[i] = new_value;
 		i++;
-		temp_io = node->io_list;
-		while (temp_io && temp_io->value)
-		{
-			if (temp_io->type == T_HEREDOC || temp_io->amb_exp == 1)
-			{
-				temp_io = temp_io->next;
-				continue ;
-			}
-			new_value = expand_argument(temp_io->value, ms);
-			if (!new_value)
-				malloc_parent_failure(ms);
-			free(temp_io->value);
-			temp_io->value = new_value;
-			temp_io = temp_io->next;
-		}
 	}
+	expand_io_list(node->io_list, ms);
 	if (node->left)
 		expand_ast(node->left, ms);
 	if (node->right)

@@ -6,48 +6,11 @@
 /*   By: vkuznets <vkuznets@student.hive.fi>        +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/11/05 11:59:01 by vkuznets          #+#    #+#             */
-/*   Updated: 2024/11/05 13:28:15 by vkuznets         ###   ########.fr       */
+/*   Updated: 2024/11/14 11:14:07 by vkuznets         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "../includes/minishell.h"
-
-//32 lines
-int	envp_remove(t_ms *ms, char *content)
-{
-	int		i;
-	int		j;
-	int		len;
-	int		new_size;
-	char	**new_envp;
-
-	len = ft_strlen(content);
-	new_size = ms->envp_size - 1;
-	new_envp = malloc((new_size + 1) * sizeof(char *));
-	if (!new_envp)
-		malloc_parent_failure(ms);
-	i = 0;
-	j = 0;
-	while (ms->my_envp[j])
-	{
-		if (!ft_strncmp(ms->my_envp[j], content, len)
-			&& (ms->my_envp[j][len] == '=' || ms->my_envp[j][len] == '\0'))
-		{
-			j++;
-			continue ;
-		}
-		new_envp[i] = ft_strdup(ms->my_envp[j]);
-		if (!new_envp[i])
-			handle_allocation_failure(new_envp, i, ms);
-		i++;
-		j++;
-	}
-	new_envp[i] = NULL;
-	free_array(ms->my_envp);
-	ms->my_envp = new_envp;
-	ms->envp_size = new_size;
-	return (1);
-}
 
 static int	error_check(char *str)
 {

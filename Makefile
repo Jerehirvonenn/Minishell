@@ -16,6 +16,7 @@ PARSING_DIR = ./parsing
 TOKEN_DIR = ./token
 EXP_DIR = ./expansion
 EXEC_DIR = ./execution
+RDR_DIR = ./redirection
 BLT_DIR = ./buildins
 UTL_DIR = ./utils
 
@@ -52,17 +53,26 @@ EXECUTION_SRCS = \
     $(EXEC_DIR)/envp.c \
     $(EXEC_DIR)/exec_buildin.c \
     $(EXEC_DIR)/find_executable.c \
-    $(EXEC_DIR)/redirection.c \
     $(EXEC_DIR)/execution.c \
+    $(EXEC_DIR)/execute_pipe.c \
+    $(EXEC_DIR)/exec_bin.c \
     $(EXEC_DIR)/execution_utils.c \
-    $(EXEC_DIR)/redirection_parent.c
+    $(EXEC_DIR)/execution_utils2.c
+
+REDIRECTION_SRCS = \
+    $(RDR_DIR)/redirection.c \
+    $(RDR_DIR)/redirection_utils.c \
+    $(RDR_DIR)/redirection_parent.c
 
 BUILTIN_SRCS = \
     $(BLT_DIR)/builtin_export.c \
     $(BLT_DIR)/builtin_exit.c \
+    $(BLT_DIR)/exit_utils.c \
     $(BLT_DIR)/builtin_env.c \
     $(BLT_DIR)/builtin_echo.c \
     $(BLT_DIR)/builtin_cd.c \
+    $(BLT_DIR)/cd_utils.c \
+    $(BLT_DIR)/envp_remove.c \
     $(BLT_DIR)/builtin_unset.c
 
 UTILS_SRCS = \
@@ -70,7 +80,7 @@ UTILS_SRCS = \
     $(UTL_DIR)/writing_utils.c
 
 # Combined source files
-OBJS = $(PARSING_SRCS) $(TOKEN_SRCS) $(EXPANSION_SRCS) $(EXECUTION_SRCS) $(BUILTIN_SRCS) $(UTILS_SRCS)
+OBJS = $(PARSING_SRCS) $(TOKEN_SRCS) $(EXPANSION_SRCS) $(EXECUTION_SRCS) $(REDIRECTION_SRCS) $(BUILTIN_SRCS) $(UTILS_SRCS)
 
 CLEAN = $(OBJS:.c=.o)
 

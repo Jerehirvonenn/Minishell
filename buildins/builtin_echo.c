@@ -6,7 +6,7 @@
 /*   By: vkuznets <vkuznets@student.hive.fi>        +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/11/05 12:12:19 by vkuznets          #+#    #+#             */
-/*   Updated: 2024/11/12 10:58:16 by vkuznets         ###   ########.fr       */
+/*   Updated: 2024/11/14 10:50:14 by vkuznets         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -17,7 +17,7 @@ static int	check_flags(char *str)
 	int	i;
 
 	i = 0;
-	if (str[i] != '-'  || (str[i] ==  '-' && str[i + 1] != 'n'))
+	if (str[i] != '-' || (str[i] == '-' && str[i + 1] != 'n'))
 		return (1);
 	else
 		i++;

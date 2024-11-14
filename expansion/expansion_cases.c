@@ -6,26 +6,38 @@
 /*   By: vkuznets <vkuznets@student.hive.fi>        +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/11/05 13:14:57 by vkuznets          #+#    #+#             */
-/*   Updated: 2024/11/13 14:49:30 by jhirvone         ###   ########.fr       */
+/*   Updated: 2024/11/14 12:06:47 by vkuznets         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "../includes/minishell.h"
 
-// Handle environment variable expansion //has 27 lines
+static void	append_envir_value(char **clean, char *envir_value, t_ms *ms)
+{
+	char	*temp;
+
+	if (envir_value)
+	{
+		temp = ft_strjoin(*clean, envir_value);
+		free(*clean);
+		if (!temp)
+			malloc_parent_failure(ms);
+		*clean = temp;
+	}
+}
+
 void	handle_envir(char **clean, char *ins, size_t *i, t_ms *ms)
 {
 	size_t	start;
 	size_t	len;
 	char	*envir_name;
 	char	*envir_value;
-	char	*temp;
 
 	start = *i + 1;
 	while (ft_isalnum(ins[start]) || ins[start] == '_')
 		start++;
 	len = start - (*i + 1);
-	envir_name = ft_substr(ins, *i + 1, len);//MALLOC
+	envir_name = ft_substr(ins, *i + 1, len);
 	if (!envir_name)
 	{
 		free(*clean);
@@ -33,30 +45,22 @@ void	handle_envir(char **clean, char *ins, size_t *i, t_ms *ms)
 	}
 	envir_value = envp_exists(envir_name, ms);
 	free(envir_name);
-	if (envir_value)
-	{
-		temp = ft_strjoin(*clean, envir_value); //MALLOC
-		free(*clean);
-		if (!temp)
-			malloc_parent_failure(ms);
-		*clean = temp;
-	}
-	*i = start; // Move the index after the environment variable
+	append_envir_value(clean, envir_value, ms);
+	*i = start;
 }
 
-// Handle exit code expansion ($?)
 void	handle_exit_code(char **clean, size_t *i, t_ms *ms)
 {
 	char	*substr;
 	char	*temp_clean;
 
-	substr = ft_itoa(ms->exit_code); //MALLOC
+	substr = ft_itoa(ms->exit_code);
 	if (!substr)
 	{
 		free(*clean);
 		malloc_parent_failure(ms);
 	}
-	temp_clean = ft_strjoin(*clean, substr); //MALLOC
+	temp_clean = ft_strjoin(*clean, substr);
 	if (!temp_clean)
 	{
 		free(*clean);
@@ -66,7 +70,7 @@ void	handle_exit_code(char **clean, size_t *i, t_ms *ms)
 	free(*clean);
 	*clean = temp_clean;
 	*i += 2;
-	free(substr); //its no longer needed
+	free(substr);
 }
 
 void	handle_normal_char(char **clean, char *ins, size_t *i, t_ms *ms)
@@ -76,7 +80,7 @@ void	handle_normal_char(char **clean, char *ins, size_t *i, t_ms *ms)
 
 	str[0] = ins[*i];
 	str[1] = '\0';
-	temp = ft_strjoin(*clean, str); //MALLOC
+	temp = ft_strjoin(*clean, str);
 	if (!temp)
 	{
 		free(*clean);
