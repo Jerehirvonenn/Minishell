@@ -6,7 +6,7 @@
 /*   By: jhirvone <jhirvone@student.hive.fi>        +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/11/06 11:14:40 by jhirvone          #+#    #+#             */
-/*   Updated: 2024/11/13 16:10:12 by jhirvone         ###   ########.fr       */
+/*   Updated: 2024/11/14 11:34:59 by jhirvone         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -43,17 +43,13 @@ static int	handle_quote(char **str, int *i, t_ms *ms)
 
 	type = (*str)[*i];
 	(*i)++;
-	while ((*str)[*i])
-	{
-		if ((*str)[*i] == type)
-			break ;
-		else
+	while ((*str)[*i] && (*str)[*i] != type)
 			(*i)++;
-	}
 	if (!(*str)[*i])
 		return (error_set(ms, NULL, 1));
 	(*i)++;
-	while ((*str)[*i] && !ft_isspace((*str)[*i]) && !ft_isoperator((*str)))
+	while ((*str)[*i] && !ft_isspace((*str)[*i])
+		&& !ft_isoperator(&((*str)[*i])))
 	{
 		if ((*str)[*i] == '\'' || (*str)[*i] == '"')
 		{
