@@ -1,21 +1,33 @@
+/* ************************************************************************** */
+/*                                                                            */
+/*                                                        :::      ::::::::   */
+/*   struct.h                                           :+:      :+:    :+:   */
+/*                                                    +:+ +:+         +:+     */
+/*   By: vkuznets <vkuznets@student.hive.fi>        +#+  +:+       +#+        */
+/*                                                +#+#+#+#+#+   +#+           */
+/*   Created: 2024/11/14 14:03:38 by vkuznets          #+#    #+#             */
+/*   Updated: 2024/11/14 14:15:47 by vkuznets         ###   ########.fr       */
+/*                                                                            */
+/* ************************************************************************** */
 
-
+#ifndef STRUCT_H
+# define STRUCT_H
 
 //tokens
 typedef enum e_token_type
 {
-	T_CMND,			//command names, filenames, and arguments.
-	T_IN_REDIR,		//input redirection <
-	T_OUT_REDIR,		//output redirection >
-	T_HERE_DOC,		//Heredoc <<
-	T_APEND,		//Append >>
-	T_PIPE,			//pipe
+	T_CMND,		
+	T_IN_REDIR,
+	T_OUT_REDIR,
+	T_HERE_DOC,
+	T_APEND,
+	T_PIPE,
 }	t_token_type;
 
 typedef struct s_token
 {
 	t_token_type		type;
-	char			*value;
+	char				*value;
 	struct s_token		*next;
 	struct s_token		*prev;
 }	t_token;
@@ -33,8 +45,8 @@ typedef struct s_io
 {
 	t_io_type	type;
 	char		*value;
-	int		heredoc_fd;
-	int		amb_exp;
+	int			heredoc_fd;
+	int			amb_exp;
 	struct s_io	*prev;
 	struct s_io	*next;
 }	t_io;
@@ -42,41 +54,43 @@ typedef struct s_io
 typedef struct s_ast
 {
 	t_token_type		type;
-	char		*value;
-	char		**exp_value;
-	char		*no_exp;
-	t_io		*io_list;
-	int		pid;
-	int		empty;
-	struct s_ast	*left;
-	struct s_ast	*right;
+	t_io				*io_list;
+	struct s_ast		*left;
+	struct s_ast		*right;
+	char				*value;
+	char				**exp_value;
+	char				*no_exp;
+	int					pid;
+	int					empty;
+	struct s_ast		*left;
+	struct s_ast		*right;
 }	t_ast;
 
 //execution
 typedef struct s_exec
 {
-    int     	pipefd[2];
-    int		num_cmds;
-    int		index;
-    int		*pids;
-}   t_exec;
+	int			pipefd[2];
+	int			num_cmds;
+	int			index;
+	int			*pids;
+}	t_exec;
 
 //main struct
 typedef struct s_ms
 {
-	char    	**my_envp;	// Environment variables
-	int     	exit_code;	// Exit code for the shell
-	int     	envp_size;	// Size of the environment variables
-	int		stop;	//indicate the minishell should stop and start new round
-	int		quit;	//indicate minishell should quit
-	int		heredoc;
-	char    	*pwd;		// Current working directory
+	char		**my_envp;
+	int			exit_code;
+	int			envp_size;
+	int			stop;
+	int			quit;
+	int			heredoc;
+	char		*pwd;
 	char		*old_pwd;
 	char		*tmp1;
 	char		*tmp2;
-	int		fds[1024];
-	t_token		*tokens;	//linked list of tokens
-	t_ast   	*ast;		// Abstract syntax tree for the command(s)
+	int			fds[1024];
+	t_token		*tokens;
+	t_ast		*ast;
 }	t_ms;
 
 typedef struct s_parsing
@@ -85,3 +99,5 @@ typedef struct s_parsing
 	t_ast	*right;
 	t_ast	*pipe;
 }	t_parsing;
+
+#endif
