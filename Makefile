@@ -39,7 +39,8 @@ TOKEN_SRCS = \
     $(TOKEN_DIR)/token_create.c \
     $(TOKEN_DIR)/token_utils.c \
     $(TOKEN_DIR)/main.c \
-    ./signal/signal.c
+    ./signal/signal.c \
+    ./signal/signal2.c
 
 EXPANSION_SRCS = \
     $(EXP_DIR)/expansion.c \

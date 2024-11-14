@@ -1,50 +1,39 @@
 /* ************************************************************************** */
 /*                                                                            */
 /*                                                        :::      ::::::::   */
-/*   signal.c                                           :+:      :+:    :+:   */
+/*   signal2.c                                          :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
 /*   By: jhirvone <jhirvone@student.hive.fi>        +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
-/*   Created: 2024/11/14 11:55:19 by jhirvone          #+#    #+#             */
-/*   Updated: 2024/11/14 11:55:50 by jhirvone         ###   ########.fr       */
+/*   Created: 2024/11/14 11:54:51 by jhirvone          #+#    #+#             */
+/*   Updated: 2024/11/14 11:55:15 by jhirvone         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "../includes/minishell.h"
 
-void	ft_sigint_parent(int num)
+void	ft_sigint_exec(int num)
 {
 	ms_signal = num;
 	ft_putstr_fd("\n", STDOUT_FILENO);
 	rl_on_new_line();
 	rl_replace_line("", 0);
-	rl_redisplay();
 }
 
-void	ft_sigint_heredoc(int num)
+void	ft_sigquit(int num)
 {
-	rl_on_new_line();
-	rl_replace_line("", 0);
-	rl_done = 1;
 	ms_signal = num;
+	printf("Quit (core dumped)\n");
 }
 
-int	ft_readline_event(void)
+void	signal_handler_exec(void)
 {
-	return (0);
+	signal(SIGINT, ft_sigint_exec);
+	signal(SIGQUIT, ft_sigquit);
 }
 
-void	signal_handler_heredoc(void)
+void	signal_handler_child(void)
 {
-	rl_event_hook = ft_readline_event;
-	signal(SIGINT, ft_sigint_heredoc);
-	signal(SIGQUIT, SIG_IGN);
-}
-
-void	signal_handler_parent(void)
-{
-	rl_done = 0;
-	rl_event_hook = NULL;
-	signal(SIGINT, ft_sigint_parent);
-	signal(SIGQUIT, SIG_IGN);
+	signal(SIGINT, SIG_DFL);
+	signal(SIGQUIT, SIG_DFL);
 }
