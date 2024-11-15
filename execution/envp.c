@@ -6,7 +6,7 @@
 /*   By: vkuznets <vkuznets@student.hive.fi>        +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/11/05 10:04:15 by vkuznets          #+#    #+#             */
-/*   Updated: 2024/11/06 16:03:33 by vkuznets         ###   ########.fr       */
+/*   Updated: 2024/11/15 11:56:47 by vkuznets         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -34,7 +34,7 @@ void	init_envp(t_ms *ms, char **envp)
 	ms->my_envp = (char **)malloc(sizeof (char *) * (ms->envp_size + 1));
 	if (!ms->my_envp)
 	{
-		printf("minishell: cannot allocate memory\n");
+		ft_putstr_fd("minishell: cannot allocate memory\n", 2);
 		exit(1);
 	}
 	i = 0;
