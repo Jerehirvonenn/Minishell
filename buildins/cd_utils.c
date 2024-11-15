@@ -6,25 +6,33 @@
 /*   By: vkuznets <vkuznets@student.hive.fi>        +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/11/14 11:27:10 by vkuznets          #+#    #+#             */
-/*   Updated: 2024/11/14 17:52:20 by jhirvone         ###   ########.fr       */
+/*   Updated: 2024/11/15 10:24:15 by vkuznets         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "../includes/minishell.h"
 
-static int	arg_count(t_ast *ast)
+int	handle_cd_dash(t_ms *ms, int *ret)
+{
+	if (!ms->old_pwd)
+	{
+		printf("%s\n", ms->pwd);
+		return (0);
+	}
+	*ret = chdir(ms->old_pwd);
+	if (*ret != -1)
+		printf("%s\n", ms->old_pwd);
+	return (*ret);
+}
+
+int	check_cd_args(t_ast *ast, t_ms *ms)
 {
 	int	i;
 
 	i = 0;
 	while (ast->exp_value[i])
 		i++;
-	return (i);
-}
-
-int	check_cd_args(t_ast *ast, t_ms *ms)
-{
-	if (arg_count(ast) > 2)
+	if (i > 2)
 	{
 		ft_putstr_fd("minishell: cd: too many arguments\n", 2);
 		ms->exit_code = 1;

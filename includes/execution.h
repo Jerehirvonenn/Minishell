@@ -6,7 +6,7 @@
 /*   By: vkuznets <vkuznets@student.hive.fi>        +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/11/14 12:07:45 by vkuznets          #+#    #+#             */
-/*   Updated: 2024/11/14 13:13:18 by vkuznets         ###   ########.fr       */
+/*   Updated: 2024/11/15 10:25:58 by vkuznets         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -38,6 +38,7 @@ int		builtin_cd(t_ms *ms, t_ast *ast, char *cmd);
 int		check_cd_args(t_ast *ast, t_ms *ms);
 int		handle_cd_error(char *cmd, t_ms *ms);
 int		check_filename_length(char *cmd, t_ms *ms);
+int		handle_cd_dash(t_ms *ms, int *ret);
 void	handle_pwd_errors(t_ms *ms, char *cmd);
 
 void	builtin_echo(char **cmd);
