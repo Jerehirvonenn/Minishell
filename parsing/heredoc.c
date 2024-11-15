@@ -6,7 +6,7 @@
 /*   By: jhirvone <jhirvone@student.hive.fi>        +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/11/06 12:07:32 by jhirvone          #+#    #+#             */
-/*   Updated: 2024/11/15 09:26:57 by jhirvone         ###   ########.fr       */
+/*   Updated: 2024/11/15 10:16:50 by jhirvone         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -51,7 +51,10 @@ int	ft_heredoc(t_ms *ms, t_io *io)
 		return (1);
 	}
 	io->heredoc_fd = fd_read;
+	io->heredoc_write = fd_write;
 	ft_heredoc_getline(io->value, fd_write, ms);
+	close(fd_write);
+	io->heredoc_write = -1;
 	return (0);
 }
 

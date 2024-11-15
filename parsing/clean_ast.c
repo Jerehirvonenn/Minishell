@@ -6,7 +6,7 @@
 /*   By: jhirvone <jhirvone@student.hive.fi>        +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/11/06 15:31:09 by jhirvone          #+#    #+#             */
-/*   Updated: 2024/11/06 16:08:36 by jhirvone         ###   ########.fr       */
+/*   Updated: 2024/11/15 10:14:37 by jhirvone         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -19,8 +19,13 @@ void	ft_free_io_list(t_io *io_list)
 	while (io_list)
 	{
 		free(io_list->value);
-		if (io_list->type == T_HEREDOC && io_list->heredoc_fd != -1)
-			close(io_list->heredoc_fd);
+		if (io_list->type == T_HEREDOC)
+		{
+			if (io_list->heredoc_fd != -1)
+				close(io_list->heredoc_fd);
+			if (io_list->heredoc_write != -1)
+				close(io_list->heredoc_write);
+		}
 		temp = io_list;
 		io_list = io_list->next;
 		free(temp);

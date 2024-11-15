@@ -6,7 +6,7 @@
 /*   By: jhirvone <jhirvone@student.hive.fi>        +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/11/14 11:55:19 by jhirvone          #+#    #+#             */
-/*   Updated: 2024/11/15 09:18:12 by jhirvone         ###   ########.fr       */
+/*   Updated: 2024/11/15 10:24:01 by jhirvone         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -23,6 +23,7 @@ void	ft_sigint_parent(int num)
 
 void	ft_sigint_heredoc(int num)
 {
+	ft_putstr_fd("\n", STDOUT_FILENO);
 	rl_on_new_line();
 	rl_replace_line("", 0);
 	rl_done = 1;

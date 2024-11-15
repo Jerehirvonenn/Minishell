@@ -6,7 +6,7 @@
 /*   By: vkuznets <vkuznets@student.hive.fi>        +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/11/14 14:03:38 by vkuznets          #+#    #+#             */
-/*   Updated: 2024/11/14 17:48:51 by jhirvone         ###   ########.fr       */
+/*   Updated: 2024/11/15 10:12:36 by jhirvone         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -46,6 +46,7 @@ typedef struct s_io
 	t_io_type	type;
 	char		*value;
 	int			heredoc_fd;
+	int			heredoc_write;
 	int			amb_exp;
 	struct s_io	*prev;
 	struct s_io	*next;
