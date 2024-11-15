@@ -6,7 +6,7 @@
 /*   By: vkuznets <vkuznets@student.hive.fi>        +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/11/06 12:25:41 by vkuznets          #+#    #+#             */
-/*   Updated: 2024/11/14 17:17:37 by jhirvone         ###   ########.fr       */
+/*   Updated: 2024/11/15 11:09:42 by vkuznets         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -88,10 +88,10 @@ static int	ft_heredoc(t_io *io_list)
 	if (dup2(io_list->heredoc_fd, STDIN_FILENO) == -1)
 	{
 		perror("dup2 heredoc");
-		close(io_list->heredoc_fd);
+		close_fd(&io_list->heredoc_fd);
 		return (-1);
 	}
-	close(io_list->heredoc_fd);
+	close_fd(&io_list->heredoc_fd);
 	return (0);
 }
 
