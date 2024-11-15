@@ -80,12 +80,10 @@ UTILS_SRCS = \
     $(UTL_DIR)/writing_utils.c
 
 # Combined source files
-OBJS = $(PARSING_SRCS) $(TOKEN_SRCS) $(EXPANSION_SRCS) $(EXECUTION_SRCS) $(REDIRECTION_SRCS) $(BUILTIN_SRCS) $(UTILS_SRCS)
+SRCS = $(PARSING_SRCS) $(TOKEN_SRCS) $(EXPANSION_SRCS) $(EXECUTION_SRCS) $(REDIRECTION_SRCS) $(BUILTIN_SRCS) $(UTILS_SRCS)
 
-CLEAN = $(OBJS:.c=.o)
-
-# Includes and headers
-INCLUDES = -I$(INCLUDES_DIR) -I$(LIBFT_DIR)
+# Object files (same directories as sources)
+OBJS = $(SRCS:.c=.o)
 
 # Rules
 
@@ -93,10 +91,10 @@ INCLUDES = -I$(INCLUDES_DIR) -I$(LIBFT_DIR)
 all: $(LIBFT) $(NAME)
 
 # Build minishell executable
-$(NAME): $(OBJS)
+$(NAME): $(LIBFT) $(OBJS)
 	$(CC) $(CFLAGS) $(OBJS) $(LIBFT) -o $(NAME) $(LDFLAGS)
 
-# Compile source files into object files
+# Compile source files into object files (same directory as .c files)
 %.o: %.c
 	$(CC) $(CFLAGS) $(INCLUDES) -c $< -o $@
 
@@ -106,7 +104,7 @@ $(LIBFT):
 
 # Clean object files
 clean:
-	rm -f $(CLEAN)
+	rm -f $(OBJS)
 	make -C $(LIBFT_DIR) clean
 
 # Clean object files and the executable
@@ -118,4 +116,3 @@ fclean: clean
 re: fclean all
 
 .PHONY: all clean fclean re
-
