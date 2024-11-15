@@ -6,7 +6,7 @@
 /*   By: vkuznets <vkuznets@student.hive.fi>        +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/11/06 15:15:41 by vkuznets          #+#    #+#             */
-/*   Updated: 2024/11/14 18:29:46 by vkuznets         ###   ########.fr       */
+/*   Updated: 2024/11/14 18:56:45 by jhirvone         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -17,6 +17,8 @@ bool	is_builtin(t_ast *ast)
 	char	*cmd;
 	int		len;
 
+	if (!ast->value)
+		return (false);
 	cmd = ast->exp_value[0];
 	len = ft_strlen(cmd);
 	if (((len == 6) && !(ft_strncmp("export", cmd, len + 1)))
@@ -86,7 +88,7 @@ void	child_process(t_ms *ms, t_ast *ast)
 {
 	if (signal_handler_child() == -1)
 		clean_and_exit(ms, 1);
-	if (ast->empty == 1)
+	if (ast->empty == 1 || !ast->value)
 		clean_and_exit(ms, 0);
 	if (is_child_builtin(ast) || is_builtin(ast))
 	{

@@ -6,14 +6,14 @@
 /*   By: jhirvone <jhirvone@student.hive.fi>        +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/11/01 14:25:28 by jhirvone          #+#    #+#             */
-/*   Updated: 2024/11/14 18:13:57 by jhirvone         ###   ########.fr       */
+/*   Updated: 2024/11/15 09:12:43 by jhirvone         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "../includes/minishell.h"
 #include <termios.h>
 
-int	ms_signal = 0;
+int	g_signal = 0;
 
 void		print_ast_tree(t_ast *root);
 void		print_tokens(t_token *tokens);
@@ -42,9 +42,9 @@ char	*check_input(t_ms *ms)
 	reset_ms(ms);
 	prompt = "minishell> ";
 	str = readline(prompt);
-	if (ms_signal)
+	if (g_signal)
 	{
-		ms_signal = 0;
+		g_signal = 0;
 		ms->exit_code = 130;
 	}
 	if (!str)

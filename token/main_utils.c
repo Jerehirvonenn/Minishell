@@ -6,7 +6,7 @@
 /*   By: jhirvone <jhirvone@student.hive.fi>        +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/11/14 17:12:12 by jhirvone          #+#    #+#             */
-/*   Updated: 2024/11/14 17:12:14 by jhirvone         ###   ########.fr       */
+/*   Updated: 2024/11/15 09:17:31 by jhirvone         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -45,7 +45,7 @@ void	reset_ms(t_ms *ms)
 	ms->quit = 0;
 	ms->ast = NULL;
 	ms->tokens = NULL;
-	ms_signal = 0;
+	g_signal = 0;
 }
 
 int	just_whitespace(char *str)

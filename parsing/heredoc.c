@@ -6,7 +6,7 @@
 /*   By: jhirvone <jhirvone@student.hive.fi>        +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/11/06 12:07:32 by jhirvone          #+#    #+#             */
-/*   Updated: 2024/11/14 18:38:33 by jhirvone         ###   ########.fr       */
+/*   Updated: 2024/11/15 09:26:57 by jhirvone         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -21,7 +21,7 @@ void	ft_empty_heredoc(t_ms *ms, t_io *io, char *delim)
 	while (1)
 	{
 		line = readline(">");
-		if (!line || ms_signal || !ft_strcmp(line, delim))
+		if (!line || g_signal || !ft_strcmp(line, delim))
 			break ;
 		free(line);
 		line = NULL;
@@ -29,8 +29,11 @@ void	ft_empty_heredoc(t_ms *ms, t_io *io, char *delim)
 	if (!line)
 		error_msg("minishell: warning: here-document delimited "
 			"by end of-file (wanted `", delim, "\')\n");
-	if (ms_signal)
+	if (g_signal)
+	{
+		ms->exit_code = 130;
 		ms->stop = 1;
+	}
 	free(line);
 	io->heredoc_fd = -1;
 	if (signal_handler_parent())

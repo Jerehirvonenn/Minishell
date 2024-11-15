@@ -6,7 +6,7 @@
 /*   By: vkuznets <vkuznets@student.hive.fi>        +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/11/14 14:16:21 by vkuznets          #+#    #+#             */
-/*   Updated: 2024/11/14 18:24:00 by jhirvone         ###   ########.fr       */
+/*   Updated: 2024/11/15 09:11:17 by jhirvone         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -24,7 +24,7 @@
 # include "execution.h"
 # include "termios.h"
 
-extern int	ms_signal;
+extern int	g_signal;
 
 //writing_utils.c
 void	error_msg(char *first_line, char *cmd, char *second_line);

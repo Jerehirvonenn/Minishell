@@ -6,7 +6,7 @@
 /*   By: jhirvone <jhirvone@student.hive.fi>        +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/11/06 11:54:14 by jhirvone          #+#    #+#             */
-/*   Updated: 2024/11/14 18:36:03 by jhirvone         ###   ########.fr       */
+/*   Updated: 2024/11/15 09:16:59 by jhirvone         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -60,7 +60,7 @@ static void	handle_heredoc_exit(char *line, char *delim, t_ms *ms)
 		error_msg("minishell: warning: "
 			"here-document delimited by end of-file (wanted `",
 			delim, "\')\n");
-	if (ms_signal)
+	if (g_signal)
 	{
 		ms->exit_code = 130;
 		ms->stop = 1;
@@ -96,9 +96,8 @@ int	ft_heredoc_getline(char *delim, int fd_write, t_ms *ms)
 	while (!ms->stop && !ms->quit)
 	{
 		line = readline(">");
-		if (!line || ms_signal || !ft_strcmp(line, delim))
+		if (!line || g_signal || !ft_strcmp(line, delim))
 			break ;
-		ms_signal = 0;
 		if (expand == 0)
 			handle_expansion(&line, ms, fd_write);
 		else if (heredoc_write(ms, line, fd_write))
