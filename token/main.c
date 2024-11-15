@@ -6,7 +6,7 @@
 /*   By: jhirvone <jhirvone@student.hive.fi>        +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/11/01 14:25:28 by jhirvone          #+#    #+#             */
-/*   Updated: 2024/11/15 09:12:43 by jhirvone         ###   ########.fr       */
+/*   Updated: 2024/11/15 11:35:19 by jhirvone         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -96,7 +96,7 @@ int	main(int ac, char **av, char **envp)
 	(void)ac;
 	(void)av;
 	init_minishell(&ms, envp);
-	if(signal_handler_parent())
+	if (signal_handler_parent())
 	{
 		clean_ms(&ms);
 		exit(1);
