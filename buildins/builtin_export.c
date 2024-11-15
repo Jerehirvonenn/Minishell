@@ -6,7 +6,7 @@
 /*   By: vkuznets <vkuznets@student.hive.fi>        +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/11/05 11:48:53 by vkuznets          #+#    #+#             */
-/*   Updated: 2024/11/07 11:16:38 by vkuznets         ###   ########.fr       */
+/*   Updated: 2024/11/15 11:51:56 by vkuznets         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -60,7 +60,10 @@ void	envp_update(t_ms *ms, char *content)
 			free(ms->my_envp[i]);
 			ms->my_envp[i] = ft_strdup(content);
 			if (!ms->my_envp[i])
+			{
 				perror("envp update error");
+				malloc_parent_failure(ms);
+			}
 			return ;
 		}
 		i++;
