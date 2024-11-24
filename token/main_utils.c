@@ -12,6 +12,25 @@
 
 #include "../includes/minishell.h"
 
+void	update_old_pwd(t_ms *ms)
+{
+	int	i;
+
+	i = 0;
+	while (ms->my_envp[i])
+	{
+		if (!ft_strncmp(ms->my_envp[i], "OLDPWD=", 7))
+		{
+			if (ft_strlen(ms->my_envp[i]) > 7)
+			{
+				ms->old_pwd = ft_substr(ms->my_envp[i], 7, ft_strlen(ms->my_envp[i]) - 7);
+					return ;
+			}
+		}
+		i++;
+	}
+}
+
 void	init_minishell(t_ms *ms, char **envp)
 {
 	struct termios	term;
@@ -37,6 +56,7 @@ void	init_minishell(t_ms *ms, char **envp)
 	tcgetattr(STDIN_FILENO, &term);
 	term.c_lflag &= ~ECHOCTL;
 	tcsetattr(STDIN_FILENO, TCSANOW, &term);
+	update_old_pwd(ms);
 }
 
 void	reset_ms(t_ms *ms)
