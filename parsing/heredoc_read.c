@@ -1,0 +1,113 @@
+/* ************************************************************************** */
+/*                                                                            */
+/*                                                        :::      ::::::::   */
+/*   heredoc_read.c                                     :+:      :+:    :+:   */
+/*                                                    +:+ +:+         +:+     */
+/*   By: jhirvone <jhirvone@student.hive.fi>        +#+  +:+       +#+        */
+/*                                                +#+#+#+#+#+   +#+           */
+/*   Created: 2024/11/06 11:54:14 by jhirvone          #+#    #+#             */
+/*   Updated: 2024/11/15 09:16:59 by jhirvone         ###   ########.fr       */
+/*                                                                            */
+/* ************************************************************************** */
+
+#include "../includes/minishell.h"
+
+void	remove_delim_quotes(char *delim)
+{
+	char	*temp;
+	char	quote;
+
+	quote = 0;
+	temp = delim;
+	while (*temp)
+	{
+		if (quote == *temp)
+			quote = 0;
+		else if (quote == 0 && (*temp == '\'' || *temp == '\"'))
+			quote = *temp;
+		else
+		{
+			*delim = *temp;
+			delim++;
+		}
+		temp++;
+	}
+	*delim = 0;
+}
+
+static int	ft_delim_expansion(char *delim)
+{
+	int	i;
+	int	ret;
+
+	i = -1;
+	ret = 0;
+	while (delim[++i])
+		if (delim[i] == '\'' || delim[i] == '"')
+			ret = 1;
+	if (ret == 1)
+	{
+		remove_delim_quotes(delim);
+		return (1);
+	}
+	else
+		return (0);
+}
+
+static void	handle_heredoc_exit(char *line, char *delim, t_ms *ms)
+{
+	if (!line)
+		error_msg("minishell: warning: "
+			"here-document delimited by end of-file (wanted `",
+			delim, "\')\n");
+	if (g_signal)
+	{
+		ms->exit_code = 130;
+		ms->stop = 1;
+	}
+	free(line);
+}
+
+static void	handle_expansion(char **line, t_ms *ms, int fd_write)
+{
+	ms->tmp1 = *line;
+	*line = expand_argument(*line, ms);
+	if (heredoc_write(ms, *line, fd_write))
+	{
+		free(ms->tmp1);
+		ms->tmp1 = NULL;
+	}
+	else
+	{
+		free(ms->tmp1);
+		ms->tmp1 = NULL;
+	}
+}
+
+int	ft_heredoc_getline(char *delim, int fd_write, t_ms *ms)
+{
+	char	*line;
+	int		expand;
+
+	ms->heredoc = 1;
+	signal_handler_heredoc(ms);
+	expand = ft_delim_expansion(delim);
+	line = NULL;
+	while (!ms->stop && !ms->quit)
+	{
+		line = readline(">");
+		if (!line || g_signal || !ft_strcmp(line, delim))
+			break ;
+		if (expand == 0)
+			handle_expansion(&line, ms, fd_write);
+		else if (heredoc_write(ms, line, fd_write))
+			break ;
+		free(line);
+		line = NULL;
+	}
+	handle_heredoc_exit(line, delim, ms);
+	if (signal_handler_parent())
+		hdoc_signal_failure(ms, fd_write);
+	ms->heredoc = 0;
+	return (0);
+}
